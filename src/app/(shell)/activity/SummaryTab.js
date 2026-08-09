@@ -22,8 +22,12 @@ function formatFullDate(isoString) {
   });
 }
 
+// The series keys are LOCAL calendar dates (YYYY-MM-DD, see activityStats.js),
+// so build the label from a local-midnight Date — never from a `T00:00:00Z`
+// string, which renders the previous date in timezones west of UTC.
 function formatDayLabel(dateKey) {
-  return new Date(`${dateKey}T00:00:00Z`).toLocaleDateString(undefined, {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
   });

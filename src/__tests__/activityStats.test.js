@@ -5,11 +5,18 @@
 //     { moduleTypes, createdAts, total } shape the aggregations consume
 //   - computeActivityStats turns that shape into the Summary tab's numbers
 //     (totals, per-module counts, dates, denominators)
-//   - buildDailySeries buckets created_at values into deterministic UTC-day
-//     buckets for the 14-day chart
+//   - buildDailySeries buckets created_at values into deterministic LOCAL-day
+//     buckets for the 14-day chart — the day boundary is the user's local
+//     midnight, not UTC (see the regression test below for why)
 //
+// The functions bucket by the runtime's local timezone, so this file pins
+// `process.env.TZ` to a fixed non-UTC zone (Asia/Kolkata, UTC+5:30) at the
+// top — before any Date math — to make the assertions deterministic on any
+// machine. Vitest isolates each test file, so the pin doesn't leak.
 // `now` is always injected into buildDailySeries so the date math is
 // deterministic regardless of when the suite runs.
+
+process.env.TZ = "Asia/Kolkata";
 
 import { describe, it, expect } from "vitest";
 import { recordsToStats, computeActivityStats, buildDailySeries } from "@/lib/activityStats";
@@ -143,7 +150,9 @@ describe("computeActivityStats", () => {
     expect(stats.activeDays).toBe(1);
   });
 
-  it("counts active days by unique UTC day", () => {
+  it("counts active days by unique local day", () => {
+    // In Asia/Kolkata: 23:59:59Z on Jul 1 is already 05:29 IST on Jul 2, so
+    // it counts as Jul 2 — the day boundary is local midnight, not UTC's.
     const stats = computeActivityStats(
       {
         moduleTypes: [],
@@ -180,7 +189,10 @@ describe("buildDailySeries", () => {
     expect(max).toBe(0);
   });
 
-  it("buckets counts into their UTC day and ignores entries before the window", () => {
+  it("buckets counts into their local day and ignores entries before the window", () => {
+    // In Asia/Kolkata (UTC+5:30), 23:00Z on Aug 7 is 04:30 IST on Aug 8, so
+    // it lands on the Aug 8 bar — a UTC-day bucket would have shown it under
+    // Aug 7 (yesterday, from the user's perspective).
     const createdAts = [
       "2026-08-07T10:00:00.000Z",
       "2026-08-07T23:00:00.000Z",
@@ -189,9 +201,32 @@ describe("buildDailySeries", () => {
     ];
     const { series, max } = buildDailySeries(createdAts, { days: 3, now: NOW });
     expect(series).toEqual([
-      { date: "2026-08-07", count: 2, isToday: false },
-      { date: "2026-08-08", count: 0, isToday: false },
+      { date: "2026-08-07", count: 1, isToday: false },
+      { date: "2026-08-08", count: 1, isToday: false },
       { date: "2026-08-09", count: 1, isToday: true },
+    ]);
+    expect(max).toBe(1);
+  });
+
+  it("regression: an action just after local midnight is TODAY, not yesterday", () => {
+    // Asia/Kolkata: `now` at 18:30Z is 00:00 IST on Aug 11, so the user's
+    // local "today" is Aug 11 even though UTC is still Aug 10. An action at
+    // 19:00Z (00:30 IST) must land on the Aug 11 (today) bar, while one at
+    // 18:00Z (23:30 IST on Aug 10) lands on Aug 10. Under UTC-day bucketing
+    // all four records collapse into a single Aug 10 bucket and the chart's
+    // last bar is labeled a day behind.
+    const now = new Date("2026-08-10T18:30:00.000Z");
+    const createdAts = [
+      "2026-08-10T18:00:00.000Z", // 23:30 IST Aug 10 — yesterday
+      "2026-08-10T18:29:59.000Z", // 23:59 IST Aug 10 — yesterday
+      "2026-08-10T18:30:00.000Z", // 00:00 IST Aug 11 — today
+      "2026-08-10T19:00:00.000Z", // 00:30 IST Aug 11 — today
+    ];
+    const { series, max } = buildDailySeries(createdAts, { days: 3, now });
+    expect(series).toEqual([
+      { date: "2026-08-09", count: 0, isToday: false },
+      { date: "2026-08-10", count: 2, isToday: false },
+      { date: "2026-08-11", count: 2, isToday: true },
     ]);
     expect(max).toBe(2);
   });
@@ -203,7 +238,7 @@ describe("buildDailySeries", () => {
     expect(series[13].date).toBe("2026-08-09");
   });
 
-  it("buckets legacy Date-object and numeric-timestamp values into their UTC day", () => {
+  it("buckets legacy Date-object and numeric-timestamp values into their local day", () => {
     const { series, max } = buildDailySeries(
       [new Date("2026-08-07T10:00:00.000Z"), new Date("2026-08-09T00:00:00.000Z").getTime()],
       { days: 3, now: NOW }

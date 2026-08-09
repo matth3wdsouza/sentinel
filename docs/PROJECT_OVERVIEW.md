@@ -104,11 +104,17 @@ planned modules are achievable entirely client-side.
   records. **`db.js` therefore stays at v2 with no schema changes.** The
   `toISOKey` normalization is kept inside `activityStats.js` because legacy
   records may hold `Date`/timestamp `created_at` values that must not crash
-  the summary. The visualizations (module bars, 14-day UTC-day chart,
+  the summary. The visualizations (module bars, 14-day local-day chart,
   donut) are hand-rolled CSS/SVG — no chart library — using inline
   `var(--color-accent-*)` styles permitted by the existing CSP and a
   `stats-bar-grow` keyframe disabled by the global `prefers-reduced-motion`
-  rule.
+  rule. **The chart and the "Active days" count bucket by the user's LOCAL
+  calendar day** (`toLocalDayKey`), not UTC — the day boundary is the user's
+  local midnight, so an action at 2:00 AM local time is "today". (The initial
+  UTC-day bucketing put actions done between local midnight and the UTC
+  rollover into yesterday's bar.) The summary's tests pin `process.env.TZ`
+  (Asia/Kolkata) so these local-day assertions are deterministic on any
+  machine.
 
 - **File-size cap for browser-side hashing.** Hashing is **streamed**, not
   whole-file: `computeHashes` runs in a Web Worker that reads the file in

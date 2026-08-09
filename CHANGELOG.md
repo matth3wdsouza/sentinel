@@ -4,6 +4,28 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed — Activity daily chart bucketed by UTC instead of the user's local day
+
+- **The 14-day chart (and the "Active days" stat) counted UTC calendar days,
+  not the days the user actually experiences.** Bucketing sliced the UTC ISO
+  string (`toISOString().slice(0,10)`) and anchored the window / "today" at
+  UTC midnight, so in any timezone east of UTC an action taken between local
+  midnight and the UTC rollover landed in **yesterday's** bar, and the chart's
+  "today" bar was itself labeled a day behind until late morning. The day
+  boundary is now the user's **local** midnight: `buildDailySeries` and
+  `activeDays` convert each record to a local day key
+  (`toLocalDayKey`, via the runtime's `getFullYear`/`getMonth`/`getDate`), and
+  `SummaryTab`'s day labels are built from a local-midnight `Date` instead of
+  `T00:00:00Z` (which renders the previous date in timezones west of UTC).
+  (`src/lib/activityStats.js`, `src/app/(shell)/activity/SummaryTab.js`)
+- **The tests now pin `process.env.TZ` (Asia/Kolkata) and carry a regression
+  case** for the reported symptom: an action at 00:30 IST must land on the
+  "today" bar while one at 23:30 IST the same UTC day lands on yesterday —
+  both previously collapsed into one UTC bucket. (17 → 18 tests.)
+  (`src/__tests__/activityStats.test.js`)
+- This is aggregation logic, not a rendering bug — a chart library would not
+  have changed the bucketing (and Recharts remains fragile on React 19.2.x).
+
 ### Added — Activity Summary tab (feature work)
 
 - **The Activity page is now two tabs: Log + Summary.** The page is a thin
