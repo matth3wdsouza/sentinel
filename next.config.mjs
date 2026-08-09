@@ -21,7 +21,9 @@ const nextConfig = {
               "default-src 'self'",
               // unsafe-inline: needed for themeInitScript in layout.js
               // unsafe-eval: React dev mode uses eval() for stack reconstruction; not needed in production
-              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+              // wasm-unsafe-eval: hash-wasm compiles its base64-inlined WASM via WebAssembly.compile(),
+              //   which CSP gates on script-src (no wasm-src involved)
+              `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ""}`,
               "connect-src 'self' https://api.pwnedpasswords.com",
               "font-src 'self'",
               "img-src 'self' data: blob:",

@@ -734,7 +734,10 @@ Location: `src/lib/hashing.js` (facade) + `src/lib/hashing.worker.js` +
   read in ~64KB stream chunks and fed to incremental hash-wasm hashers inside
   the worker, so memory stays bounded regardless of file size and the main
   thread stays free (the worker throttles progress posts to a few/sec).
-  `hash-wasm`'s WASM is base64-inlined, so no `wasm-src` CSP entry is needed.
+  `hash-wasm`'s WASM is base64-inlined, so no `wasm-src` CSP entry is needed —
+  but compiling those inlined bytes (`WebAssembly.compile`) is still gated by
+  `script-src`, so the CSP includes `'wasm-unsafe-eval'` (broad `'unsafe-eval'`
+  stays dev-only).
 - Activity logging is coarse: `subType` + length bucket + a 30s coalescing
   window — never file names, filenames, or digests.
 - Accent: `blue`.

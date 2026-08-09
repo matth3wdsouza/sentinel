@@ -4,6 +4,19 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed — File hashing blocked by the production CSP (hash-wasm WASM compilation)
+
+- **File integrity / text hash worked in dev but failed on Vercel with
+  `WebAssembly.compile()` rejected by `script-src`.** hash-wasm instantiates
+  its WASM by decoding base64-inlined bytes and calling
+  `WebAssembly.compile`/`instantiate` (`hash-wasm/dist/index.esm.js`) — no
+  `wasm-src` involved, but CSP gates WASM compilation on `script-src`.
+  Dev mode only had `'unsafe-eval'` (React's dev-mode eval), so it worked
+  locally while production (`script-src 'self' 'unsafe-inline'`) had neither
+  grant. `script-src` now includes `'wasm-unsafe-eval'` — the minimal source
+  for compiling WASM bytes — in both modes; broad `'unsafe-eval'` stays
+  dev-only. (`next.config.mjs`)
+
 ### Fixed — Activity daily chart bucketed by UTC instead of the user's local day
 
 - **The 14-day chart (and the "Active days" stat) counted UTC calendar days,
