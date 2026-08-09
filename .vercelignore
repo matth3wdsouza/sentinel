@@ -1,0 +1,10 @@
+# Build artifacts — rebuilt on Vercel
+.next
+
+# Project housekeeping — never part of the deployed bundle
+docs
+coverage
+.env*
+
+# Repo convenience scripts
+*.sh
