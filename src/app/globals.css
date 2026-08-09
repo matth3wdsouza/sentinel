@@ -1,0 +1,226 @@
+@import "tailwindcss";
+
+/* Light mode (default) */
+:root {
+  --background: #f0f4f7;
+  --foreground: #1e2d3d;
+
+  --color-ink: #1e2d3d;
+  --color-paper: #f0f4f7;
+  --color-teal: #2c7a7b;
+  --color-teal-light: #ddeaea;
+  /* Slightly darker slate so secondary text clears WCAG AA (4.5:1) on
+     paper (5.3:1), surface (5.7:1), and slate-light (4.6:1). */
+  --color-slate: #58687a;
+  --color-slate-light: #e4e8ed;
+  /* Darker teal for small text on teal-light chips (4.98:1 on teal-light,
+     6.15:1 on white). Interactive teal (#2c7a7b) is unchanged. */
+  --color-teal-chip: #256b6e;
+  --color-match: #2f7d5b;
+  --color-match-light: #ddf0e8;
+  --color-mismatch: #b44545;
+  --color-mismatch-light: #f7e5e5;
+  /* Darker mismatch for small text on mismatch-light chips/banners — the
+     base mismatch (4.46:1 on the tint) clears 4.5:1 at 4.80:1. Plain
+     text-mismatch on white/paper surfaces is unchanged and already passes. */
+  --color-mismatch-chip: #ae4040;
+
+  /* Destructive UI actions (danger zone borders, buttons) — semantically
+     distinct from mismatch which is reserved for result verdicts. Warmer
+     hue so the two don't visually blur together. */
+  --color-danger: #c03010;
+  --color-danger-light: #fce8e2;
+  --color-fallback: #7f5c1a;
+  --color-fallback-light: #f5ecda;
+
+  /* Cards clearly lift off the page background — enough contrast to read as
+     surfaces without needing a visible border as the sole separator. */
+  --color-surface: #ffffff;
+
+  /* Background for code/pre blocks — matches slate-light in light mode,
+     noticeably lighter than surface in dark mode so blocks have visible fill. */
+  --color-code: #e4e8ed;
+
+  /* Deeper teal for hero gradients only. --color-teal stays the interactive shade. */
+  --color-teal-deep: #164040;
+
+  /* Per-module accent palette — decorative identity only, never used for
+     verdicts. Slightly saturated for better visibility in light mode. */
+  --color-accent-blue: #2a5f90;
+  --color-accent-blue-light: #dce8f4;
+  --color-accent-violet: #6244a0;
+  --color-accent-violet-light: #ece2f7;
+  --color-accent-rose: #a03860;
+  --color-accent-rose-light: #f5dfe8;
+  --color-accent-amber: #a07820;
+  --color-accent-amber-light: #f5ecda;
+  --color-accent-emerald: #2e7540;
+  --color-accent-emerald-light: #ddefdf;
+  --color-accent-indigo: #3f5a9e;
+  --color-accent-indigo-light: #e0e6f5;
+  --color-accent-orange: #b05018;
+  --color-accent-orange-light: #f7ebe2;
+
+  /* Cards use a richer shadow so they genuinely lift off the background. */
+  --shadow-card: 0 1px 3px rgba(20, 40, 60, 0.08), 0 2px 6px rgba(20, 40, 60, 0.06);
+  --shadow-card-hover: 0 10px 28px -6px rgba(20, 40, 60, 0.18), 0 2px 8px rgba(20, 40, 60, 0.08);
+  --shadow-hero: 0 24px 60px -16px rgba(22, 64, 64, 0.40);
+}
+
+/* Dark mode — toggled via a "dark" class on <html>, manual only. */
+:root.dark {
+  --background: #151c24;
+  --foreground: #dde3ea;
+
+  --color-ink: #dde3ea;
+  --color-paper: #151c24;
+  --color-teal: #4fa8a6;
+  --color-teal-light: #1a3232;
+  --color-slate: #8a9bb0;
+  --color-slate-light: #1e2730;
+  /* Dark-mode teal chip text — same value as interactive teal, which
+     already clears 4.5:1 on teal-light (#1a3232) here. */
+  --color-teal-chip: #4fa8a6;
+  --color-match: #4aaa82;
+  --color-match-light: #1a3028;
+  --color-mismatch: #d47070;
+  --color-mismatch-light: #321e1e;
+  /* Dark-mode mismatch chip text — same value as mismatch, which already
+     clears 4.5:1 on mismatch-light (#321e1e) here. */
+  --color-mismatch-chip: #d47070;
+
+  --color-danger: #e05830;
+  --color-danger-light: #301408;
+  --color-fallback: #d4a050;
+  --color-fallback-light: #302418;
+
+  --color-surface: #1d2733;
+
+  /* Lighter than surface so code blocks have a visible fill in dark mode. */
+  --color-code: #283442;
+  --color-teal-deep: #2a5e5c;
+
+  --color-accent-blue: #6fa8d8;
+  --color-accent-blue-light: #192840;
+  --color-accent-violet: #a08cd8;
+  --color-accent-violet-light: #271e3a;
+  --color-accent-rose: #d880a0;
+  --color-accent-rose-light: #32182a;
+  --color-accent-amber: #d0a050;
+  --color-accent-amber-light: #302418;
+  --color-accent-emerald: #68ba7a;
+  --color-accent-emerald-light: #182a1e;
+  --color-accent-indigo: #8aa6e0;
+  --color-accent-indigo-light: #1a2040;
+  --color-accent-orange: #e0845a;
+  --color-accent-orange-light: #2c1808;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25);
+  --shadow-card-hover: 0 12px 30px -8px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-hero: 0 24px 60px -16px rgba(0, 0, 0, 0.60);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-ink: var(--color-ink);
+  --color-paper: var(--color-paper);
+  --color-teal: var(--color-teal);
+  --color-teal-light: var(--color-teal-light);
+  --color-teal-chip: var(--color-teal-chip);
+  --color-slate: var(--color-slate);
+  --color-slate-light: var(--color-slate-light);
+  --color-match: var(--color-match);
+  --color-match-light: var(--color-match-light);
+  --color-mismatch: var(--color-mismatch);
+  --color-mismatch-light: var(--color-mismatch-light);
+  --color-mismatch-chip: var(--color-mismatch-chip);
+  --color-danger: var(--color-danger);
+  --color-danger-light: var(--color-danger-light);
+  --color-fallback: var(--color-fallback);
+  --color-fallback-light: var(--color-fallback-light);
+
+  --color-surface: var(--color-surface);
+  --color-code: var(--color-code);
+  --color-teal-deep: var(--color-teal-deep);
+  --color-accent-blue: var(--color-accent-blue);
+  --color-accent-blue-light: var(--color-accent-blue-light);
+  --color-accent-violet: var(--color-accent-violet);
+  --color-accent-violet-light: var(--color-accent-violet-light);
+  --color-accent-rose: var(--color-accent-rose);
+  --color-accent-rose-light: var(--color-accent-rose-light);
+  --color-accent-amber: var(--color-accent-amber);
+  --color-accent-amber-light: var(--color-accent-amber-light);
+  --color-accent-emerald: var(--color-accent-emerald);
+  --color-accent-emerald-light: var(--color-accent-emerald-light);
+  --color-accent-indigo: var(--color-accent-indigo);
+  --color-accent-indigo-light: var(--color-accent-indigo-light);
+  --color-accent-orange: var(--color-accent-orange);
+  --color-accent-orange-light: var(--color-accent-orange-light);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-card-hover: var(--shadow-card-hover);
+  --shadow-hero: var(--shadow-hero);
+
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-technical);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Global keyboard focus indicator — applies to all interactive elements
+   navigated with Tab. Uses :focus-visible so mouse clicks don't show a ring. */
+:focus-visible {
+  outline: 2px solid var(--color-teal);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Hero — layered gradient with a subtle geometric inset shape for depth.
+   The white bloom shifts from centre-right to suggest internal light
+   rather than a flat top-left "standard" effect. */
+.hero-panel {
+  background:
+    radial-gradient(ellipse at 80% 50%, rgba(255,255,255,0.10) 0%, transparent 55%),
+    radial-gradient(circle at 8% 20%, rgba(255,255,255,0.13), transparent 38%),
+    linear-gradient(140deg, var(--color-teal-deep) 0%, #1e6868 45%, var(--color-teal) 100%);
+  box-shadow: var(--shadow-hero);
+}
+
+/* Animated trust indicators — tiny pulsing dots beside "In your browser" */
+@keyframes sentinel-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.75); }
+}
+
+.trust-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: sentinel-pulse 2s ease-in-out infinite;
+}
+
+.trust-dot:nth-child(2) { animation-delay: 0.4s; }
+.trust-dot:nth-child(3) { animation-delay: 0.8s; }
+
+/* Respect prefers-reduced-motion for all animations and transitions — kills
+   the looping trust-dot pulse plus the one-shot hover lifts / active scales
+   (card rise, button shrink) that are purely decorative. */
+@media (prefers-reduced-motion: reduce) {
+  .trust-dot { animation: none; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

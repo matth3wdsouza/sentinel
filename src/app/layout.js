@@ -1,0 +1,61 @@
+import { Manrope, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import TopBar from "@/components/TopBar";
+import DragGuard from "@/components/DragGuard";
+import ScrollToTop from "@/components/ScrollToTop";
+import "./globals.css";
+
+const manrope = Manrope({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+});
+
+const plexSans = IBM_Plex_Sans({
+  variable: "--font-body",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
+
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-technical",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+});
+
+export const metadata = {
+  title: "Sentinel",
+  description: "A cybersecurity and privacy toolkit for everyday users.",
+};
+
+// Runs before paint to apply the stored theme class to <html>, avoiding a
+// flash of the wrong theme. No system-preference fallback by design — the
+// theme is manual-toggle-only (see ThemeToggle.js), defaulting to light.
+const themeInitScript = `
+(function() {
+  try {
+    if (localStorage.getItem('sentinel-theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  } catch (e) {}
+})();
+`;
+
+export default function RootLayout({ children }) {
+  return (
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${manrope.variable} ${plexSans.variable} ${plexMono.variable} h-full antialiased`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className="min-h-full flex flex-col">
+        <DragGuard />
+        <ScrollToTop />
+        <TopBar />
+        {children}
+      </body>
+    </html>
+  );
+}
