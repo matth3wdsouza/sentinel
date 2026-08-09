@@ -1,7 +1,7 @@
 // fingerprint.js — Browser data collection for the Fingerprint module.
 //
 // Two exported functions:
-//   collectPassive()  — async, no permissions, runs immediately on page load.
+//   collectPassive()  — async, no permissions, runs on user action.
 //   collectGeo()      — async, triggers a geolocation permission prompt.
 //   collectMedia()    — async, triggers a camera/microphone permission prompt.
 //

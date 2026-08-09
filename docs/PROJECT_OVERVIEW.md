@@ -89,6 +89,27 @@ planned modules are achievable entirely client-side.
 - **Favourites** — not yet implemented (deliberately deferred). Will follow
   the same `IndexedDB` pattern as activity when built.
 
+- **Activity Summary is derived from the log records — one source of truth.**
+  The Activity page (`src/app/(shell)/activity/page.js`) is a thin two-tab
+  shell (Summary + Log, Summary being the default/opening tab) that fetches
+  `getAllActivity()` once; `SummaryTab`
+  derives its numbers from those same records via the pure functions in
+  `src/lib/activityStats.js` (`recordsToStats` → `computeActivityStats` /
+  `buildDailySeries`), so the tabs can never disagree and deleting an entry
+  updates the Summary automatically. This deliberately replaced an earlier
+  design that added IndexedDB v3 indexes on `module_type`/`created_at` for
+  key-only stats queries: the indexes forced a schema migration surface
+  (and once produced a permanently wrong-keyed index, which surfaced as
+  epoch dates in the Summary) for a store that realistically holds dozens of
+  records. **`db.js` therefore stays at v2 with no schema changes.** The
+  `toISOKey` normalization is kept inside `activityStats.js` because legacy
+  records may hold `Date`/timestamp `created_at` values that must not crash
+  the summary. The visualizations (module bars, 14-day UTC-day chart,
+  donut) are hand-rolled CSS/SVG — no chart library — using inline
+  `var(--color-accent-*)` styles permitted by the existing CSP and a
+  `stats-bar-grow` keyframe disabled by the global `prefers-reduced-motion`
+  rule.
+
 - **File-size cap for browser-side hashing.** Hashing is **streamed**, not
   whole-file: `computeHashes` runs in a Web Worker that reads the file in
   ~64KB stream chunks through incremental WASM hashers, so memory stays
@@ -658,8 +679,21 @@ Location: `src/lib/encrypt.js` + `src/app/modules/encryptor/page.js`
 
 Location: `src/lib/fingerprint.js` + `src/app/modules/fingerprint/page.js`
 
-- Collects browser signals passively using only standard Web APIs — no external
+- Collects browser signals using only standard Web APIs — no external
   requests, nothing leaves the device.
+- Two tabs: **Passive Exposure** (no-permission signals) and
+  **Permission-Gated** (geolocation, camera/mic device enumeration).
+- Passive collection is **button-triggered, not automatic**. The Passive tab
+  starts at an `idle → loading → done | error` state machine (the same shape
+  the Gated sections use): the user clicks "Collect browser data" before
+  anything is gathered or logged. This replaced the old mount `useEffect`,
+  which ran twice under React StrictMode in dev and logged a duplicate
+  activity entry on every page open.
+- Activity logging — all three sections log on button press, metadata only:
+  - Passive: `{ passiveDataPoints, webglAvailable }` — never the fingerprint
+    values or any canvas-hash prefix.
+  - Geolocation: `{ granted, highAccuracy, errorType }` — never coordinates.
+  - Media: `{ granted, errorType, deviceCount }` — never device labels.
 - Accent: `violet`.
 
 ## Clipboard Inspector — detailed status
@@ -742,6 +776,7 @@ src/
 │   ├── usePreference.js     # usePreference(key, default, { debounceMs }) hook
 │   ├── moduleAccents.js     # accent color map for PageHeader chips
 │   ├── modules.js           # canonical module registry — CATEGORIES array + ALL_MODULES flat list
+│   ├── activityStats.js     # recordsToStats()/computeActivityStats()/buildDailySeries() — pure, deterministic
 │   ├── passwordGen.js       # generatePassword(), entropy calculations
 │   ├── wordlist.js          # passphrase generation, wordlist validation
 │   ├── hibp.js              # sha1Hex(), checkPasswordBreach()
@@ -783,7 +818,9 @@ src/
     ├── (shell)/
     │   ├── layout.js         # shared shell layout (TopBar + PageShell)
     │   ├── activity/
-    │   │   └── page.js
+    │   │   ├── page.js          # thin shell — fetches records once, owns tab/error/delete state
+    │   │   ├── LogTab.js        # existing log panel (filter, expand, delete) as a tab
+    │   │   └── SummaryTab.js    # stats panel — presentational, derives from the same records
     │   └── settings/
     │       ├── page.js       # Appearance / Modules link / Reset sections
     │       └── modules/

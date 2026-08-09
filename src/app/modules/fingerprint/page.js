@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useId } from "react";
+import { useState, useId } from "react";
 import {
   Fingerprint,
   MapPin,
@@ -114,13 +114,15 @@ function countDataPoints({ identity, locale, display, hardware, tracking, graphi
 }
 
 function PassiveTab({ moduleId }) {
+  const [state, setState] = useState("idle"); // idle | loading | done | error
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    collectPassive().then((result) => {
+  async function handleCollect() {
+    setState("loading");
+    try {
+      const result = await collectPassive();
       setData(result);
-      setLoading(false);
+      setState("done");
 
       // Log metadata only — never the actual fingerprint values, which are
       // identifying. That includes hash prefixes: a truncated digest of a
@@ -134,10 +136,12 @@ function PassiveTab({ moduleId }) {
           webglAvailable: !result.graphics.webglError,
         },
       });
-    }).catch(() => setLoading(false));
-  }, [moduleId]);
+    } catch {
+      setState("error");
+    }
+  }
 
-  if (loading) {
+  if (state === "loading") {
     return (
       <p className="text-sm text-slate py-8 text-center">
         Collecting browser data…
@@ -145,11 +149,44 @@ function PassiveTab({ moduleId }) {
     );
   }
 
-  if (!data) {
+  if (state === "error") {
     return (
-      <p className="text-sm text-slate py-8 text-center">
-        Could not collect browser data.
-      </p>
+      <ResultCard
+        verdict="mismatch"
+        heading="Could not collect browser data"
+        explanation={{
+          means:
+            "An unexpected error prevented your browser data from being collected.",
+          action:
+            "Collection runs entirely in your browser — try again.",
+        }}
+      >
+        <Button onClick={() => setState("idle")}>Try again</Button>
+      </ResultCard>
+    );
+  }
+
+  if (state === "idle") {
+    return (
+      <div className="rounded-xl bg-surface shadow-card p-5">
+        <div className="flex items-start gap-3 mb-4">
+          <span className="inline-flex p-2 rounded-full bg-accent-indigo-light text-accent-indigo shrink-0">
+            <Fingerprint size={16} />
+          </span>
+          <div>
+            <p className="text-sm font-semibold text-ink mb-1">
+              Passive exposure
+            </p>
+            <p className="text-xs text-slate leading-relaxed">
+              Every website you visit receives dozens of browser details with
+              no permission prompt — no pop-up, no opt-in. Clicking below
+              collects yours and reveals what any site can read about you.
+              Nothing is sent anywhere.
+            </p>
+          </div>
+        </div>
+        <Button onClick={handleCollect}>Collect browser data</Button>
+      </div>
     );
   }
 
@@ -300,7 +337,7 @@ function PassiveTab({ moduleId }) {
 
 // ─── GeoSection ───────────────────────────────────────────────────────────────
 
-function GeoSection() {
+function GeoSection({ moduleId }) {
   const [state, setState] = useState("idle"); // idle | loading | done | error
   const [result, setResult] = useState(null);
   const [highAccuracy, setHighAccuracy] = useState(false);
@@ -310,6 +347,18 @@ function GeoSection() {
     const geo = await collectGeo(highAccuracy);
     setResult(geo);
     setState(geo.error ? "error" : "done");
+
+    // Log outcome only — never the coordinates, which are identifying. Whether
+    // the user granted access is coarse metadata; the position stays on screen.
+    saveActivity({
+      moduleType: moduleId,
+      summary: "Geolocation requested",
+      details: {
+        granted: !geo.error,
+        highAccuracy,
+        errorType: geo.error ?? null,
+      },
+    });
   }
 
   const errorMessages = {
@@ -441,7 +490,7 @@ function GeoSection() {
 
 // ─── MediaSection ─────────────────────────────────────────────────────────────
 
-function MediaSection() {
+function MediaSection({ moduleId }) {
   const [state, setState] = useState("idle");
   const [result, setResult] = useState(null);
 
@@ -450,6 +499,18 @@ function MediaSection() {
     const media = await collectMedia();
     setResult(media);
     setState(media.error ? "error" : "done");
+
+    // Log outcome only — granted/denied and a coarse device count. Device
+    // labels (manufacturer/model strings) are identifying and stay on screen.
+    saveActivity({
+      moduleType: moduleId,
+      summary: "Media device access requested",
+      details: {
+        granted: !media.error,
+        errorType: media.error ?? null,
+        deviceCount: media.devices.length,
+      },
+    });
   }
 
   const errorMessages = {
@@ -541,7 +602,7 @@ function MediaSection() {
 
 // ─── GatedTab ─────────────────────────────────────────────────────────────────
 
-function GatedTab() {
+function GatedTab({ moduleId }) {
   return (
     <div className="space-y-6">
       <div className="rounded-xl bg-accent-indigo-light border border-accent-indigo/20 px-5 py-4">
@@ -557,8 +618,8 @@ function GatedTab() {
         </div>
       </div>
 
-      <GeoSection />
-      <MediaSection />
+      <GeoSection moduleId={moduleId} />
+      <MediaSection moduleId={moduleId} />
     </div>
   );
 }
@@ -582,7 +643,7 @@ export default function FingerprintPage() {
           <PassiveTab moduleId={moduleId} />
         </div>
         <div id="panel-gated" role="tabpanel" className={activeTab === "gated" ? "" : "hidden"}>
-          <GatedTab />
+          <GatedTab moduleId={moduleId} />
         </div>
     </ModulePage>
   );

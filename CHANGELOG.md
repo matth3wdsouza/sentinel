@@ -4,6 +4,82 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added — Activity Summary tab (feature work)
+
+- **The Activity page is now two tabs: Log + Summary.** The page is a thin
+  shell (`src/app/(shell)/activity/page.js`) that fetches the activity
+  records once and owns the shared error/retry/delete state; the panels are
+  co-located `LogTab.js` (the existing log panel, moved verbatim) and
+  `SummaryTab.js` (presentational). Deleting an entry just filters the
+  in-memory array — the Summary recomputes automatically, so the two tabs
+  can never disagree. (`src/app/(shell)/activity/`)
+
+- **Stats are derived from the log records — one source of truth, no DB
+  changes.** `recordsToStats()` in `src/lib/activityStats.js` maps the same
+  `getAllActivity()` records the Log tab renders into the `{ moduleTypes,
+  createdAts, total }` shape that `computeActivityStats()` and
+  `buildDailySeries()` aggregate. This deliberately replaces an earlier
+  design that added IndexedDB v3 indexes for key-only queries: the indexes
+  introduced a migration surface (and a wrong-keyed-index bug) for a store
+  holding dozens of records, so the whole approach was scrapped and rebuilt
+  without touching `db.js` at all (still v2). `toISOKey` normalization is
+  kept — legacy records may hold `Date`/timestamp `created_at` values.
+
+- **Summary shows lifetime totals and two hand-rolled charts — no chart
+  library.** Recharts is still fragile on React 19.2.x and a canvas library
+  is poor for this app's dark-mode/a11y needs, so the bars and donut are
+  plain divs and SVG (inline `var(--color-accent-*)` styles, permitted by
+  the existing CSP; donut via `stroke-dasharray` on a `r=15.9155` circle so
+  the circumference is exactly 100). Bars grow in via a `stats-bar-grow`
+  keyframe, auto-disabled by the existing `prefers-reduced-motion` rule. The
+  daily chart shows a "No activity in the last 14 days" note instead of a
+  blank row when the window has no counts. (`SummaryTab.js`, `globals.css`)
+
+- **Deterministic, unit-tested stats math.** `recordsToStats`,
+  `computeActivityStats`, and `buildDailySeries` are pure functions with an
+  injected `now`, so date boundaries are testable regardless of when the
+  suite runs. Unknown/retired modules with activity stay counted in the
+  total but are excluded from the per-module breakdown; the
+  available-modules denominator counts `status === "available"` only. 17
+  tests. (`src/__tests__/activityStats.test.js`)
+
+### Fixed — Summary chart tracks invisible in dark mode
+
+- **The donut's empty-section track blended into the card in dark mode.**
+  The track used `slate-light`, which is `#1e2730` in dark mode — nearly
+  identical to the `#1d2733` surface it sits on. All three track visuals
+  (donut stroke, per-module bar tracks, daily-chart zero-day marks) now use
+  translucent `slate/30`, which reads clearly against the dark surface
+  while staying subtly grey in light mode. (`SummaryTab.js`)
+
+### Changed — Activity Summary is the default tab
+
+- **The Activity page now opens on the Summary tab**, with Log second — the
+  aggregate overview leads, matching the app's explain-first ethos; the
+  detailed Log stays one click away. Tab order, the default `activeTab`,
+  and the panel DOM order all move together (the Tabs component roves
+  `tabIndex`/arrow-keys by array order). The page header was retitled
+  "Activity Log" → "Activity" so the title matches the new primary view.
+  (`src/app/(shell)/activity/page.js`)
+
+### Fixed — Fingerprint activity double-logged on page open
+
+- **Passive collection now runs on a button press, not on mount.** The
+  Passive tab auto-collected (and auto-logged) browser data from a mount
+  `useEffect`; under React StrictMode (on by default in `next dev`) the
+  effect runs twice, so simply opening the module logged **two** activity
+  entries. The tab now uses the same `idle → loading → done | error` state
+  machine as the Permission-Gated sections — the user clicks "Collect
+  browser data", and each press logs exactly once. It was the only
+  `saveActivity` call site in the app firing from an effect; all others are
+  click handlers. (`src/app/modules/fingerprint/page.js`)
+- **Geolocation and Media sections now log outcome-only.** The two
+  Permission-Gated sections previously logged nothing at all. Each now
+  records a coarse entry on button press: `{ granted, highAccuracy,
+  errorType }` for geolocation and `{ granted, errorType, deviceCount }` for
+  media — never coordinates or device labels, consistent with the privacy
+  invariants. (`src/app/modules/fingerprint/page.js`)
+
 ### Fixed — Clipboard Inspector "Read again"
 
 - **"Read again" now actually re-reads the clipboard** — the button called
