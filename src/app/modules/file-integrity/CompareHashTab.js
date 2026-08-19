@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { Scale } from "lucide-react";
 import { computeHashes, BIG_FILE_SUGGESTION_BYTES } from "@/lib/hashing";
 import { saveActivity } from "@/lib/api";
 import FallbackCommands from "./FallbackCommands";
 import HashProgress from "./HashProgress";
+import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import FileInput from "@/components/FileInput";
 import InlineError from "@/components/InlineError";
@@ -129,6 +131,17 @@ export default function CompareHashTab({ moduleId }) {
 
   return (
     <div className="max-w-2xl">
+      <GuidedCard
+        icon={Scale}
+        accent="blue"
+        heading="Compare a hash"
+        description={
+          "Paste a known hash (from a download page, vendor site, or previous " +
+          "scan) and upload the file to check if they match. The algorithm is " +
+          "detected automatically from the hash length."
+        }
+      />
+
       <div className="mb-4">
         <FileInput file={file} onChange={handleFileChange} />
       </div>

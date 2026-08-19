@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { FileCheck } from "lucide-react";
 import { computeHashes, BIG_FILE_SUGGESTION_BYTES } from "@/lib/hashing";
 import { saveActivity } from "@/lib/api";
 import FallbackCommands from "./FallbackCommands";
 import HashProgress from "./HashProgress";
+import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import FileInput from "@/components/FileInput";
 import AlgorithmPicker from "@/components/AlgorithmPicker";
@@ -78,6 +81,17 @@ export default function GenerateHashTab({ moduleId }) {
 
   return (
     <div className="max-w-2xl">
+      <GuidedCard
+        icon={FileCheck}
+        accent="blue"
+        heading="Verify file integrity"
+        description={
+          "Compute a cryptographic fingerprint of your file. Share the hash " +
+          "alongside the file so others can verify their copy is " +
+          "byte-for-byte identical to yours. Nothing leaves your device."
+        }
+      />
+
       <div className="mb-4">
         <FileInput file={file} onChange={handleFileChange} />
       </div>
@@ -89,6 +103,12 @@ export default function GenerateHashTab({ moduleId }) {
           open={showLegacy}
           onOpenChange={setShowLegacy}
         />
+        <Link
+          href="/modules/text-hash"
+          className="inline-block text-sm text-teal mt-3"
+        >
+          Need to hash text instead? →
+        </Link>
       </div>
 
       <div className="flex items-center gap-4">

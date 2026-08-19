@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { KeySquare } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
+import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import { Button } from "@/components/Button";
 import CodeBlock from "@/components/CodeBlock";
@@ -226,6 +227,18 @@ export default function JWTInspectorPage() {
       title="JWT Inspector"
       description="Paste a JSON Web Token to decode its header and payload, read timestamps in plain English, and spot dangerous algorithm settings."
     >
+      <GuidedCard
+        icon={KeySquare}
+        accent="blue"
+        heading="What is a JWT?"
+        description={
+          "A JSON Web Token is a signed piece of data commonly used in web " +
+          "authentication. Paste one below to decode its header, payload, and " +
+          "timestamps — and spot dangerous algorithm settings. Nothing leaves " +
+          "your browser."
+        }
+      />
+
       <div>
         <label className="block text-sm font-medium text-ink mb-1.5">
           JSON Web Token

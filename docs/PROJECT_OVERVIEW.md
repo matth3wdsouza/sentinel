@@ -286,6 +286,23 @@ elevated). All phases are complete and stable:
     starting modules (Password Generator, HIBP, EXIF, QR Code). Dismissible
     via `preferences["welcome-dismissed"]`. (`src/app/page.js`)
 
+- **Phase 9** — cross-module navigation and onboarding:
+  - **GuidedCard component** — shared empty-state card (`icon`, `accent`,
+    `heading`, `description`, optional `children`) extracted from ~10 inline
+    copies across clipboard, fingerprint, and the six new cards.
+    (`src/components/GuidedCard.js`).
+  - **Cross-module links** — contextual `<Link>` suggestions in six modules:
+    Guessability → Password Generator (weak result), Text Hash → File
+    Integrity, File Integrity (GenerateHash) → Text Hash, Encryptor →
+    Passphrase Generator, EXIF → Fingerprint. Follows the HIBP → Password
+    Generator pattern (teal text inside or below ResultCard).
+  - **Guided empty state cards** — added to Base64, JWT Inspector, File
+    Integrity (all three tabs), and QR Decode. Icon card with heading,
+    2-sentence explanation, and privacy note. Matches the Clipboard/
+    Fingerprint idle-state pattern.
+  - All 14 modules now have either a rich guided empty state or a functional
+    one; no module presents raw inputs without context.
+
 ## Refactor — Rounds 1–3
 
 A systematic refactor was completed after the 10th module was built, to

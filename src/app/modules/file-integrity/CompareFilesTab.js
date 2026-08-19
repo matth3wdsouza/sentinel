@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { GitCompare } from "lucide-react";
 import { computeHashes, BIG_FILE_SUGGESTION_BYTES } from "@/lib/hashing";
 import { saveActivity } from "@/lib/api";
 import FallbackCommands from "./FallbackCommands";
 import HashProgress, { formatBytes } from "./HashProgress";
+import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import FileInput from "@/components/FileInput";
 import InlineError from "@/components/InlineError";
@@ -166,6 +168,17 @@ export default function CompareFilesTab({ moduleId }) {
 
   return (
     <div className="max-w-2xl">
+      <GuidedCard
+        icon={GitCompare}
+        accent="blue"
+        heading="Compare two files"
+        description={
+          "Upload two files to check whether they are byte-for-byte identical. " +
+          "If their sizes differ, the check short-circuits immediately — no " +
+          "hashing needed. Nothing leaves your device."
+        }
+      />
+
       <div className="mb-4">
         <FileInput
           label="File A"

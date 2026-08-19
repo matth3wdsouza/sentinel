@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Binary } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
+import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import CodeBlock from "@/components/CodeBlock";
 import TextOutput from "@/components/TextOutput";
@@ -251,6 +252,17 @@ export default function Base64Page() {
       description="Encode text to Base64 or decode Base64 back to text. Supports the Base64url variant used in JWTs and URLs."
     >
       <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
+
+      <GuidedCard
+        icon={Binary}
+        accent="blue"
+        heading="What is Base64?"
+        description={
+          "Base64 encodes arbitrary data as plain ASCII text — useful when a " +
+          "channel can only handle text (emails, JSON, URLs, JWTs). Everything " +
+          "runs in your browser; nothing is sent anywhere."
+        }
+      />
 
       <div id="panel-encode" role="tabpanel" className={activeTab === "encode" ? "" : "hidden"}>
         <EncodeTab moduleId={moduleId} />

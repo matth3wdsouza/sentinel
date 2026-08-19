@@ -55,6 +55,38 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   Collapse/expand animation is intentionally avoided (the bugs that killed the
   original Phase 4).
 
+### Changed — shared GuidedCard component
+
+- **The guided empty-state card pattern (icon + heading + description) is
+  extracted into `src/components/GuidedCard.js`**, replacing ~10 inline copies
+  across clipboard, fingerprint, Base64, JWT Inspector, File Integrity, and QR
+  Decode. The component accepts `icon`, `accent` (blue/rose/indigo/teal),
+  `heading`, `description`, and optional `children` for action buttons.
+  (`src/components/GuidedCard.js`)
+
+### Added — cross-module links
+
+- **Six modules now suggest companion tools** via inline teal links,
+  following the pattern established by HIBP → Password Generator:
+  - Guessability: "Generate a stronger password →" (shown when score ≤ 1)
+  - Text Hash: "Need to hash a file instead? →"
+  - File Integrity (Generate Hash): "Need to hash text instead? →"
+  - Text Encryptor: "Generate a strong passphrase →"
+  - EXIF: "See what your browser reveals too →"
+  (`guessability/page.js`, `text-hash/page.js`,
+  `file-integrity/GenerateHashTab.js`, `encryptor/page.js`, `exif/page.js`)
+
+### Added — guided empty state cards
+
+- **Base64, JWT Inspector, File Integrity (all three tabs), and QR Decode
+  now show a guided card** when the user first lands on the page, explaining
+  what the tool does and that everything runs client-side. This closes the
+  gap where these modules presented raw inputs with no context. All 14
+  modules now have either a rich guided idle state or a functional one.
+  (`base64/page.js`, `jwt-inspector/page.js`,
+  `file-integrity/GenerateHashTab.js`, `CompareHashTab.js`,
+  `CompareFilesTab.js`, `qr/DecodeTab.js`)
+
 ### Fixed — File hashing blocked by the production CSP (hash-wasm WASM compilation)
 
 - **File integrity / text hash worked in dev but failed on Vercel with

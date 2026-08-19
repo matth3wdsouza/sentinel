@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Clipboard, ClipboardCheck, ClipboardX, AlertTriangle } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
+import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import TextOutput from "@/components/TextOutput";
 import InlineError from "@/components/InlineError";
@@ -186,22 +187,17 @@ function ReadSection({ moduleId }) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl bg-surface shadow-card p-5">
-        <div className="flex items-start gap-3 mb-4">
-          <span className="inline-flex p-2 rounded-full bg-accent-rose-light text-accent-rose shrink-0">
-            <Clipboard size={16} />
-          </span>
-          <div>
-            <p className="text-sm font-semibold text-ink mb-1">Read your clipboard</p>
-            <p className="text-xs text-slate leading-relaxed">
-              Clicking the button below triggers the real browser clipboard
-              permission prompt — exactly as any website would. If you grant
-              it, your current clipboard contents will be shown and analysed.
-              Nothing is stored or sent anywhere.
-            </p>
-          </div>
-        </div>
-
+      <GuidedCard
+        icon={Clipboard}
+        accent="rose"
+        heading="Read your clipboard"
+        description={
+          "Clicking the button below triggers the real browser clipboard " +
+          "permission prompt — exactly as any website would. If you grant " +
+          "it, your current clipboard contents will be shown and analysed. " +
+          "Nothing is stored or sent anywhere."
+        }
+      >
         {state === "idle" && (
           <Button onClick={handleRead}>
             Read clipboard
@@ -219,7 +215,7 @@ function ReadSection({ moduleId }) {
             {reading ? "Reading…" : "Read again"}
           </button>
         )}
-      </div>
+      </GuidedCard>
 
       {state === "done" && analysis && (
         () => {
@@ -285,25 +281,18 @@ function WriteSection({ moduleId }) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl bg-surface shadow-card p-5">
-        <div className="flex items-start gap-3 mb-4">
-          <span className="inline-flex p-2 rounded-full bg-accent-rose-light text-accent-rose shrink-0">
-            <ClipboardX size={16} />
-          </span>
-          <div>
-            <p className="text-sm font-semibold text-ink mb-1">
-              Sites can also overwrite your clipboard
-            </p>
-            <p className="text-xs text-slate leading-relaxed">
-              The clipboard write API requires no permission prompt in most
-              browsers — a site can silently replace whatever you have copied
-              the moment you interact with the page. This is a real attack
-              vector: a malicious site can swap a safe address for a
-              scammer&apos;s wallet address the instant you click &quot;Copy&quot;.
-            </p>
-          </div>
-        </div>
-
+      <GuidedCard
+        icon={ClipboardX}
+        accent="rose"
+        heading="Sites can also overwrite your clipboard"
+        description={
+          "The clipboard write API requires no permission prompt in most " +
+          "browsers — a site can silently replace whatever you have copied " +
+          "the moment you interact with the page. This is a real attack " +
+          "vector: a malicious site can swap a safe address for a " +
+          "scammer\u2019s wallet address the instant you click \u201cCopy\u201d."
+        }
+      >
         {state === "idle" && (
           <Button onClick={handleWrite}>
             Overwrite my clipboard
@@ -315,7 +304,7 @@ function WriteSection({ moduleId }) {
             Write failed — your browser may require a user gesture or HTTPS context.
           </InlineError>
         )}
-      </div>
+      </GuidedCard>
 
       {state === "done" && (
         <ResultCard

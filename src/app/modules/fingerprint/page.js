@@ -10,6 +10,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
+import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import CopyButton from "@/components/CopyButton";
 import { Button } from "@/components/Button";
@@ -168,25 +169,19 @@ function PassiveTab({ moduleId }) {
 
   if (state === "idle") {
     return (
-      <div className="rounded-xl bg-surface shadow-card p-5">
-        <div className="flex items-start gap-3 mb-4">
-          <span className="inline-flex p-2 rounded-full bg-accent-indigo-light text-accent-indigo shrink-0">
-            <Fingerprint size={16} />
-          </span>
-          <div>
-            <p className="text-sm font-semibold text-ink mb-1">
-              Passive exposure
-            </p>
-            <p className="text-xs text-slate leading-relaxed">
-              Every website you visit receives dozens of browser details with
-              no permission prompt — no pop-up, no opt-in. Clicking below
-              collects yours and reveals what any site can read about you.
-              Nothing is sent anywhere.
-            </p>
-          </div>
-        </div>
+      <GuidedCard
+        icon={Fingerprint}
+        accent="indigo"
+        heading="Passive exposure"
+        description={
+          "Every website you visit receives dozens of browser details with " +
+          "no permission prompt — no pop-up, no opt-in. Clicking below " +
+          "collects yours and reveals what any site can read about you. " +
+          "Nothing is sent anywhere."
+        }
+      >
         <Button onClick={handleCollect}>Collect browser data</Button>
-      </div>
+      </GuidedCard>
     );
   }
 
@@ -374,22 +369,17 @@ function GeoSection({ moduleId }) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl bg-surface shadow-card p-5">
-        <div className="flex items-start gap-3 mb-4">
-          <span className="inline-flex p-2 rounded-full bg-accent-indigo-light text-accent-indigo shrink-0">
-            <MapPin size={16} />
-          </span>
-          <div>
-            <p className="text-sm font-semibold text-ink mb-1">Geolocation</p>
-            <p className="text-xs text-slate leading-relaxed">
-              Websites can request your location via the Geolocation API.
-              Clicking below triggers your browser&apos;s real permission prompt.
-              If you grant it, your coordinates will be shown below.
-              Nothing is sent anywhere.
-            </p>
-          </div>
-        </div>
-
+      <GuidedCard
+        icon={MapPin}
+        accent="indigo"
+        heading="Geolocation"
+        description={
+          "Websites can request your location via the Geolocation API. " +
+          "Clicking below triggers your browser\u2019s real permission prompt. " +
+          "If you grant it, your coordinates will be shown below. " +
+          "Nothing is sent anywhere."
+        }
+      >
         {state === "idle" && (
           <div className="space-y-3">
             <div className="flex items-center gap-3">
@@ -431,7 +421,7 @@ function GeoSection({ moduleId }) {
               : "Waiting for location…"}
           </p>
         )}
-      </div>
+      </GuidedCard>
 
       {state === "done" && result && !result.error && (
         <ResultCard
@@ -526,27 +516,20 @@ function MediaSection({ moduleId }) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl bg-surface shadow-card p-5">
-        <div className="flex items-start gap-3 mb-4">
-          <span className="inline-flex p-2 rounded-full bg-accent-indigo-light text-accent-indigo shrink-0">
-            <Camera size={16} />
-          </span>
-          <div>
-            <p className="text-sm font-semibold text-ink mb-1">
-              Camera & Microphone Devices
-            </p>
-            <p className="text-xs text-slate leading-relaxed">
-              Browsers hide device labels (camera and microphone names) until
-              you grant camera/microphone permission. Once granted, the
-              full device list — with manufacturer and model names — is
-              exposed. Clicking below will trigger the real permission
-              prompt. The camera and microphone are stopped immediately
-              after the permission is read; no video or audio is captured
-              or stored.
-            </p>
-          </div>
-        </div>
-
+      <GuidedCard
+        icon={Camera}
+        accent="indigo"
+        heading="Camera & Microphone Devices"
+        description={
+          "Browsers hide device labels (camera and microphone names) until " +
+          "you grant camera/microphone permission. Once granted, the " +
+          "full device list — with manufacturer and model names — is " +
+          "exposed. Clicking below will trigger the real permission " +
+          "prompt. The camera and microphone are stopped immediately " +
+          "after the permission is read; no video or audio is captured " +
+          "or stored."
+        }
+      >
         {state === "idle" && (
           <Button onClick={handleRequest}>
             Request camera & mic access
@@ -555,7 +538,7 @@ function MediaSection({ moduleId }) {
         {state === "loading" && (
           <p className="text-sm text-slate">Waiting for permission…</p>
         )}
-      </div>
+      </GuidedCard>
 
       {state === "done" && result && (
         <ResultCard

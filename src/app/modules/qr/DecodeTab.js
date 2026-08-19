@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { ExternalLink, ShieldCheck } from "lucide-react";
+import { ExternalLink, ShieldCheck, QrCode } from "lucide-react";
 import FileInput from "@/components/FileInput";
+import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import { Button } from "@/components/Button";
 import { decodeQR, analyzeQRContent } from "@/lib/qr";
@@ -308,6 +309,17 @@ export default function DecodeTab({ moduleId }) {
 
   return (
     <div className="space-y-5">
+      <GuidedCard
+        icon={QrCode}
+        accent="blue"
+        heading="Decode a QR code"
+        description={
+          "Upload an image containing a QR code to reveal the hidden URL, Wi-Fi " +
+          "credentials, or text. Useful for checking a QR code before you " +
+          "follow a link — especially from unknown sources."
+        }
+      />
+
       <FileInput
         onChange={handleFile}
         file={file}

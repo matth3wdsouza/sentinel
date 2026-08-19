@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { Hash, Info } from "lucide-react";
 import { computeHashes } from "@/lib/hashing";
 import { usePreference } from "@/lib/usePreference";
@@ -210,6 +211,12 @@ export default function TextHashPage() {
           open={showLegacy}
           onOpenChange={setShowLegacy}
         />
+        <Link
+          href="/modules/file-integrity"
+          className="inline-block text-sm text-teal mt-3"
+        >
+          Need to hash a file instead? →
+        </Link>
       </div>
 
       {/* Error */}

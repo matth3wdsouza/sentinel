@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   ScanEye,
   MapPin,
@@ -560,6 +561,13 @@ export default function ExifPage() {
 
                 {/* Act */}
                 <ActionBlock result={result} />
+
+                <Link
+                  href="/modules/fingerprint"
+                  className="inline-block text-sm text-teal"
+                >
+                  See what your browser reveals too →
+                </Link>
 
               </div>
             )}
