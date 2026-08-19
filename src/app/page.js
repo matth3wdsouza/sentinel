@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { ShieldCheck, Search } from "lucide-react";
 
 import { CATEGORIES, ALL_MODULES } from "@/lib/modules";
 import { usePreference } from "@/lib/usePreference";
-import { fetchActivity } from "@/lib/api";
 import { ACCENTS } from "@/lib/moduleAccents";
 import ModuleCard from "@/components/ModuleCard";
 
@@ -102,28 +101,16 @@ function WelcomeBanner({ onDismiss }) {
 
 export default function Home() {
   const [query, setQuery] = useState("");
-  const [disabledModules, , isLoading] = usePreference("disabled-modules", []);
-  const [welcomeDismissed, setWelcomeDismissed] = usePreference(
+  const [disabledModules] = usePreference("disabled-modules", []);
+  const [welcomeDismissed, setWelcomeDismissed, isLoading] = usePreference(
     "welcome-dismissed",
     false
   );
-  const [showWelcome, setShowWelcome] = useState(false);
   const searchRef = useRef(null);
 
-  // First-use detection: show the welcome banner only if the preference has
-  // loaded, the user hasn't dismissed it, and the activity log is empty.
-  useEffect(() => {
-    if (isLoading) return;
-    if (welcomeDismissed) return;
-    fetchActivity()
-      .then((records) => {
-        if (records.length === 0) setShowWelcome(true);
-      })
-      .catch(() => {});
-  }, [isLoading, welcomeDismissed]);
+  const showWelcome = !isLoading && !welcomeDismissed;
 
   function dismissWelcome() {
-    setShowWelcome(false);
     setWelcomeDismissed(true);
   }
 

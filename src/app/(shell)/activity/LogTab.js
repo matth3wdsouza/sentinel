@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useId } from "react";
 import InlineError from "@/components/InlineError";
+import { usePreference } from "@/lib/usePreference";
 import {
   Activity as ActivityIcon,
   Inbox,
   Trash2,
   ChevronDown,
+  ChevronLeft,
   ChevronRight,
   AlertTriangle,
   X,
@@ -26,6 +28,27 @@ function metaFor(moduleType) {
       icon: ActivityIcon,
     }
   );
+}
+
+const PAGE_SIZE_OPTIONS = [25, 50, 100];
+
+// Returns an array of page indices and "…" ellipsis strings for the
+// pagination bar. Always shows first/last page; adds current ± 1 when
+// they'd otherwise be separated from the ends.
+function getPageNumbers(currentPage, totalPages) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i);
+  }
+  const pages = new Set([0, totalPages - 1, currentPage]);
+  if (currentPage > 1) pages.add(currentPage - 1);
+  if (currentPage < totalPages - 2) pages.add(currentPage + 1);
+  const sorted = [...pages].sort((a, b) => a - b);
+  const result = [];
+  for (let i = 0; i < sorted.length; i++) {
+    if (i > 0 && sorted[i] - sorted[i - 1] > 1) result.push("…");
+    result.push(sorted[i]);
+  }
+  return result;
 }
 
 // Small, local to this tab rather than a shared lib helper — this is
@@ -133,6 +156,8 @@ function ActivityRow({ entry, expanded, onToggleExpand, onDelete, now }) {
 export default function LogTab({ activity, loadError, actionError, onRetry, onDelete }) {
   const [moduleFilter, setModuleFilter] = useState("all");
   const [expandedIds, setExpandedIds] = useState(() => new Set());
+  const [pageSize, setPageSize] = usePreference("activity.pageSize", 50);
+  const [page, setPage] = useState(0);
   // Tick every 30s so the relative "…s/m/h/d ago" labels stay current while
   // the tab is open instead of freezing at first render — same pattern as
   // the JWT inspector's expiry clock.
@@ -142,6 +167,16 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
     const id = setInterval(() => setNow(Date.now()), 30000);
     return () => clearInterval(id);
   }, []);
+
+  function handleFilterChange(value) {
+    setModuleFilter(value);
+    setPage(0);
+  }
+
+  function handlePageSizeChange(size) {
+    setPageSize(size);
+    setPage(0);
+  }
 
   function toggleExpanded(id) {
     setExpandedIds((prev) => {
@@ -172,6 +207,11 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
   const filtered =
     moduleFilter === "all" ? sorted : sorted.filter((e) => e.module_type === moduleFilter);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const safePage = Math.min(page, totalPages - 1);
+  const startIdx = safePage * pageSize;
+  const displayed = filtered.slice(startIdx, startIdx + pageSize);
+
   // Resolved once so the JSX below can render the active-filter chip without
   // re-calling metaFor twice. Null when no filter is applied.
   const activeFilterMeta = moduleFilter === "all" ? null : metaFor(moduleFilter);
@@ -182,7 +222,7 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
         <div className="flex items-center justify-between gap-3 mb-4">
           <select
             value={moduleFilter}
-            onChange={(e) => setModuleFilter(e.target.value)}
+            onChange={(e) => handleFilterChange(e.target.value)}
             aria-label="Filter activity by module"
             className="border border-slate/30 rounded-lg px-3 py-1.5 text-sm bg-surface focus:outline-none focus:border-teal transition"
           >
@@ -206,7 +246,7 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
                 <activeFilterMeta.icon size={13} />
                 {activeFilterMeta.label}
                 <button
-                  onClick={() => setModuleFilter("all")}
+                  onClick={() => handleFilterChange("all")}
                   aria-label="Clear module filter"
                   className="shrink-0 rounded-full p-0.5 hover:bg-teal/10 transition"
                 >
@@ -250,7 +290,7 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
             No activity for {metaFor(moduleFilter).label} yet.
           </p>
         ) : (
-          filtered.map((entry) => (
+          displayed.map((entry) => (
             <ActivityRow
               key={entry.id}
               entry={entry}
@@ -262,6 +302,65 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
           ))
         )}
       </div>
+
+      {filtered.length > 0 && (
+        <div className="flex items-center justify-between mt-4 gap-3">
+          <div className="flex items-center gap-1">
+            {PAGE_SIZE_OPTIONS.map((size) => (
+              <button
+                key={size}
+                onClick={() => handlePageSizeChange(size)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition ${
+                  pageSize === size
+                    ? "bg-teal-light text-teal-chip"
+                    : "text-slate hover:text-ink hover:bg-slate/10"
+                }`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+          <nav className="flex items-center gap-1" aria-label="Activity log pages">
+            <button
+              onClick={() => setPage((p) => p - 1)}
+              disabled={safePage === 0}
+              aria-label="Previous page"
+              className="size-7 rounded-lg flex items-center justify-center text-slate hover:text-ink hover:bg-slate/10 transition disabled:opacity-30 disabled:pointer-events-none"
+            >
+              <ChevronLeft size={14} />
+            </button>
+            {getPageNumbers(safePage, totalPages).map((item, i) =>
+              item === "…" ? (
+                <span key={`ellipsis-${i}`} className="px-1 text-xs text-slate">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={item}
+                  onClick={() => setPage(item)}
+                  aria-label={`Page ${item + 1}`}
+                  aria-current={item === safePage ? "page" : undefined}
+                  className={`size-7 rounded-lg text-xs font-medium flex items-center justify-center transition ${
+                    item === safePage
+                      ? "bg-teal-light text-teal-chip"
+                      : "text-slate hover:text-ink hover:bg-slate/10"
+                  }`}
+                >
+                  {item + 1}
+                </button>
+              )
+            )}
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={safePage >= totalPages - 1}
+              aria-label="Next page"
+              className="size-7 rounded-lg flex items-center justify-center text-slate hover:text-ink hover:bg-slate/10 transition disabled:opacity-30 disabled:pointer-events-none"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </nav>
+        </div>
+      )}
     </>
   );
 }

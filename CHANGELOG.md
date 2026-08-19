@@ -87,6 +87,26 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   `file-integrity/GenerateHashTab.js`, `CompareHashTab.js`,
   `CompareFilesTab.js`, `qr/DecodeTab.js`)
 
+### Fixed — welcome banner reappearing after clearing activity
+
+- **Welcome banner no longer reappears after the activity log is cleared.**
+  The previous implementation checked two independent async sources
+  (`disabled-modules` isLoading + `fetchActivity()` result), creating a
+  race condition where the banner could flash even after dismissal. The
+  banner visibility is now derived directly from the `welcome-dismissed`
+  preference — no activity fetch needed. (`page.js`)
+
+### Added — activity log pagination
+
+- **Activity log now paginates with configurable page sizes (25 / 50 /
+  100) and numbered page navigation.** The pagination bar — page size
+  selector, prev/next arrows, numbered page buttons, and ellipsis for
+  large counts — is always visible when entries exist. The selected page
+  size is persisted in IndexedDB via `usePreference` (key
+  `activity.pageSize`, default: 50). Page resets automatically when the
+  module filter or page size changes.
+  (`activity/LogTab.js`)
+
 ### Fixed — File hashing blocked by the production CSP (hash-wasm WASM compilation)
 
 - **File integrity / text hash worked in dev but failed on Vercel with

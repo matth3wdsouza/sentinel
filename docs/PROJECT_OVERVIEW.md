@@ -302,6 +302,12 @@ elevated). All phases are complete and stable:
     Fingerprint idle-state pattern.
   - All 14 modules now have either a rich guided empty state or a functional
     one; no module presents raw inputs without context.
+  - **Activity log pagination** — configurable page sizes (25 / 50 / 100)
+    with numbered page navigation (prev/next arrows, page buttons, ellipsis
+    for large counts). Pagination bar always visible when entries exist.
+    Page size persisted via `usePreference` (key `activity.pageSize`,
+    default 50). Page resets on filter or size change.
+    (`src/app/(shell)/activity/LogTab.js`)
 
 ## Refactor — Rounds 1–3
 
