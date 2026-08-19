@@ -219,6 +219,38 @@ body {
   to   { transform: scaleX(1); }
 }
 
+/* Page content fades in on route change — applied to the PageShell content
+   column so the TopBar stays stable while content transitions. */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Result cards fade in when they appear after a check/hash/decode. */
+@keyframes result-reveal {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-page-enter {
+  animation: page-enter 0.2s ease-out;
+}
+
+.animate-result-reveal {
+  animation: result-reveal 0.25s ease-out;
+}
+
+/* Welcome banner appears with a slight delay after the page content for a
+   cascading entrance effect. */
+@keyframes welcome-appear {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-welcome-appear {
+  animation: welcome-appear 0.3s ease-out 0.1s both;
+}
+
 /* Respect prefers-reduced-motion for all animations and transitions — kills
    the looping trust-dot pulse plus the one-shot hover lifts / active scales
    (card rise, button shrink) that are purely decorative. */

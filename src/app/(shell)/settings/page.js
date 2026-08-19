@@ -122,8 +122,8 @@ export default function SettingsPage() {
       {/* ── Appearance ───────────────────────────────────────────────────── */}
       <SettingsSection title="Appearance">
         <SettingsRow
-          label="Dark mode"
-          description="Switch between light and dark themes."
+          label="Theme"
+          description="Choose a theme or follow your system setting."
         >
           <ThemeToggle />
         </SettingsRow>

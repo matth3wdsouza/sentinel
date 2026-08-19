@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { ShieldCheck, Search } from "lucide-react";
 
 import { CATEGORIES, ALL_MODULES } from "@/lib/modules";
 import { usePreference } from "@/lib/usePreference";
+import { fetchActivity } from "@/lib/api";
+import { ACCENTS } from "@/lib/moduleAccents";
 import ModuleCard from "@/components/ModuleCard";
 
 function ComingSoonRow({ module }) {
@@ -39,10 +41,91 @@ function TrustDots() {
   );
 }
 
+// First-use welcome banner — shown when the activity log is empty and the
+// user hasn't dismissed it. Suggests four approachable starting modules.
+const WELCOME_SUGGESTED = ["password-generator", "hibp", "exif", "qr"];
+
+function WelcomeBanner({ onDismiss }) {
+  const suggested = WELCOME_SUGGESTED
+    .map((id) => ALL_MODULES.find((m) => m.id === id))
+    .filter(Boolean);
+
+  return (
+    <div className="relative rounded-2xl bg-surface shadow-card overflow-hidden mb-8 sm:mb-10 animate-welcome-appear">
+      <div className="absolute left-0 top-0 bottom-0 w-1 bg-teal" />
+      <div className="pl-6 pr-4 py-5 sm:pl-7 sm:pr-5 sm:py-6">
+        <div className="flex items-start justify-between gap-4 mb-1">
+          <h2 className="font-display text-lg font-semibold text-ink">
+            Welcome to Sentinel
+          </h2>
+          <button
+            onClick={onDismiss}
+            className="text-xs text-slate hover:text-ink transition shrink-0 mt-0.5"
+          >
+            Dismiss
+          </button>
+        </div>
+        <p className="text-sm text-slate mb-4">
+          Here are some things you can try to get started.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {suggested.map((mod) => {
+            const Icon = mod.icon;
+            const { chipBg, chipText } = ACCENTS[mod.accent];
+            return (
+              <Link
+                key={mod.id}
+                href={mod.path}
+                className="flex items-start gap-3 p-3 rounded-xl hover:bg-teal-light/40 transition group"
+              >
+                <span
+                  className={`inline-flex p-1.5 rounded-full shrink-0 ${chipBg} ${chipText}`}
+                >
+                  <Icon size={14} />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-ink group-hover:text-teal transition">
+                    {mod.title}
+                  </p>
+                  <p className="text-xs text-slate leading-relaxed">
+                    {mod.description}
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [query, setQuery] = useState("");
   const [disabledModules, , isLoading] = usePreference("disabled-modules", []);
+  const [welcomeDismissed, setWelcomeDismissed] = usePreference(
+    "welcome-dismissed",
+    false
+  );
+  const [showWelcome, setShowWelcome] = useState(false);
   const searchRef = useRef(null);
+
+  // First-use detection: show the welcome banner only if the preference has
+  // loaded, the user hasn't dismissed it, and the activity log is empty.
+  useEffect(() => {
+    if (isLoading) return;
+    if (welcomeDismissed) return;
+    fetchActivity()
+      .then((records) => {
+        if (records.length === 0) setShowWelcome(true);
+      })
+      .catch(() => {});
+  }, [isLoading, welcomeDismissed]);
+
+  function dismissWelcome() {
+    setShowWelcome(false);
+    setWelcomeDismissed(true);
+  }
 
   const isLoaded = !isLoading;
   const disabledSet = new Set(disabledModules);
@@ -142,6 +225,11 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Welcome banner — first-use only */}
+        {isLoaded && showWelcome && !isSearching && (
+          <WelcomeBanner onDismiss={dismissWelcome} />
+        )}
 
         {/* Search results */}
         {isLoaded && isSearching && searchResults.length > 0 && (

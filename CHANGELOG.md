@@ -4,6 +4,57 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed — three-way theme toggle (Light / System / Dark)
+
+- **The binary light/dark toggle is replaced with a three-segment control:**
+  Light, System, and Dark. "System" follows the OS `prefers-color-scheme`
+  preference live via a `matchMedia` change listener — when the user switches
+  their OS theme, the app updates immediately without a page reload. New users
+  default to System. The init script (`layout.js`) was rewritten to handle
+  three stored values: `"light"`, `"dark"`, and `"auto"` (or missing). The
+  previous invisible-text bugs that caused OS-preference detection to be removed
+  were fixed by the Phase 7 WCAG pass (darkened `--color-slate`, added
+  `--color-teal-chip` / `--color-mismatch-chip` tokens), making auto-detection
+  safe again. (`ThemeToggle.js`, `layout.js`)
+- Settings label updated from "Dark mode" to "Theme" with description "Choose a
+  theme or follow your system setting."
+  (`src/app/(shell)/settings/page.js`)
+
+### Changed — active TopBar state
+
+- **Activity and Settings icons in the TopBar now show a teal highlight when
+  on their respective pages**, replacing the identical appearance of all nav
+  icons regardless of current route. The Home icon (visible only on module
+  pages) stays neutral — it's a navigation action, not an indicator.
+  (`src/components/TopBar.js`)
+
+### Added — first-use welcome banner
+
+- **A welcome banner appears on the home page for first-time users.** Shown
+  only when the activity log is empty and the user hasn't dismissed it. Suggests
+  four approachable starting modules (Password Generator, HIBP Breach Check,
+  EXIF Metadata, QR Code) as clickable card rows with accent-colored icon
+  chips. Dismissible via `preferences["welcome-dismissed"]` in IndexedDB — the
+  banner won't reappear after dismissal even if the activity log is cleared.
+  (`src/app/page.js`)
+
+### Changed — micro-animations (targeted Phase 4)
+
+- **Page content fades in on route change** via a `page-enter` CSS keyframe
+  applied to the `PageShell` content column. The TopBar stays stable while
+  content transitions.
+  (`src/components/PageShell.js`, `src/app/globals.css`)
+- **Result cards fade in when they appear** after a check, hash, or decode via
+  a `result-reveal` keyframe on the root div of `ResultCard` and
+  `GeneratorResultCard`.
+  (`src/components/ResultCard.js`, `src/components/GeneratorResultCard.js`)
+- **Welcome banner has a delayed entrance** (`welcome-appear` keyframe with
+  0.1s delay) for a cascading effect after the page content.
+  (`src/app/globals.css`)
+- All animations are killed by the existing `prefers-reduced-motion` rule.
+  Collapse/expand animation is intentionally avoided (the bugs that killed the
+  original Phase 4).
+
 ### Fixed — File hashing blocked by the production CSP (hash-wasm WASM compilation)
 
 - **File integrity / text hash worked in dev but failed on Vercel with

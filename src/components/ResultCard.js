@@ -115,7 +115,7 @@ export default function ResultCard({
     explanation && (explanation.means || explanation.doesntMean || explanation.action);
 
   return (
-    <div className="relative rounded-xl bg-surface shadow-card overflow-hidden">
+    <div className="relative rounded-xl bg-surface shadow-card overflow-hidden animate-result-reveal">
       <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${rail}`} />
 
       <div className="pl-6 pr-4 py-4 sm:pl-7 sm:pr-5 sm:py-5">

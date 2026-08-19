@@ -7,6 +7,15 @@ import { Home, History, Settings } from "lucide-react";
 export default function TopBar() {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isActivity = pathname.startsWith("/activity");
+  const isSettings = pathname.startsWith("/settings");
+
+  const linkClass = (active) =>
+    `inline-flex p-3 rounded-full transition ${
+      active
+        ? "text-teal bg-teal-light/40"
+        : "text-slate hover:text-teal hover:bg-slate-light"
+    }`;
 
   return (
     <div className="sticky top-0 z-10 flex items-center justify-between px-3 sm:px-6 py-2 bg-paper/80 backdrop-blur-sm border-b border-slate/10">
@@ -26,14 +35,14 @@ export default function TopBar() {
         <Link
           href="/activity"
           aria-label="Activity log"
-          className="inline-flex p-3 rounded-full text-slate hover:text-teal hover:bg-slate-light transition"
+          className={linkClass(isActivity)}
         >
           <History size={18} />
         </Link>
         <Link
           href="/settings"
           aria-label="Settings"
-          className="inline-flex p-3 rounded-full text-slate hover:text-teal hover:bg-slate-light transition"
+          className={linkClass(isSettings)}
         >
           <Settings size={18} />
         </Link>

@@ -59,7 +59,7 @@ export default function GeneratorResultCard({
   explanation,
 }) {
   return (
-    <div className="p-5">
+    <div className="p-5 animate-result-reveal">
       {result ? (
         <>
           {/* Output display — neutral surface so it looks consistent in

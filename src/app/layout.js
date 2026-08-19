@@ -28,12 +28,13 @@ export const metadata = {
 };
 
 // Runs before paint to apply the stored theme class to <html>, avoiding a
-// flash of the wrong theme. No system-preference fallback by design — the
-// theme is manual-toggle-only (see ThemeToggle.js), defaulting to light.
+// flash of the wrong theme. Stored values: "light", "dark", or "auto"
+// (default). When "auto" or missing, follows the OS prefers-color-scheme.
 const themeInitScript = `
 (function() {
   try {
-    if (localStorage.getItem('sentinel-theme') === 'dark') {
+    var t = localStorage.getItem('sentinel-theme');
+    if (t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
     }
   } catch (e) {}

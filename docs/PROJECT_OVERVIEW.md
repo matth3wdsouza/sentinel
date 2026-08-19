@@ -134,14 +134,17 @@ planned modules are achievable entirely client-side.
   MD5/SHA-1 are tucked behind a "show legacy algorithms" toggle in the UI,
   defaulting to modern algorithms (SHA-256 etc.) being visible/selected.
 
-- **Dark mode — implemented, manual-toggle-only.** An earlier version of
-  `globals.css` had an OS-based dark-mode media query (the default Next.js
-  scaffold behavior), which was removed after it caused invisible-text bugs
-  (near-white text on light Tailwind backgrounds). Rather than fix that
-  media query, dark mode was rebuilt as an explicit manual toggle
-  (`ThemeToggle.js`, `.dark` class on `<html>`, preference persisted to
-  `localStorage`) with no OS-preference fallback by design. The toggle was
-  previously in `TopBar`; it now lives in Settings → Appearance.
+- **Theme — three-way toggle (Light / System / Dark).** An earlier OS-based
+  dark-mode media query was removed after it caused invisible-text bugs; dark
+  mode was rebuilt as an explicit manual toggle (`ThemeToggle.js`, `.dark` class
+  on `<html>`, preference persisted to `localStorage`). The Phase 7 WCAG pass
+  fixed the contrast issues that caused the original removal, so a third "System"
+  option was added: it follows `prefers-color-scheme` live via a `matchMedia`
+  change listener. The init script (`layout.js`) applies the stored choice before
+  first paint; when the stored value is `"auto"` or absent (new users), it reads
+  the OS preference. Theme is deliberately excluded from the IndexedDB preferences
+  store and from the "Reset all preferences" action. The toggle lives in
+  Settings → Appearance as a segmented button group (Sun / Monitor / Moon icons).
 
 ## Modules (priority order)
 
@@ -186,11 +189,10 @@ elevated). All phases are complete and stable:
   `FileInput`, `PasswordField`) elevated onto `bg-surface` + `shadow-card`.
   `FallbackCommands.js`'s copy button gives Copy→Check feedback.
 - **Phase 4** (motion/animation polish) — attempted twice and reverted both
-  times due to CSS collapse-animation bugs. No browser is available in the
-  dev sandbox (Playwright can't download Chromium; apt-get chromium is
-  snap-only on this Ubuntu image), so CSS layout/animation changes can't be
-  verified without the developer checking each one manually before building
-  further. Project is back to a clean pre-Phase-4 state.
+  times due to CSS collapse-animation bugs. A targeted subset was later landed
+  as part of Phase 8: page-enter fade and result-reveal animations (pure CSS
+  `@keyframes`, no collapse/expand). Full collapse/expand motion remains
+  unattempted.
 - **Phase 5** — home page module grid redesigned from a flat list to loose
   category groups (Passwords & Passphrases / Inspect & Analyse / Miscellaneous),
   with Miscellaneous as a catch-all for modules that don't fit neatly elsewhere
@@ -268,6 +270,21 @@ elevated). All phases are complete and stable:
     **not** merged — their padding, borders, and placeholder handling differ,
     and a `KeyValueRow` with many knobs risked density regressions in the
     dense tables. Revisited only if a future review flags row divergence.
+- **Phase 8** — UI/UX polish pass:
+  - **Active TopBar state** — Activity and Settings icons now show a teal
+    highlight when on their respective pages (`TopBar.js`).
+  - **Three-way theme toggle** — Light / System / Dark segmented control
+    replaces the binary toggle. "System" follows `prefers-color-scheme` live
+    via `matchMedia` change listener; new users default to System.
+    (`ThemeToggle.js`, `layout.js`)
+  - **Micro-animations** — page-enter fade (`PageShell.js`) and result-reveal
+    fade (`ResultCard.js`, `GeneratorResultCard.js`). Pure CSS `@keyframes`,
+    all killed by the existing `prefers-reduced-motion` rule. Collapse/expand
+    animation is intentionally avoided (the bugs that killed Phase 4).
+  - **First-use welcome banner** — shown on the home page when the activity
+    log is empty and the user hasn't dismissed it. Suggests four approachable
+    starting modules (Password Generator, HIBP, EXIF, QR Code). Dismissible
+    via `preferences["welcome-dismissed"]`. (`src/app/page.js`)
 
 ## Refactor — Rounds 1–3
 
@@ -886,6 +903,6 @@ Run manually: `npm run dev`
 ## Not yet started
 
 - Favourites (deferred)
-- Phase 4 motion/animation polish (reverted twice — needs manual visual
-  verification at each step; no browser available in dev sandbox)
+- Full collapse/expand motion animation (Phase 4 scope — needs manual visual
+  verification; targeted micro-animations landed in Phase 8)
 - Any authentication (intentionally out of scope)
