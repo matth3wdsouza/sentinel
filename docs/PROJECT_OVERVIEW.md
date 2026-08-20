@@ -281,6 +281,13 @@ elevated). All phases are complete and stable:
     fade (`ResultCard.js`, `GeneratorResultCard.js`). Pure CSS `@keyframes`,
     all killed by the existing `prefers-reduced-motion` rule. Collapse/expand
     animation is intentionally avoided (the bugs that killed Phase 4).
+    Hero-specific: `badge-enter` (staggered fade + slide up for trust
+    badges) and `lock-float` (gentle 8s vertical drift for the lock
+    watermark). Both killed by `prefers-reduced-motion`.
+    Cursor-reactive: the hero panel has a radial-gradient spotlight
+    (600px, 7% opacity) that follows the mouse via CSS custom properties
+    `--mx`/`--my`. Skipped when `prefers-reduced-motion: reduce` matches.
+    (`globals.css`, `src/app/page.js`)
   - **First-use welcome banner** — shown on the home page when the activity
     log is empty and the user hasn't dismissed it. Suggests four approachable
     starting modules (Password Generator, HIBP, EXIF, QR Code). Dismissible

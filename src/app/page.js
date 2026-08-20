@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import Link from "next/link";
 import { ShieldCheck, CloudOff, UserX, EyeOff } from "lucide-react";
 
@@ -95,6 +96,20 @@ export default function Home() {
 
   const showWelcome = !isLoading && !welcomeDismissed;
 
+  const heroRef = useRef(null);
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const handleMouseMove = (e) => {
+      const rect = hero.getBoundingClientRect();
+      hero.style.setProperty("--mx", `${((e.clientX - rect.left) / rect.width) * 100}%`);
+      hero.style.setProperty("--my", `${((e.clientY - rect.top) / rect.height) * 100}%`);
+    };
+    hero.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => hero.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   function dismissWelcome() {
     setWelcomeDismissed(true);
   }
@@ -121,7 +136,7 @@ export default function Home() {
       <div className="max-w-6xl mx-auto">
 
         {/* Hero */}
-        <div className="hero-panel rounded-2xl sm:rounded-3xl px-6 py-7 sm:px-10 sm:py-9 mb-8 sm:mb-10 overflow-hidden relative">
+        <div ref={heroRef} className="hero-panel rounded-2xl sm:rounded-3xl px-6 py-7 sm:px-10 sm:py-9 mb-8 sm:mb-10 overflow-hidden relative">
           {/* Decorative lock watermark — inline SVG avoids emoji font override */}
           <svg
             aria-hidden="true"
@@ -132,7 +147,8 @@ export default function Home() {
             strokeWidth="0.75"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="hidden sm:block absolute right-8 top-1/2 -translate-y-1/2 text-white/[0.07] pointer-events-none select-none w-44 h-44"
+            className="hidden sm:block absolute right-8 top-1/2 text-white/[0.07] pointer-events-none select-none w-44 h-44"
+            style={{ animation: "lock-float 8s ease-in-out infinite" }}
           >
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -156,15 +172,15 @@ export default function Home() {
 
             {/* Trust badges */}
             <div className="flex items-center gap-2.5 mt-4 mb-7 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-xs text-white/80 font-medium">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-xs text-white/80 font-medium animate-badge-enter" style={{ animationDelay: "0ms" }}>
                 <CloudOff size={12} className="text-white/60" />
                 No server
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-xs text-white/80 font-medium">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-xs text-white/80 font-medium animate-badge-enter" style={{ animationDelay: "50ms" }}>
                 <UserX size={12} className="text-white/60" />
                 No account
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-xs text-white/80 font-medium">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-xs text-white/80 font-medium animate-badge-enter" style={{ animationDelay: "100ms" }}>
                 <EyeOff size={12} className="text-white/60" />
                 No tracking
               </span>

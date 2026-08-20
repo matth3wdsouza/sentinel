@@ -149,6 +149,23 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   `sentinel-pulse` keyframe, `.trust-dot` rules, and `TrustDots` component
   are removed. (`src/app/page.js`, `globals.css`)
 
+### Changed — hero trust badges entrance animation and floating lock
+
+- **Trust badges stagger in on page load** (fade + slide up, 50ms apart)
+  to give the hero a moment of arrival. The existing lock watermark SVG
+  now drifts gently (8s cycle, 3px amplitude) to keep the hero from
+  feeling dead. Both animations are killed by `prefers-reduced-motion`.
+  (`src/app/page.js`, `globals.css`)
+
+### Changed — cursor-following hero spotlight
+
+- **The hero panel reacts to the cursor** with a subtle radial gradient
+  spotlight (600px radius, 7% white opacity). A throttled `mousemove`
+  listener sets CSS custom properties `--mx`/`--my` that position the
+  gradient center. Defaults to 50%/50% (center) before the mouse enters.
+  Skipped entirely when `prefers-reduced-motion: reduce` matches.
+  (`src/app/page.js`, `globals.css`)
+
 ### Fixed — File hashing blocked by the production CSP (hash-wasm WASM compilation)
 
 - **File integrity / text hash worked in dev but failed on Vercel with

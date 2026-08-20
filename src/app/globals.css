@@ -192,6 +192,7 @@ body {
    rather than a flat top-left "standard" effect. */
 .hero-panel {
   background:
+    radial-gradient(circle 600px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.07) 0%, transparent 70%),
     radial-gradient(ellipse at 80% 50%, rgba(255,255,255,0.10) 0%, transparent 55%),
     radial-gradient(circle at 8% 20%, rgba(255,255,255,0.13), transparent 38%),
     linear-gradient(140deg, var(--color-teal-deep) 0%, #1e6868 45%, var(--color-teal) 100%);
@@ -245,6 +246,22 @@ body {
 
 .animate-palette-enter {
   animation: palette-enter 0.15s ease-out;
+}
+
+/* Trust badges stagger in on page load — one-shot entrance. */
+@keyframes badge-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-badge-enter {
+  animation: badge-enter 0.3s ease-out both;
+}
+
+/* Lock watermark drifts gently to keep the hero from feeling dead. */
+@keyframes lock-float {
+  0%, 100% { transform: translateY(-50%); }
+  50%      { transform: translateY(calc(-50% - 3px)); }
 }
 
 /* Respect prefers-reduced-motion for all animations and transitions — kills
