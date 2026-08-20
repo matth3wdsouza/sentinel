@@ -131,6 +131,14 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   where needed (command palette input). All other interactive elements are
   unaffected — no other component suppresses focus rings. (`globals.css`)
 
+### Changed — removed home page hero search bar
+
+- **The search bar embedded in the hero panel is removed.** The command
+  palette (⌘K / Ctrl+K or TopBar search icon) is now the single search
+  surface — it works from every page, not just home. Removing the hero
+  search eliminates duplicate functionality and simplifies the landing
+  page to: logo, tagline, and trust signal. (`src/app/page.js`)
+
 ### Fixed — File hashing blocked by the production CSP (hash-wasm WASM compilation)
 
 - **File integrity / text hash worked in dev but failed on Vercel with

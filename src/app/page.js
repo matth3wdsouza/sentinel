@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
 import Link from "next/link";
-import { ShieldCheck, Search } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 import { CATEGORIES, ALL_MODULES } from "@/lib/modules";
 import { usePreference } from "@/lib/usePreference";
@@ -100,13 +99,11 @@ function WelcomeBanner({ onDismiss }) {
 }
 
 export default function Home() {
-  const [query, setQuery] = useState("");
   const [disabledModules] = usePreference("disabled-modules", []);
   const [welcomeDismissed, setWelcomeDismissed, isLoading] = usePreference(
     "welcome-dismissed",
     false
   );
-  const searchRef = useRef(null);
 
   const showWelcome = !isLoading && !welcomeDismissed;
 
@@ -117,35 +114,19 @@ export default function Home() {
   const isLoaded = !isLoading;
   const disabledSet = new Set(disabledModules);
 
-  const q = query.trim().toLowerCase();
-
-  const matches = (module) =>
-    !q ||
-    module.title.toLowerCase().includes(q) ||
-    module.description.toLowerCase().includes(q);
-
-  const isSearching = q.length > 0;
   const isVisible = (m) => !disabledSet.has(m.id);
 
-  const searchResults = isSearching
-    ? ALL_MODULES.filter((m) => m.status === "available" && isVisible(m) && matches(m))
-    : [];
+  const visibleCategories = CATEGORIES.map((cat) => ({
+    ...cat,
+    available: cat.modules.filter(
+      (m) => m.status === "available" && isVisible(m)
+    ),
+    comingSoon: cat.modules.filter(
+      (m) => m.status === "coming-soon" && isVisible(m)
+    ),
+  })).filter((cat) => cat.available.length > 0 || cat.comingSoon.length > 0);
 
-  const visibleCategories = isSearching
-    ? []
-    : CATEGORIES.map((cat) => ({
-        ...cat,
-        available: cat.modules.filter(
-          (m) => m.status === "available" && isVisible(m) && matches(m)
-        ),
-        comingSoon: cat.modules.filter(
-          (m) => m.status === "coming-soon" && isVisible(m) && matches(m)
-        ),
-      })).filter((cat) => cat.available.length > 0 || cat.comingSoon.length > 0);
-
-  const hasNoResults = isSearching
-    ? searchResults.length === 0
-    : visibleCategories.length === 0;
+  const hasNoResults = visibleCategories.length === 0;
 
   return (
     <main className="min-h-screen px-4 py-6 sm:px-10 sm:py-10">
@@ -193,43 +174,16 @@ export default function Home() {
                 hash check is the only exception
               </span>
             </div>
-
-            {/* Search */}
-            <div className="relative max-w-xs sm:max-w-sm">
-              <Search
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/60"
-                size={15}
-              />
-              <input
-                ref={searchRef}
-                type="search"
-                aria-label="Search modules"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search modules…"
-                className="w-full border border-white/20 rounded-xl pl-10 pr-3 py-2.5 text-sm text-white placeholder:text-white/50 bg-white/10 backdrop-blur-sm focus:outline-none focus:border-white/50 focus:bg-white/15 transition"
-              />
-            </div>
           </div>
         </div>
 
         {/* Welcome banner — first-use only */}
-        {isLoaded && showWelcome && !isSearching && (
+        {isLoaded && showWelcome && (
           <WelcomeBanner onDismiss={dismissWelcome} />
-        )}
-
-        {/* Search results */}
-        {isLoaded && isSearching && searchResults.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-            {searchResults.map((module) => (
-              <ModuleCard key={module.id} module={module} />
-            ))}
-          </div>
         )}
 
         {/* Default view — grouped by category */}
         {isLoaded &&
-          !isSearching &&
           visibleCategories.map((cat, i) => (
             <div key={cat.id} className={i < visibleCategories.length - 1 ? "mb-10" : ""}>
               {/* Category heading — more presence than a dot + tiny caps */}
@@ -261,32 +215,26 @@ export default function Home() {
           ))}
 
         {isLoaded && hasNoResults && (
-          isSearching ? (
-            <p className="text-sm text-slate mt-4">
-              No modules match &quot;{query}&quot;.
+          <div className="text-center py-16">
+            <p className="text-sm text-ink font-medium mb-1">No modules enabled</p>
+            <p className="text-sm text-slate mb-4">
+              Go to Settings to choose which modules appear here.
             </p>
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-sm text-ink font-medium mb-1">No modules enabled</p>
-              <p className="text-sm text-slate mb-4">
-                Go to Settings to choose which modules appear here.
-              </p>
-              <div className="flex items-center justify-center gap-4">
-                <Link
-                  href="/settings/modules"
-                  className="text-sm text-teal font-medium hover:underline"
-                >
-                  Manage modules →
-                </Link>
-                <Link
-                  href="/settings"
-                  className="text-sm text-slate hover:underline"
-                >
-                  ← Settings
-                </Link>
-              </div>
+            <div className="flex items-center justify-center gap-4">
+              <Link
+                href="/settings/modules"
+                className="text-sm text-teal font-medium hover:underline"
+              >
+                Manage modules →
+              </Link>
+              <Link
+                href="/settings"
+                className="text-sm text-slate hover:underline"
+              >
+                ← Settings
+              </Link>
             </div>
-          )
+          </div>
         )}
       </div>
     </main>
