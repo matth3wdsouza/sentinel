@@ -139,6 +139,16 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   search eliminates duplicate functionality and simplifies the landing
   page to: logo, tagline, and trust signal. (`src/app/page.js`)
 
+### Changed — replaced decorative trust dots with trust badges
+
+- **The animated pulsing dots in the hero are replaced with three compact
+  trust badges**: "No server", "No account", "No tracking". The dots were
+  decorative — they pulsed to suggest activity but conveyed no information.
+  The badges are scannable, communicate the privacy model at a glance, and
+  replace the verbose sentence that previously accompanied the dots. The
+  `sentinel-pulse` keyframe, `.trust-dot` rules, and `TrustDots` component
+  are removed. (`src/app/page.js`, `globals.css`)
+
 ### Fixed — File hashing blocked by the production CSP (hash-wasm WASM compilation)
 
 - **File integrity / text hash worked in dev but failed on Vercel with

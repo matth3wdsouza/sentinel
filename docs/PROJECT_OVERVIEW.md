@@ -226,7 +226,7 @@ elevated). All phases are complete and stable:
     emitted) — caught in the post-refactor review and fixed by adding the two
     mirror lines; confirmed in the compiled CSS.**
   - `prefers-reduced-motion` extended to kill all decorative transitions and
-    one-shot hover lifts (not just the trust-dot pulse).
+    one-shot hover lifts.
   - `Tabs` now implements the WAI-ARIA tabs pattern (roles, `aria-selected`,
     `aria-controls`, arrow/Home/End keys); every page's tab panels carry
     matching `id` + `role="tabpanel"`.

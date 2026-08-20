@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, CloudOff, UserX, EyeOff } from "lucide-react";
 
 import { CATEGORIES, ALL_MODULES } from "@/lib/modules";
 import { usePreference } from "@/lib/usePreference";
@@ -24,18 +24,6 @@ function ComingSoonRow({ module }) {
         Soon
       </span>
     </div>
-  );
-}
-
-// Three animated dots that pulse in sequence — used in the hero to show
-// "active but quiet" processing happening locally.
-function TrustDots() {
-  return (
-    <span className="inline-flex items-center gap-1 text-white/60" aria-hidden="true">
-      <span className="trust-dot" />
-      <span className="trust-dot" />
-      <span className="trust-dot" />
-    </span>
   );
 }
 
@@ -166,12 +154,19 @@ export default function Home() {
               Privacy tools that run entirely in your browser.
             </p>
 
-            {/* Trust signal — the key differentiator, shown not just stated */}
-            <div className="flex items-center gap-2 mb-7">
-              <TrustDots />
-              <span className="text-xs text-white/55 font-medium tracking-wide">
-                Passwords and files never leave your device — one anonymous
-                hash check is the only exception
+            {/* Trust badges */}
+            <div className="flex items-center gap-2.5 mt-4 mb-7 flex-wrap">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-xs text-white/80 font-medium">
+                <CloudOff size={12} className="text-white/60" />
+                No server
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-xs text-white/80 font-medium">
+                <UserX size={12} className="text-white/60" />
+                No account
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-xs text-white/80 font-medium">
+                <EyeOff size={12} className="text-white/60" />
+                No tracking
               </span>
             </div>
           </div>
