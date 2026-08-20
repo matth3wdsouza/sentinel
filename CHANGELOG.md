@@ -107,6 +107,30 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   module filter or page size changes.
   (`activity/LogTab.js`)
 
+### Added — command palette
+
+- **Quick module navigation via a command palette** (⌘K / Ctrl+K or
+  search icon in TopBar). A modal overlay with a search input and a
+  filterable list of all available modules plus quick actions (Home,
+  Activity, Settings). Keyboard navigable: arrow keys to move, Enter to
+  go, Escape to close. Search matches module titles and descriptions
+  with highlighted matches. The search icon in the TopBar provides a
+  click/tap trigger for mobile users. The search input suppresses the
+  browser focus ring (matching cmdk/shadcn/Linear/Raycast convention) —
+  the modal backdrop + blinking caret communicate focus. (`CommandPalette.js`,
+  `TopBar.js`, `layout.js`)
+
+### Fixed — Global :focus-visible ring could not be overridden by Tailwind utilities
+
+- **The global `:focus-visible` rule in `globals.css` was unlayered, which
+  meant Tailwind utility classes like `focus:outline-none` had no effect** (CSS
+  Cascade Layers: unlayered styles always beat `@layer utilities`). The
+  command palette input's `focus:outline-none` was silently ignored, leaving
+  a teal outline that clipped against `overflow-hidden` on the panel. Moved
+  the global rule into `@layer base` so Tailwind utilities can override it
+  where needed (command palette input). All other interactive elements are
+  unaffected — no other component suppresses focus rings. (`globals.css`)
+
 ### Fixed — File hashing blocked by the production CSP (hash-wasm WASM compilation)
 
 - **File integrity / text hash worked in dev but failed on Vercel with

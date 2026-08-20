@@ -308,6 +308,15 @@ elevated). All phases are complete and stable:
     Page size persisted via `usePreference` (key `activity.pageSize`,
     default 50). Page resets on filter or size change.
     (`src/app/(shell)/activity/LogTab.js`)
+  - **Command palette** — modal overlay for quick module navigation,
+    triggered by ⌘K / Ctrl+K (desktop) or search icon in TopBar (all
+    devices). Flat filterable list of available modules plus quick actions
+    (Home, Activity, Settings). Keyboard navigable (arrow keys, Enter,
+    Escape). `preventDefault()` on keydown blocks browser omnibox.
+    Input suppresses focus ring (cmdk/shadcn convention — modal context
+    + caret communicates focus; global `:focus-visible` lives in `@layer
+    base` so Tailwind utilities can override it). (`src/components/CommandPalette.js`,
+    `src/components/TopBar.js`, `src/app/layout.js`)
 
 ## Refactor — Rounds 1–3
 
@@ -861,7 +870,8 @@ src/
 │   ├── ThemeToggle.js       # now rendered in Settings, not TopBar
 │   └── DragGuard.js
 └── app/
-    ├── globals.css           # design tokens, manual light/dark theme
+    ├── globals.css           # design tokens, manual light/dark theme,
+    │                         # global :focus-visible in @layer base (overridable by Tailwind utilities)
     ├── layout.js             # fonts + themeInitScript (localStorage, pre-paint)
     ├── page.js               # home screen — reads CATEGORIES from lib/modules.js, filters disabled modules
     ├── (shell)/

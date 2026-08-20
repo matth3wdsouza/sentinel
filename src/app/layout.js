@@ -2,6 +2,7 @@ import { Manrope, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import TopBar from "@/components/TopBar";
 import DragGuard from "@/components/DragGuard";
 import ScrollToTop from "@/components/ScrollToTop";
+import CommandPalette from "@/components/CommandPalette";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -54,6 +55,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         <DragGuard />
         <ScrollToTop />
+        <CommandPalette />
         <TopBar />
         {children}
       </body>

@@ -176,11 +176,15 @@ body {
 }
 
 /* Global keyboard focus indicator — applies to all interactive elements
-   navigated with Tab. Uses :focus-visible so mouse clicks don't show a ring. */
-:focus-visible {
-  outline: 2px solid var(--color-teal);
-  outline-offset: 2px;
-  border-radius: 4px;
+   navigated with Tab. Uses :focus-visible so mouse clicks don't show a ring.
+   Lives in @layer base so Tailwind utilities (e.g. focus:outline-none) in
+   @layer utilities can override it where needed (command palette input). */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-teal);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 /* Hero — layered gradient with a subtle geometric inset shape for depth.
@@ -249,6 +253,16 @@ body {
 
 .animate-welcome-appear {
   animation: welcome-appear 0.3s ease-out 0.1s both;
+}
+
+/* Command palette panel slides in with a subtle scale + fade. */
+@keyframes palette-enter {
+  from { opacity: 0; transform: scale(0.98) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-palette-enter {
+  animation: palette-enter 0.15s ease-out;
 }
 
 /* Respect prefers-reduced-motion for all animations and transitions — kills

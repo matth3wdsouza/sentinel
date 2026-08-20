@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, History, Settings } from "lucide-react";
+import { Home, History, Settings, Search } from "lucide-react";
 
 export default function TopBar() {
   const pathname = usePathname();
@@ -32,6 +32,14 @@ export default function TopBar() {
       </div>
 
       <div className="flex items-center gap-0.5">
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent("command-palette:open"))}
+          aria-label="Search modules"
+          title="Search modules"
+          className="inline-flex p-3 rounded-full text-slate hover:text-teal hover:bg-slate-light transition"
+        >
+          <Search size={18} />
+        </button>
         <Link
           href="/activity"
           aria-label="Activity log"
