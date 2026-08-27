@@ -7,6 +7,10 @@
 
   --color-ink: #1e2d3d;
   --color-paper: #f0f4f7;
+  /* "teal" is named after the default scheme — it is Sentinel's
+     interactive colour family (links, buttons, focus rings, active
+     states, hero gradient). Per-scheme overrides carry different hues;
+     the name stays teal everywhere for Tailwind class consistency. */
   --color-teal: #286c6d;
   --color-teal-light: #ddeaea;
   /* Slightly darker slate so secondary text clears WCAG AA (4.5:1) on
