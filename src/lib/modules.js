@@ -13,6 +13,7 @@ import {
   Binary,
   KeySquare,
   Timer,
+  Link,
 } from "lucide-react";
 
 // Canonical module registry — single source of truth for every page that
@@ -109,6 +110,16 @@ export const CATEGORIES = [
         path: "/modules/qr",
         status: "available",
         icon: QrCode,
+        accent: "amber",        // Inspect & Analyse
+      },
+      {
+        id: "url-inspector",
+        title: "URL Inspector",
+        description:
+          "Decompose a URL and flag phishing indicators — homograph tricks, suspicious TLDs, and encoded characters.",
+        path: "/modules/url-inspector",
+        status: "available",
+        icon: Link,
         accent: "amber",        // Inspect & Analyse
       },
     ],
