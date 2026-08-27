@@ -31,12 +31,18 @@ export const metadata = {
 // Runs before paint to apply the stored theme class to <html>, avoiding a
 // flash of the wrong theme. Stored values: "light", "dark", or "auto"
 // (default). When "auto" or missing, follows the OS prefers-color-scheme.
+// Also reads "sentinel-scheme" and sets a data-scheme attribute so the
+// correct colour palette applies from first paint.
 const themeInitScript = `
 (function() {
   try {
     var t = localStorage.getItem('sentinel-theme');
     if (t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
+    }
+    var s = localStorage.getItem('sentinel-scheme');
+    if (s && s !== 'default') {
+      document.documentElement.setAttribute('data-scheme', s);
     }
   } catch (e) {}
 })();

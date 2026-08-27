@@ -7,23 +7,29 @@
 
   --color-ink: #1e2d3d;
   --color-paper: #f0f4f7;
-  --color-teal: #2c7a7b;
+  --color-teal: #286c6d;
   --color-teal-light: #ddeaea;
   /* Slightly darker slate so secondary text clears WCAG AA (4.5:1) on
      paper (5.3:1), surface (5.7:1), and slate-light (4.6:1). */
   --color-slate: #58687a;
   --color-slate-light: #e4e8ed;
   /* Darker teal for small text on teal-light chips (4.98:1 on teal-light,
-     6.15:1 on white). Interactive teal (#2c7a7b) is unchanged. */
+     6.15:1 on white). Interactive teal (#286c6d) clears 4.5:1 on paper,
+     surface, AND slate-light — asserted by validate-palettes.js. */
   --color-teal-chip: #256b6e;
-  --color-match: #2f7d5b;
+  /* Label colour used on top of interactive teal fills (buttons).
+     White in light mode; near-black in dark mode where every scheme's
+     teal is bright enough to carry dark text at AA. */
+  --color-on-teal: #ffffff;
+  --color-match: #266e4d;
   --color-match-light: #ddf0e8;
-  --color-mismatch: #b44545;
+  --color-mismatch: #ad4040;
   --color-mismatch-light: #f7e5e5;
-  /* Darker mismatch for small text on mismatch-light chips/banners — the
-     base mismatch (4.46:1 on the tint) clears 4.5:1 at 4.80:1. Plain
-     text-mismatch on white/paper surfaces is unchanged and already passes. */
-  --color-mismatch-chip: #ae4040;
+  /* Chip token for small text on mismatch-light chips/banners. Value is
+     unified with --color-mismatch (#ad4040, 4.83:1 on the tint): after
+     the light mismatch nudge the old one-step-darker chip value added
+     nothing. Kept as a named token for semantic clarity. */
+  --color-mismatch-chip: #ad4040;
 
   /* Destructive UI actions (danger zone borders, buttons) — semantically
      distinct from mismatch which is reserved for result verdicts. Warmer
@@ -43,6 +49,8 @@
 
   /* Deeper teal for hero gradients only. --color-teal stays the interactive shade. */
   --color-teal-deep: #164040;
+  /* Midpoint for hero gradient — base is #1e6868; schemes override this. */
+  --color-teal-mid: #1e6868;
 
   /* Per-module accent palette — decorative identity only, never used for
      verdicts. Slightly saturated for better visibility in light mode. */
@@ -52,13 +60,13 @@
   --color-accent-violet-light: #ece2f7;
   --color-accent-rose: #a03860;
   --color-accent-rose-light: #f5dfe8;
-  --color-accent-amber: #a07820;
+  --color-accent-amber: #8a6410;
   --color-accent-amber-light: #f5ecda;
   --color-accent-emerald: #2e7540;
   --color-accent-emerald-light: #ddefdf;
   --color-accent-indigo: #3f5a9e;
   --color-accent-indigo-light: #e0e6f5;
-  --color-accent-orange: #b05018;
+  --color-accent-orange: #9e4712;
   --color-accent-orange-light: #f7ebe2;
 
   /* Cards use a richer shadow so they genuinely lift off the background. */
@@ -81,6 +89,7 @@
   /* Dark-mode teal chip text — same value as interactive teal, which
      already clears 4.5:1 on teal-light (#1a3232) here. */
   --color-teal-chip: #4fa8a6;
+  --color-on-teal: #10181a;
   --color-match: #4aaa82;
   --color-match-light: #1a3028;
   --color-mismatch: #d47070;
@@ -89,7 +98,7 @@
      clears 4.5:1 on mismatch-light (#321e1e) here. */
   --color-mismatch-chip: #d47070;
 
-  --color-danger: #e05830;
+  --color-danger: #ee6a42;
   --color-danger-light: #301408;
   --color-fallback: #d4a050;
   --color-fallback-light: #302418;
@@ -99,6 +108,7 @@
   /* Lighter than surface so code blocks have a visible fill in dark mode. */
   --color-code: #283442;
   --color-teal-deep: #2a5e5c;
+  --color-teal-mid: #1e6868;
 
   --color-accent-blue: #6fa8d8;
   --color-accent-blue-light: #192840;
@@ -120,6 +130,168 @@
   --shadow-hero: 0 24px 60px -16px rgba(0, 0, 0, 0.60);
 }
 
+/* Named colour schemes — Sentinel originals, light mode.
+   There are no third-party palettes: every value is designed in-house so
+   contrast was engineered first instead of ported from themes whose
+   canonical greys fail WCAG AA. Five schemes total — default (Sentinel,
+   the :root block above) plus the four below; each also has a matching
+   .dark[data-scheme] block further down.
+   Every block overrides the SAME 13 tokens in BOTH modes: the neutral
+   ramp (background/paper/foreground/ink/slate/slate-light/code/surface)
+   and the interactive hue family (teal, teal-light, teal-chip,
+   teal-deep, teal-mid). Verdict colours (match/mismatch/danger/fallback),
+   module accents, shadows, and --color-on-teal are global and never
+   overridden per scheme.
+   Cascade: :root[data-scheme] (0,2,0 — pseudo-class + attribute) beats
+   :root (0,1,0).
+   All ratio assertions live in docs/internal/validate-palettes.js
+   (gitignored): node docs/internal/validate-palettes.js src/app/globals.css
+   "default" omits a block. */
+
+:root[data-scheme="ember"] {
+  /* Warm cream paper / espresso night; copper interactive hue. */
+  --background: #f7f2ea;
+  --color-paper: #f7f2ea;
+  --foreground: #2d241c;
+  --color-ink: #2d241c;
+  --color-slate: #6b5d50;
+  --color-slate-light: #eae3d8;
+  --color-code: #eae3d8;
+  --color-surface: #ffffff;
+  --color-teal: #a04b28;
+  --color-teal-light: #f3e2d6;
+  --color-teal-chip: #7e3a1e;
+  --color-teal-deep: #4a2010;
+  --color-teal-mid: #7e3418;
+}
+
+:root[data-scheme="moss"] {
+  /* Sage-tinted paper / forest night; pine interactive hue. */
+  --background: #eff3ec;
+  --color-paper: #eff3ec;
+  --foreground: #1c2921;
+  --color-ink: #1c2921;
+  --color-slate: #55665a;
+  --color-slate-light: #dde5da;
+  --color-code: #dde5da;
+  --color-surface: #ffffff;
+  --color-teal: #2c6e46;
+  --color-teal-light: #d8e8dc;
+  --color-teal-chip: #1f5636;
+  --color-teal-deep: #12331f;
+  --color-teal-mid: #1e5738;
+}
+
+:root[data-scheme="dusk"] {
+  /* Lilac-grey paper / aubergine night; plum interactive hue. */
+  --background: #f2eff5;
+  --color-paper: #f2eff5;
+  --foreground: #261e33;
+  --color-ink: #261e33;
+  --color-slate: #635b73;
+  --color-slate-light: #e4dfec;
+  --color-code: #e4dfec;
+  --color-surface: #ffffff;
+  --color-teal: #6d4494;
+  --color-teal-light: #e7dcf2;
+  --color-teal-chip: #553476;
+  --color-teal-deep: #2c1745;
+  --color-teal-mid: #543078;
+}
+
+:root[data-scheme="graphite"] {
+  /* Pure neutral grey ramp; steel-blue interactive hue. */
+  --background: #f2f3f4;
+  --color-paper: #f2f3f4;
+  --foreground: #22272b;
+  --color-ink: #22272b;
+  --color-slate: #5c666d;
+  --color-slate-light: #e3e5e7;
+  --color-code: #e3e5e7;
+  --color-surface: #ffffff;
+  --color-teal: #356a83;
+  --color-teal-light: #dbe5ea;
+  --color-teal-chip: #275367;
+  --color-teal-deep: #16262e;
+  --color-teal-mid: #26495a;
+}
+
+/* Named colour schemes — Sentinel originals, dark mode.
+   Same 13-token shape as the light blocks; verdict/accent/shadow tokens
+   stay global here too. :root.dark and .dark[data-scheme] have EQUAL
+   specificity ((0,2,0) each — class + pseudo-class vs class + attribute),
+   so these blocks win only by document order: every .dark[data-scheme]
+   block MUST stay after the :root.dark block in this file.
+   validate-palettes.js asserts that ordering. */
+
+.dark[data-scheme="ember"] {
+  /* Warm cream paper / espresso night; copper interactive hue. */
+  --background: #1f1712;
+  --color-paper: #1f1712;
+  --foreground: #ede2d6;
+  --color-ink: #ede2d6;
+  --color-slate: #b5a292;
+  --color-slate-light: #2b211a;
+  --color-code: #33261e;
+  --color-surface: #2a1f18;
+  --color-teal: #e08a54;
+  --color-teal-light: #33231a;
+  --color-teal-chip: #e08a54;
+  --color-teal-deep: #52301c;
+  --color-teal-mid: #9c5630;
+}
+
+.dark[data-scheme="moss"] {
+  /* Sage-tinted paper / forest night; pine interactive hue. */
+  --background: #161e18;
+  --color-paper: #161e18;
+  --foreground: #dfe8de;
+  --color-ink: #dfe8de;
+  --color-slate: #9db3a0;
+  --color-slate-light: #202b23;
+  --color-code: #28342b;
+  --color-surface: #1e2820;
+  --color-teal: #63c08a;
+  --color-teal-light: #1a2c20;
+  --color-teal-chip: #63c08a;
+  --color-teal-deep: #27503a;
+  --color-teal-mid: #3d7a56;
+}
+
+.dark[data-scheme="dusk"] {
+  /* Lilac-grey paper / aubergine night; plum interactive hue. */
+  --background: #1a1721;
+  --color-paper: #1a1721;
+  --foreground: #e6dff0;
+  --color-ink: #e6dff0;
+  --color-slate: #a89cc0;
+  --color-slate-light: #262130;
+  --color-code: #2d2739;
+  --color-surface: #241f2d;
+  --color-teal: #b48ae0;
+  --color-teal-light: #251d33;
+  --color-teal-chip: #b48ae0;
+  --color-teal-deep: #453063;
+  --color-teal-mid: #6d4aa0;
+}
+
+.dark[data-scheme="graphite"] {
+  /* Pure neutral grey ramp; steel-blue interactive hue. */
+  --background: #191b1d;
+  --color-paper: #191b1d;
+  --foreground: #e3e6e8;
+  --color-ink: #e3e6e8;
+  --color-slate: #a2adb4;
+  --color-slate-light: #242729;
+  --color-code: #2b2f32;
+  --color-surface: #222527;
+  --color-teal: #6fa8c8;
+  --color-teal-light: #1b262c;
+  --color-teal-chip: #6fa8c8;
+  --color-teal-deep: #2c4a5c;
+  --color-teal-mid: #48789a;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -129,6 +301,7 @@
   --color-teal: var(--color-teal);
   --color-teal-light: var(--color-teal-light);
   --color-teal-chip: var(--color-teal-chip);
+  --color-on-teal: var(--color-on-teal);
   --color-slate: var(--color-slate);
   --color-slate-light: var(--color-slate-light);
   --color-match: var(--color-match);
@@ -144,6 +317,7 @@
   --color-surface: var(--color-surface);
   --color-code: var(--color-code);
   --color-teal-deep: var(--color-teal-deep);
+  --color-teal-mid: var(--color-teal-mid);
   --color-accent-blue: var(--color-accent-blue);
   --color-accent-blue-light: var(--color-accent-blue-light);
   --color-accent-violet: var(--color-accent-violet);
@@ -195,7 +369,7 @@ body {
     radial-gradient(circle 600px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.07) 0%, transparent 70%),
     radial-gradient(ellipse at 80% 50%, rgba(255,255,255,0.10) 0%, transparent 55%),
     radial-gradient(circle at 8% 20%, rgba(255,255,255,0.13), transparent 38%),
-    linear-gradient(140deg, var(--color-teal-deep) 0%, #1e6868 45%, var(--color-teal) 100%);
+    linear-gradient(140deg, var(--color-teal-deep) 0%, var(--color-teal-mid) 45%, var(--color-teal) 100%);
   box-shadow: var(--shadow-hero);
 }
 

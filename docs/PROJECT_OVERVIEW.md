@@ -86,6 +86,20 @@ planned modules are achievable entirely client-side.
   here. Theme preference is intentionally kept out of the `preferences` store
   and is also excluded from the global "reset all preferences" action.
 
+- **Colour schemes also live in `localStorage`** (`sentinel-scheme`), for the
+  same pre-paint reason. The init script reads it and sets `data-scheme` on
+  `<html>` so the correct palette applies from first paint. Like the theme,
+  schemes are excluded from the `preferences` store and from the global
+  "reset all preferences" action. There are five schemes — all Sentinel
+  originals (default + Ember, Moss, Dusk, Graphite; no third-party
+  palettes, whose canonical values fail WCAG AA). Each scheme overrides
+  exactly 13 tokens in BOTH modes via matching `:root[data-scheme]` /
+  `.dark[data-scheme]` blocks: the neutral ramp (background/paper/
+  foreground/ink/slate/slate-light/code/surface) and the interactive hue
+  family (teal/-light/-chip/-deep/-mid). Verdict colours, module accents,
+  shadows, and `--color-on-teal` are global. Contrast is asserted by
+  `docs/internal/validate-palettes.js`.
+
 - **Favourites** — not yet implemented (deliberately deferred). Will follow
   the same `IndexedDB` pattern as activity when built.
 
@@ -215,12 +229,15 @@ elevated). All phases are complete and stable:
     secondary text clears WCAG AA (4.5:1) on paper, surface, and slate-light.
   - New `--color-teal-chip` token: a darker teal for small text on teal-light
     chips, so chip labels pass AA without touching the interactive teal (the
-    chip-against-tint pairing was 4.08:1; interactive teal on white stays
-    ~5.0:1). Also darkened light `--color-fallback` (chip-only token) from
-    2.99:1 to ~5.1:1 on its chip background.
-  - `--color-mismatch-chip` token (light `#ae4040`, dark reuses mismatch) for
-    text on mismatch-light chips/banners — 4.46:1 → 4.80:1 — while plain
-    `text-mismatch` on white/paper verdicts stays on the lighter base token.
+    chip-against-tint pairing was 4.08:1; interactive teal on white was
+    ~5.0:1 at the time — later nudged to `#286c6d` / 6.08:1 by the
+    colour-scheme work). Also darkened light `--color-fallback` (chip-only
+    token) from 2.99:1 to ~5.1:1 on its chip background.
+  - `--color-mismatch-chip` token for text on mismatch-light chips/banners
+    (dark reuses mismatch). Originally light `#ae4040` (4.79:1) propping up
+    a failing base; the scheme-work remediation later moved the base
+    mismatch itself to `#ad4040` (4.83:1 on the tint), so the chip now
+    shares the base value and keeps only its semantic name.
     **Both chip tokens were initially missing their `@theme inline` mirror
     lines, so `text-teal-chip`/`text-mismatch-chip` were inert (no utility
     emitted) — caught in the post-refactor review and fixed by adding the two
@@ -287,7 +304,24 @@ elevated). All phases are complete and stable:
     Cursor-reactive: the hero panel has a radial-gradient spotlight
     (600px, 7% opacity) that follows the mouse via CSS custom properties
     `--mx`/`--my`. Skipped when `prefers-reduced-motion: reduce` matches.
-    (`globals.css`, `src/app/page.js`)
+  - **Named colour schemes** — five palettes, all Sentinel originals
+    (default Sentinel, Ember, Moss, Dusk, Graphite — no third-party
+    themes: an audit found ten borrowed palettes' canonical values fail
+    WCAG AA in dark mode, worst 2.16:1 body text) selectable from
+    Settings via a WAI-ARIA radiogroup, active in both light and dark
+    mode. Each scheme overrides exactly 13 tokens through matching
+    `:root[data-scheme="X"]` / `.dark[data-scheme="X"]` blocks: the
+    neutral ramp (background/paper/foreground/ink/slate/slate-light/
+    code/surface) and the interactive hue family (teal/-light/-chip/
+    -deep/-mid). Verdict colours, module accents, shadows, and
+    `--color-on-teal` (white/near-black button labels) are global.
+    All overrides propagate through Tailwind's `@theme inline` bridge.
+    A `--color-teal-mid` variable (base `#1e6868`) is overridden per
+    scheme for the hero gradient midpoint. Every ratio is asserted by
+    `docs/internal/validate-palettes.js` (ink/slate/teal >= 4.5:1 on
+    paper, surface, AND slate-light per scheme per mode; accent and
+    verdict chains on their tints plus paper/surface).
+    (`globals.css`, `colorSchemes.js`, `SchemePicker.js`, `layout.js`)
   - **First-use welcome banner** — shown on the home page when the activity
     log is empty and the user hasn't dismissed it. Suggests four approachable
     starting modules (Password Generator, HIBP, EXIF, QR Code). Dismissible
@@ -520,7 +554,11 @@ Location: `src/app/(shell)/settings/page.js`, reached via the gear icon in `TopB
 
 Three sections:
 
-- **Appearance** — theme toggle (relocated here from TopBar).
+- **Appearance** — theme toggle (Light / System / Dark) and colour scheme
+  picker (WAI-ARIA radiogroup, roving tabindex + arrow keys). The scheme
+  picker stores the selection in `localStorage` and sets `data-scheme` on
+  `<html>`. Five schemes available, all Sentinel originals: Sentinel,
+  Ember, Moss, Dusk, Graphite.
 - **Modules** — a single "Manage modules →" link row that navigates to
   `/settings/modules` (see below). Kept as a link rather than an inline list
   to avoid cluttering the main settings page.
@@ -756,6 +794,12 @@ Location: `src/lib/fingerprint.js` + `src/app/modules/fingerprint/page.js`
     values or any canvas-hash prefix.
   - Geolocation: `{ granted, highAccuracy, errorType }` — never coordinates.
   - Media: `{ granted, errorType, deviceCount }` — never device labels.
+- Canvas probe scene (`PROBE_COLORS` in `src/lib/fingerprint.js`) — the
+  colours, fonts, and glyphs drawn to the hidden canvas are **frozen hash
+  input**: distinct hues across the gamut plus one alpha-blended pass,
+  following common fingerprinting practice. Deliberately never themed
+  (a colour-scheme change must not change a device's reported
+  fingerprint); post-release edits here would change every user's hash.
 - Accent: `violet`.
 
 ## Clipboard Inspector — detailed status
@@ -840,6 +884,7 @@ src/
 │   ├── fallbackCommands.js  # buildCommand(os, algorithm, filenames)
 │   ├── usePreference.js     # usePreference(key, default, { debounceMs }) hook
 │   ├── moduleAccents.js     # accent color map for PageHeader chips
+│   ├── colorSchemes.js      # scheme picker registry (id/label/swatch; values live in globals.css)
 │   ├── modules.js           # canonical module registry — CATEGORIES array + ALL_MODULES flat list
 │   ├── activityStats.js     # recordsToStats()/computeActivityStats()/buildDailySeries() — pure, deterministic
 │   ├── passwordGen.js       # generatePassword(), entropy calculations
@@ -875,11 +920,14 @@ src/
 │   ├── TopBar.js            # home/history/settings nav icons
 │   ├── ScrollToTop.js       # scroll restore on navigation
 │   ├── ThemeToggle.js       # now rendered in Settings, not TopBar
+ │   ├── SchemePicker.js     # colour scheme radiogroup (roving tabindex, Settings)
 │   └── DragGuard.js
 └── app/
     ├── globals.css           # design tokens, manual light/dark theme,
+    │                         # 5 original schemes as :root/.dark[data-scheme]
+    │                         # overrides (13 tokens each),
     │                         # global :focus-visible in @layer base (overridable by Tailwind utilities)
-    ├── layout.js             # fonts + themeInitScript (localStorage, pre-paint)
+    ├── layout.js             # fonts + themeInitScript (localStorage + data-scheme, pre-paint)
     ├── page.js               # home screen — reads CATEGORIES from lib/modules.js, filters disabled modules
     ├── (shell)/
     │   ├── layout.js         # shared shell layout (TopBar + PageShell)

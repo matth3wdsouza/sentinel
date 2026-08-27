@@ -44,7 +44,7 @@ export default function FallbackCommands({ algorithm, filenames, extraNote }) {
             onClick={() => setSelectedOS(osKey)}
             className={`px-3 py-1 rounded text-xs transition ${
               selectedOS === osKey
-                ? "bg-teal text-white"
+                ? "bg-teal text-on-teal"
                 : "bg-slate-light text-slate hover:text-ink"
             }`}
           >

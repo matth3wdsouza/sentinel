@@ -33,7 +33,7 @@ export function QRCanvas({ canvasRef, show, onDownload, filename = "sentinel-qr.
       {show && (
         <button
           onClick={onDownload}
-          className="inline-flex items-center gap-2 bg-teal text-white px-4 py-2 rounded-lg text-sm hover:bg-teal/90 active:scale-[0.98] transition"
+          className="inline-flex items-center gap-2 bg-teal text-on-teal px-4 py-2 rounded-lg text-sm hover:bg-teal/90 active:scale-[0.98] transition"
         >
           <Download size={14} />
           Download PNG

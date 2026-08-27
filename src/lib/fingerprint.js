@@ -14,6 +14,20 @@
 // instructions, so the hash acts as a near-unique device signature — without
 // the user ever noticing a canvas element exists.
 
+// Probe scene palette — deliberately hardcoded and NOT themed. The rendered
+// pixels are hashed into the canvas fingerprint, so this scene is frozen
+// input: it must never follow CSS tokens (schemes would change every user's
+// reported hash), and post-launch edits here change everyone's hash.
+// Values are arbitrary but follow common fingerprinting practice: distinct
+// hues across the gamut plus one alpha-blended pass to exercise compositor
+// differences between renderers.
+const PROBE_COLORS = Object.freeze({
+  background: "#f0f0f0",
+  serifText: "#223142",
+  sansText: "rgba(138, 90, 44, 0.8)", // ochre — alpha-blended on purpose
+  monoText: "#6b4fa0",
+});
+
 async function canvasFingerprint() {
   try {
     const canvas = document.createElement("canvas");
@@ -22,21 +36,21 @@ async function canvasFingerprint() {
     const ctx = canvas.getContext("2d");
 
     // Background fill
-    ctx.fillStyle = "#f0f0f0";
+    ctx.fillStyle = PROBE_COLORS.background;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // First text pass — serif, coloured
-    ctx.fillStyle = "#223142";
+    // First text pass — serif, opaque navy
+    ctx.fillStyle = PROBE_COLORS.serifText;
     ctx.font = "14px 'Times New Roman', Times, serif";
     ctx.fillText("Sentinel \u2022 \u00e9\u00e0\u00fc \u2665 \ud83d\udd12", 10, 22);
 
-    // Second pass — sans-serif, different colour + blend
-    ctx.fillStyle = "#2c7a7b";
+    // Second text pass — sans-serif, alpha-blended ochre (compositor probe)
+    ctx.fillStyle = PROBE_COLORS.sansText;
     ctx.font = "bold 13px Arial, Helvetica, sans-serif";
     ctx.fillText("0123456789 !@#$%^&*()", 10, 44);
 
-    // Third pass — monospace
-    ctx.fillStyle = "#6b4fa0";
+    // Third text pass — monospace, opaque violet
+    ctx.fillStyle = PROBE_COLORS.monoText;
     ctx.font = "12px 'Courier New', Courier, monospace";
     ctx.fillText("the quick brown fox", 10, 58);
 

@@ -5,6 +5,7 @@ import { Settings, RotateCcw, Layers, ChevronRight, CheckCircle2 } from "lucide-
 import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import ThemeToggle from "@/components/ThemeToggle";
+import SchemePicker from "@/components/SchemePicker";
 import { clearPreferences } from "@/lib/db";
 import { clearAllActivity } from "@/lib/api";
 
@@ -127,6 +128,13 @@ export default function SettingsPage() {
         >
           <ThemeToggle />
         </SettingsRow>
+        <div className="px-5 py-4">
+          <p className="text-sm font-medium text-ink">Color scheme</p>
+          <p className="text-xs text-slate mt-0.5 leading-relaxed mb-3">
+            Palette applied in both light and dark mode.
+          </p>
+          <SchemePicker />
+        </div>
       </SettingsSection>
 
       {/* ── File Integrity ───────────────────────────────────────────────── */}

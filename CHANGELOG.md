@@ -4,6 +4,90 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added — named colour schemes
+
+- **Five colour schemes, all designed in-house**, selectable from Settings
+  and active in both light and dark mode: Sentinel (default), Ember (warm
+  cream paper / espresso night, copper interactive hue), Moss (sage /
+  forest, pine), Dusk (lilac-grey / aubergine, plum), and Graphite (pure
+  neutral grey ramp, steel-blue). An earlier iteration shipped ten
+  third-party palettes (Dracula, Nord, Gruvbox, Tokyo Night, Catppuccin,
+  One Dark, Rose Pine, Ayu, Night Owl, Solarized); a contrast audit found
+  their canonical values fail WCAG AA in ways that couldn't be repaired
+  without abandoning what made them recognisable — dark-mode slate body
+  text under 4.5:1 in all ten (worst 2.16:1), white button labels on teal
+  fills failing in every dark scheme (1.49–2.91:1), and 27 light-mode
+  accent/chip pairs below AA. They were retired in favour of originals
+  whose contrast was engineered first. (`globals.css`,
+  `src/lib/colorSchemes.js`)
+- **Strict override shape** — each scheme sets exactly 13 tokens, via
+  identical-shape blocks in both modes (`:root[data-scheme="X"]` /
+  `.dark[data-scheme="X"]`): the neutral ramp (`--background`,
+  `--color-paper`, `--foreground`, `--color-ink`, `--color-slate`,
+  `--color-slate-light`, `--color-code`, `--color-surface`) plus the
+  interactive hue family (`--color-teal`, `-light`, `-chip`, `-deep`,
+  `-mid`). Verdict colours, module accents, shadows, and the new
+  button-label token are global and never overridden per scheme. All
+  overrides propagate through the Tailwind `@theme inline` bridge with
+  zero component edits. (`globals.css`)
+- **New `--color-on-teal` token for filled-button labels** — white in
+  light mode, near-black (`#10181a`) in dark mode, where every scheme's
+  interactive hue is bright enough to carry dark text at AA. `Button.js`,
+  `GeneratorResultCard`, QR decode/generate, and the file-integrity
+  fallback tabs swapped hardcoded `text-white` for it, fixing button
+  label contrast in every dark scheme (1.49–2.91:1 before).
+- **Global accent/verdict remediation** — six base tokens were nudged to
+  clear 4.5:1 on every surface they appear on: light accent-amber
+  (`#a07820` → `#8a6410`; was 3.44:1 on its chip tint), light
+  accent-orange (`#b05018` → `#9e4712`), light match green (`#2f7d5b` →
+  `#266e4d`), light mismatch red (`#b44545` → `#ad4040`), dark danger
+  orange (`#e05830` → `#ee6a42`; was 4.03:1 on cards), and the default
+  light interactive teal (`#2c7a7b` → `#286c6d`; was 4.09:1 on
+  slate-light — closes the coverage gap between the default scheme and
+  the named schemes). The light `--color-mismatch-chip` token was unified
+  with the new mismatch value (`#ae4040` → `#ad4040`): one R-step darker,
+  perceptually identical, and pointless once the base cleared 4.5:1 on
+  its own.
+- **Flash-free first paint** — the init script in `layout.js` reads
+  `sentinel-scheme` from `localStorage` and sets `data-scheme` on
+  `<html>` before paint, matching the existing theme init pattern.
+  (`layout.js`)
+- **New `--color-teal-mid` CSS variable** added to both `:root` and
+  `:root.dark` (base value `#1e6868`), used by the hero gradient's
+  midpoint. Schemes override this so the gradient follows the palette.
+  Mapped through `@theme inline` for Tailwind availability.
+  (`globals.css`)
+- **SchemePicker component** — WAI-ARIA radiogroup with roving tabindex
+  and Arrow/Home/End key navigation (the Tabs.js pattern). Swatch + name
+  grid; the active choice gets a teal border and tinted background.
+  Stores the selection in `localStorage` (`sentinel-scheme`); "Sentinel"
+  removes the attribute so the base palette applies. (`SchemePicker.js`)
+- **`Home`/`End` no longer scroll the page** when the first/last item is
+  already selected — the keydown handlers now call `preventDefault()` for
+  the keys they own before the boundary early-return. Same fix applied to
+  the shared Tabs component. (`Tabs.js`, `SchemePicker.js`)
+- Settings page now shows the full-width scheme picker grid under a
+  "Color scheme" label in the Appearance section, below the theme toggle.
+  (`src/app/(shell)/settings/page.js`)
+- **Palette validator** — `docs/internal/validate-palettes.js`
+  (gitignored) parses the shipped CSS and the scheme registry and asserts
+  the full contrast matrix: per scheme, per mode — ink and slate ≥ 4.5:1
+  on paper, surface AND slate-light; teal on all three (link text);
+  chip-on-tint pairs; white button labels plus hero-gradient stops in
+  light mode / the near-black label token in dark mode. Globally: every
+  accent and verdict colour ≥ 4.5:1 on its tint, paper, and surface;
+  registry↔CSS sync (no orphan blocks, no missing pairs). Exits
+  non-zero on any failure:
+  `node docs/internal/validate-palettes.js src/app/globals.css`
+- **Known limitations (accepted):** the home hero renders white text over
+  the teal gradient; in dark mode the gradient's bright end stop falls to
+  ~2.2–2.8:1 against white (below the 3:1 large-text bar) — true of the
+  pre-existing default scheme and inherited by design by the new ones,
+  since dark-mode buttons need bright fills for their near-black labels,
+  which rules out darkening the interactive hue. Separately,
+  `hover:bg-teal/90` and `disabled:opacity-50` transiently reduce filled-
+  button label contrast; both patterns predate this work.
+
 ### Changed — three-way theme toggle (Light / System / Dark)
 
 - **The binary light/dark toggle is replaced with a three-segment control:**
@@ -27,6 +111,18 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   icons regardless of current route. The Home icon (visible only on module
   pages) stays neutral — it's a navigation action, not an indicator.
   (`src/components/TopBar.js`)
+
+### Changed — canvas-fingerprint probe scene
+
+- **The probe's drawing constants are extracted and documented as frozen
+  hash input** (`PROBE_COLORS` in `src/lib/fingerprint.js`). The
+  sans-serif pass switched from the old brand teal to an alpha-blended
+  ochre (`rgba(138, 90, 44, 0.8)`) — matching common fingerprinting
+  practice, where distinct hues plus one alpha pass exercise the
+  renderer/compositor differences that discriminate devices. The scene is
+  never themed (colour schemes must not change a device's reported
+  fingerprint), and this edit shifts canvas-fingerprint hashes relative
+  to earlier development builds.
 
 ### Added — first-use welcome banner
 

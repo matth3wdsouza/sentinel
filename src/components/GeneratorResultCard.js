@@ -73,7 +73,7 @@ export default function GeneratorResultCard({
           <div className="flex items-center gap-2 mb-4">
             <button
               onClick={onCopy}
-              className="flex-1 flex items-center justify-center gap-2 bg-teal text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-teal/90 active:scale-[0.98] transition"
+              className="flex-1 flex items-center justify-center gap-2 bg-teal text-on-teal px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-teal/90 active:scale-[0.98] transition"
             >
               {copied ? <Check size={16} /> : <Copy size={16} />}
               {copied ? copiedLabel : copyLabel}

@@ -156,7 +156,7 @@ function URLPreview({ detail }) {
           href={detail.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 bg-teal text-white px-3 py-1.5 rounded-lg text-xs hover:bg-teal/90 active:scale-[0.98] transition"
+          className="inline-flex items-center gap-1.5 bg-teal text-on-teal px-3 py-1.5 rounded-lg text-xs hover:bg-teal/90 active:scale-[0.98] transition"
         >
           <ExternalLink size={12} />
           Open original URL

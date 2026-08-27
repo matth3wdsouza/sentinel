@@ -26,7 +26,7 @@ export function Button({
     return (
       <button
         {...props}
-        className={`inline-flex items-center justify-center gap-2 bg-teal text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-teal/90 active:scale-[0.98] transition disabled:opacity-50 disabled:pointer-events-none ${fullWidth ? "w-full" : ""} ${className}`}
+        className={`inline-flex items-center justify-center gap-2 bg-teal text-on-teal px-4 py-2 rounded-lg text-sm font-medium hover:bg-teal/90 active:scale-[0.98] transition disabled:opacity-50 disabled:pointer-events-none ${fullWidth ? "w-full" : ""} ${className}`}
       >
         {loading && loadingLabel ? loadingLabel : children}
       </button>

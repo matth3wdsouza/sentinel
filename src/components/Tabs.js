@@ -32,9 +32,11 @@ export default function Tabs({ tabs, activeTab, onChange, ariaLabel }) {
     else if (e.key === "Home") nextIndex = 0;
     else if (e.key === "End") nextIndex = tabs.length - 1;
 
-    if (nextIndex === null || nextIndex === index) return;
+    if (nextIndex === null) return;
 
     e.preventDefault();
+    if (nextIndex === index) return;
+
     const next = tabs[nextIndex];
     onChange(next.id);
     tabListRef.current?.querySelectorAll('[role="tab"]')[nextIndex]?.focus();
