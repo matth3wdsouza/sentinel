@@ -130,7 +130,7 @@ export default function CompareHashTab({ moduleId }) {
   }
 
   return (
-    <div className="max-w-2xl">
+    <>
       <GuidedCard
         icon={Scale}
         heading="Compare a hash"
@@ -146,7 +146,7 @@ export default function CompareHashTab({ moduleId }) {
       </div>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">
+        <label className="block text-sm font-medium text-ink mb-1">
           Paste the hash you want to compare against
         </label>
         <input
@@ -208,6 +208,6 @@ export default function CompareHashTab({ moduleId }) {
           />
         </div>
       )}
-    </div>
+    </>
   );
 }

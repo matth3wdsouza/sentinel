@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useId } from "react";
 import { Timer, RefreshCw, Download } from "lucide-react";
 import * as OTPAuth from "otpauth";
 import { generateQR } from "@/lib/qr";
@@ -53,6 +53,7 @@ function TOTPDisplay({ totp, onCopy }) {
   const [secondsLeft, setSecondsLeft] = useState(30);
   const [showQR, setShowQR] = useState(false);
   const canvasRef = useRef(null);
+  const qrId = useId();
 
   const refresh = useCallback(() => {
     const now = Date.now();
@@ -153,12 +154,13 @@ function TOTPDisplay({ totp, onCopy }) {
         <button
           onClick={() => setShowQR((v) => !v)}
           aria-expanded={showQR}
+          aria-controls={qrId}
           className="text-sm text-teal hover:underline"
         >
           {showQR ? "Hide" : "Show"} QR code for authenticator apps
         </button>
         {showQR && (
-          <div className="mt-3 space-y-3">
+          <div id={qrId} className="mt-3 space-y-3">
             <p className="text-xs text-slate">
               Scan with any TOTP app (Google Authenticator, Authy, 1Password…) to add this secret.
             </p>

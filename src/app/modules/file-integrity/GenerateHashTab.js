@@ -80,7 +80,7 @@ export default function GenerateHashTab({ moduleId }) {
   }
 
   return (
-    <div className="max-w-2xl">
+    <>
       <GuidedCard
         icon={FileCheck}
         heading="Verify file integrity"
@@ -165,6 +165,6 @@ export default function GenerateHashTab({ moduleId }) {
           { href: "/modules/text-hash", label: "Need to hash text instead?" },
         ]}
       />
-    </div>
+    </>
   );
 }

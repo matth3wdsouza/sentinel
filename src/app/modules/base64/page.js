@@ -251,7 +251,7 @@ export default function Base64Page() {
       title="Base64 Encoder / Decoder"
       description="Encode text to Base64 or decode Base64 back to text. Supports the Base64url variant used in JWTs and URLs."
     >
-      <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
+      <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} ariaLabel="Base64 operation" />
 
       <GuidedCard
         icon={Binary}
@@ -263,10 +263,10 @@ export default function Base64Page() {
         }
       />
 
-      <div id="panel-encode" role="tabpanel" className={activeTab === "encode" ? "" : "hidden"}>
+      <div id="panel-encode" role="tabpanel" aria-labelledby="tab-encode" tabIndex={-1} className={activeTab === "encode" ? "" : "hidden"}>
         <EncodeTab moduleId={moduleId} />
       </div>
-      <div id="panel-decode" role="tabpanel" className={activeTab === "decode" ? "" : "hidden"}>
+      <div id="panel-decode" role="tabpanel" aria-labelledby="tab-decode" tabIndex={-1} className={activeTab === "decode" ? "" : "hidden"}>
         <DecodeTab moduleId={moduleId} />
       </div>
     </ModulePage>

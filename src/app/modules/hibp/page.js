@@ -119,7 +119,7 @@ export default function HibpPage() {
       description="Check whether a password has appeared in a known data breach."
     >
 
-        <label className="block text-sm font-medium mb-1">
+        <label className="block text-sm font-medium text-ink mb-1">
           Password to check
         </label>
         <div className="mb-1">
@@ -129,6 +129,7 @@ export default function HibpPage() {
             onChange={handlePasswordChange}
             onEnter={handleCheck}
             placeholder="Enter a password"
+            ariaLabel="Password to check"
           />
         </div>
         <div className="mb-4 rounded-xl border border-slate/20 bg-surface px-4 py-3">

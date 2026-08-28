@@ -617,12 +617,12 @@ export default function FingerprintPage() {
       description="See what your browser silently reveals to every website you visit — no permissions needed for most of it."
     >
 
-        <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
+        <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} ariaLabel="Fingerprint data category" />
 
-        <div id="panel-passive" role="tabpanel" className={activeTab === "passive" ? "" : "hidden"}>
+        <div id="panel-passive" role="tabpanel" aria-labelledby="tab-passive" tabIndex={-1} className={activeTab === "passive" ? "" : "hidden"}>
           <PassiveTab moduleId={moduleId} />
         </div>
-        <div id="panel-gated" role="tabpanel" className={activeTab === "gated" ? "" : "hidden"}>
+        <div id="panel-gated" role="tabpanel" aria-labelledby="tab-gated" tabIndex={-1} className={activeTab === "gated" ? "" : "hidden"}>
           <GatedTab moduleId={moduleId} />
         </div>
     </ModulePage>

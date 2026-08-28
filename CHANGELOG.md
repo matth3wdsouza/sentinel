@@ -4,6 +4,68 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed — DRY sweep + accessibility pass
+
+- **text-hash Reset now uses the shared `<Button>`** — the last module hand-rolling
+  a ghost reset button (raw `<button>` with an inline `RotateCcw` SVG) now uses
+  `<Button variant="ghost" resetIcon>`, matching the other 21 reset sites and
+  dropping the duplicated class string + SVG.
+  (`src/app/modules/text-hash/page.js`)
+- **File-integrity sub-tabs drop redundant `max-w-2xl` wrappers** — the three tab
+  components (`GenerateHashTab`, `CompareHashTab`, `CompareFilesTab`) wrapped their
+  content in `<div className="max-w-2xl">` inside a `PageShell` that already constrains
+  the column width; the inner divs were no-ops and are removed.
+- **text-hash textarea + label standardised** — the text-hash textarea adopted the
+  dominant cross-module class string (`rounded-xl border-slate/30 px-4 py-3
+  focus:border-teal` instead of its one-off `rounded-lg border-slate/20 px-3 py-2.5
+  focus:ring-2`), and its label gained `text-ink`/`mb-1.5` to match the standard.
+  (`src/app/modules/text-hash/page.js`)
+- **Single-line input labels standardised to `text-ink`** — the Style-B labels in
+  HIBP, password-generator (custom exclusions), and CompareHashTab now include
+  `text-ink` (a visual no-op, matching the default ink colour) for semantic
+  consistency. Margins unchanged to preserve the compact single-line spacing.
+- **file-signature error now uses `<InlineError>`** — replaced the raw
+  `<div className="text-sm text-mismatch">` with the shared error paragraph.
+  (`src/app/modules/file-signature/page.js`)
+- **PasswordField now exposes an accessible name** — the masked input gained an
+  `aria-label` (an optional `ariaLabel` prop, defaulting to `placeholder`), fixing
+  screen readers announcing password fields only by their placeholder. Call sites
+  with a visible label pass the matching text ("Passphrase", "Password to check",
+  "Password to analyze"). (`src/components/PasswordField.js` + HIBP, common-password,
+  encryptor, guessability)
+- **FileInput drop-zone button is now labelled** — the clickable drop zone gained
+  an `aria-label` (`"Choose File A"` / `"Choose a file"`) so assistive tech can name
+  the control. (`src/components/FileInput.js`)
+- **Tabs `ariaLabel` documented as required** — all six `<Tabs>` call sites now pass
+  an accessible name for the tablist (File Integrity, QR, Base64, Encryptor,
+  Fingerprint, Activity). (`src/components/Tabs.js` + pages)
+- **Tab panels now meet the WAI-ARIA tabs spec** — every `role="tabpanel"` across the
+  six tab-using pages gained `aria-labelledby` (pointing at its tab) and
+  `tabIndex={-1}` so the active panel is programmatically focusable. (`file-integrity`,
+  `qr`, `base64`, `encryptor`, `fingerprint`, `(shell)/activity`)
+- **Disclosure toggles gained `aria-controls`** — the TOTP show/hide-QR toggle, the
+  EXIF `MetadataGroup` accordion, and the file-integrity "use a different algorithm"
+  toggle now point `aria-controls` at their (unique, `useId`-derived) content ids,
+  completing the expanded-state wiring. (`totp`, `exif`, `file-integrity/CompareFilesTab`)
+- **CodeBlock dark-variant copy button contrast fixed** — the always-dark terminal's
+  Copy button used `text-teal` (light-mode `#286c6d`, 2.92:1 on `zinc-900` — below AA);
+    it now uses the fixed `text-teal-400` (#2dd4bf, 9.52:1), matching the dark
+    terminal's intentional literal-zinc token bypass. The themed variant's `text-slate` on
+    `slate-light` (4.64:1) already passed. (`src/components/CodeBlock.js`)
+- **CodeBlock copy button is now icon-only** — dropped the redundant "Copy"/"Copied"
+  text label (the icon already reads as copy); the accessible name (`aria-label`,
+  e.g. "Copy encrypted text") and a hover tooltip (`title`) still name the action.
+  (`src/components/CodeBlock.js`)
+- **CompanionLinks placement convention documented** — a comment now records when to
+  nest links inside a `ResultCard` (outcome-contingent) vs. render them standalone
+  (outcome-independent, or when the module uses a custom result component).
+  (`src/components/CompanionLinks.js`)
+- **Button JSDoc notes `loadingLabel`** — documented that a `loading` button should
+  pass `loadingLabel` so it reads as in-progress rather than showing its action text.
+  (`src/components/Button.js`)
+- **SchemePicker radiogroup already carried `aria-label="Colour scheme"`** — verified
+  during the a11y pass; no change needed.
+
 ### Changed — GuidedCard derives the module colour
 
 - **`GuidedCard` no longer takes an `accent` prop** (`src/components/

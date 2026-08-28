@@ -47,15 +47,15 @@ export default function CodeBlock({ code, label = "command", variant = "dark", p
       }
       <button
         onClick={handleCopy}
-        aria-label={`Copy ${label}`}
-        className={`shrink-0 flex items-center gap-1.5 transition ${
+        aria-label={copied ? `Copied ${label}` : `Copy ${label}`}
+        title={label}
+        className={`shrink-0 flex items-center transition ${
           isDark
-            ? "text-teal hover:text-teal/80"
+            ? "text-teal-400 hover:text-teal-300"
             : "text-slate hover:text-teal"
         }`}
       >
         {copied ? <Check size={13} /> : <Copy size={13} />}
-        {copied ? "Copied" : "Copy"}
       </button>
     </div>
   );

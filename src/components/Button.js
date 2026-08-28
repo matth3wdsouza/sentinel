@@ -6,6 +6,8 @@ import { RotateCcw } from "lucide-react";
 //
 //   primary — the teal action button ("Check password", "Encrypt", "Inspect image"…)
 //             Accepts disabled, loading/loadingLabel, and an optional fullWidth flag.
+//             When loading is true, pass loadingLabel too (e.g. "Checking…") so the
+//             button reads as in-progress rather than showing its action text.
 //             Shadow is intentionally omitted — card-elevation shadows on buttons
 //             look like the button is floating off the page.
 //

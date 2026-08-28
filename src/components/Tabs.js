@@ -2,13 +2,14 @@
 
 import { useRef } from "react";
 
-// Tab bar used by Encryptor, File Integrity, Fingerprint, and QR.
+// Tab bar used by Encryptor, File Integrity, Fingerprint, QR, and Activity.
 //
 // Props:
 //   tabs       — array of { id, label }
 //   activeTab  — the currently active tab id
 //   onChange   — called with the new tab id when a tab is selected
-//   ariaLabel  — optional accessible name for the tablist (e.g. "Hash method")
+//   ariaLabel  — accessible name for the tablist (e.g. "Hash method"). Always
+//                pass one — without it the tablist has no accessible name.
 //
 // Renders only the bar itself — each page is still responsible for
 // rendering its own panel content (conditionally shown via the
@@ -17,9 +18,10 @@ import { useRef } from "react";
 // know about children ordering, which would make it harder to use.
 //
 // Panels are associated via convention: the panel for a tab with id "foo"
-// must carry `id="panel-foo"` and `role="tabpanel"`. The bar exposes the
-// tablist/tab roles, aria-selected state, and arrow-key navigation from the
-// WAI-ARIA tabs pattern.
+// must carry `id="panel-foo"`, `role="tabpanel"`, `aria-labelledby="tab-foo"`,
+// and `tabIndex={-1}` (so the active panel is programmatically focusable per
+// the WAI-ARIA tabs pattern). The bar exposes the tablist/tab roles,
+// aria-selected state, and arrow-key navigation from the WAI-ARIA tabs pattern.
 export default function Tabs({ tabs, activeTab, onChange, ariaLabel }) {
   const tabListRef = useRef(null);
 

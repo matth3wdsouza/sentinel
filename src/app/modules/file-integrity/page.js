@@ -25,15 +25,15 @@ export default function FileIntegrityPage() {
       title="File Integrity Verification"
       description="Generate and compare file hashes to verify downloads and detect tampering."
     >
-      <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
+      <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} ariaLabel="File integrity tools" />
 
-      <div id="panel-generate" role="tabpanel" className={activeTab === "generate" ? "" : "hidden"}>
+      <div id="panel-generate" role="tabpanel" aria-labelledby="tab-generate" tabIndex={-1} className={activeTab === "generate" ? "" : "hidden"}>
         <GenerateHashTab moduleId={moduleId} />
       </div>
-      <div id="panel-compare-hash" role="tabpanel" className={activeTab === "compare-hash" ? "" : "hidden"}>
+      <div id="panel-compare-hash" role="tabpanel" aria-labelledby="tab-compare-hash" tabIndex={-1} className={activeTab === "compare-hash" ? "" : "hidden"}>
         <CompareHashTab moduleId={moduleId} />
       </div>
-      <div id="panel-compare-files" role="tabpanel" className={activeTab === "compare-files" ? "" : "hidden"}>
+      <div id="panel-compare-files" role="tabpanel" aria-labelledby="tab-compare-files" tabIndex={-1} className={activeTab === "compare-files" ? "" : "hidden"}>
         <CompareFilesTab moduleId={moduleId} />
       </div>
     </ModulePage>

@@ -55,6 +55,7 @@ export default function FileInput({ label, file, onChange, accept }) {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
+        aria-label={label ? `Choose ${label}` : "Choose a file"}
         className={`flex items-center gap-2 w-full border-2 border-dashed rounded-xl px-4 py-3.5 text-sm transition text-left ${
           isDragging
             ? "border-teal bg-teal-light"

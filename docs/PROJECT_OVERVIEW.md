@@ -409,6 +409,42 @@ elevated). All phases are complete and stable:
     base` so Tailwind utilities can override it). (`src/components/CommandPalette.js`,
     `src/components/TopBar.js`, `src/app/layout.js`)
 
+- **Phase 10** — DRY/refactor sweep + accessibility pass (mechanical; rendering and
+  wording unchanged):
+  - **text-hash Reset now uses the shared `<Button>`** — the last module hand-rolling
+    a ghost reset button (raw `<button>` + inline `RotateCcw` SVG) now uses
+    `<Button variant="ghost" resetIcon>`, matching the other 21 reset sites.
+  - **File-integrity sub-tabs drop redundant `max-w-2xl` wrappers** — the three tab
+    components wrapped content in a no-op `<div className="max-w-2xl">` inside a
+    `PageShell` that already constrains the column width.
+  - **text-hash textarea + label standardised** to the dominant cross-module class
+    string (`rounded-xl border-slate/30 px-4 py-3 focus:border-teal`) and the standard
+    label (`text-ink mb-1.5`).
+  - **file-signature error now uses `<InlineError>`** in place of a raw mismatch div.
+  - **PasswordField gained an accessible name** — an `aria-label` (optional `ariaLabel`
+    prop defaulting to `placeholder`) fixes screen readers announcing the password
+    field by placeholder alone; call sites with visible labels pass the matching text.
+  - **FileInput drop-zone button gained an `aria-label`** (`"Choose File A"` / `"Choose
+    a file"`).
+  - **Tab panels now meet the WAI-ARIA tabs spec** — every `role="tabpanel"` across the
+    six tab-using pages gained `aria-labelledby` (pointing at its tab) and
+    `tabIndex={-1}`; the `Tabs` `ariaLabel` is documented as required and provided by
+    all call sites.
+  - **Disclosure toggles gained `aria-controls`** — the TOTP show/hide-QR toggle, EXIF
+    `MetadataGroup`, and file-integrity "use a different algorithm" toggle now point at
+    their `useId`-derived content ids.
+  - **CodeBlock dark-variant copy button contrast fixed** — `text-teal` was 2.92:1 on
+    `zinc-900` (below AA); now the fixed `text-teal-400` (9.52:1), matching the dark
+    terminal's intentional literal-zinc token bypass. The themed variant already passed.
+    The copy button is also now icon-only — the redundant "Copy"/"Copied" text label was
+    dropped (the icon reads as copy); `aria-label` + a `title` tooltip still name it.
+  - **CompanionLinks placement convention documented** in a comment (nest in
+    `ResultCard` when outcome-contingent; render standalone when outcome-independent or
+    when a custom result component leaves nowhere to nest).
+  - Two audit candidates required no change on inspection: the `SchemePicker`
+    radiogroup already carries `aria-label="Colour scheme"`, and the themed
+    `CodeBlock` `text-slate`-on-`slate-light` copy is 4.64:1 (passes AA).
+
 ## Refactor — Rounds 1–3
 
 A systematic refactor was completed after the 10th module was built, to

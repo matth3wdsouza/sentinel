@@ -6,6 +6,7 @@ import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
 import FileInput from "@/components/FileInput";
 import { Button } from "@/components/Button";
+import InlineError from "@/components/InlineError";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
 import { analyzeFile } from "@/lib/fileSignature";
@@ -91,7 +92,7 @@ export default function FileSignaturePage() {
         )}
 
         {error && (
-          <div className="text-sm text-mismatch">{error}</div>
+          <InlineError>{error}</InlineError>
         )}
 
         {result && (

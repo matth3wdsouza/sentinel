@@ -14,6 +14,7 @@ export default function PasswordField({
   onChange,
   onEnter,
   placeholder = "Enter a password",
+  ariaLabel,
   maxLength,
   autoComplete = "off",
 }) {
@@ -29,6 +30,7 @@ export default function PasswordField({
           if (e.key === "Enter" && onEnter) onEnter();
         }}
         placeholder={placeholder}
+        aria-label={ariaLabel ?? placeholder}
         autoComplete={autoComplete}
         maxLength={maxLength}
         className="w-full border border-slate/30 rounded-xl pl-4 pr-10 py-2.5 text-sm font-mono text-ink bg-surface focus:outline-none focus:border-teal transition"

@@ -231,6 +231,7 @@ export default function GuessabilityPage() {
             onChange={handlePasswordChange}
             onEnter={handleAnalyze}
             placeholder="Paste or type a password"
+            ariaLabel="Password to analyze"
             maxLength={MAX_PASSWORD_LENGTH}
           />
         </div>

@@ -25,15 +25,15 @@ export default function QRPage() {
       title="QR Code"
       description="Decode a QR code and see exactly where it leads before you open it — or generate your own."
     >
-      <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
+      <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} ariaLabel="QR mode" />
 
-      <div id="panel-decode" role="tabpanel" className={activeTab === "decode" ? "" : "hidden"}>
+      <div id="panel-decode" role="tabpanel" aria-labelledby="tab-decode" tabIndex={-1} className={activeTab === "decode" ? "" : "hidden"}>
         <DecodeTab moduleId={moduleId} />
       </div>
-      <div id="panel-generate" role="tabpanel" className={activeTab === "generate" ? "" : "hidden"}>
+      <div id="panel-generate" role="tabpanel" aria-labelledby="tab-generate" tabIndex={-1} className={activeTab === "generate" ? "" : "hidden"}>
         <GenerateTab moduleId={moduleId} />
       </div>
-      <div id="panel-wifi" role="tabpanel" className={activeTab === "wifi" ? "" : "hidden"}>
+      <div id="panel-wifi" role="tabpanel" aria-labelledby="tab-wifi" tabIndex={-1} className={activeTab === "wifi" ? "" : "hidden"}>
         <WiFiTab moduleId={moduleId} />
       </div>
     </ModulePage>

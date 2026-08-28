@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import CompanionLinks from "@/components/CompanionLinks";
 import {
   ScanEye,
@@ -75,6 +75,7 @@ function FieldRow({ label, value, mono, copyable }) {
 function MetadataGroup({ icon: Icon, title, severity, found, explanation, children }) {
   const [open, setOpen] = useState(found);
   const sev = SEVERITY[severity];
+  const contentId = useId();
 
   return (
     <div className="rounded-xl bg-surface shadow-card overflow-hidden">
@@ -82,6 +83,7 @@ function MetadataGroup({ icon: Icon, title, severity, found, explanation, childr
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-slate/5 transition"
         aria-expanded={open}
+        aria-controls={contentId}
       >
         <span className={`inline-flex p-2 rounded-full ${sev.chipBg} ${sev.text}`}>
           <Icon size={16} />
@@ -99,7 +101,7 @@ function MetadataGroup({ icon: Icon, title, severity, found, explanation, childr
       </button>
 
       {open && (
-        <div className="px-5 pb-5">
+        <div id={contentId} className="px-5 pb-5">
           <div className={`flex gap-2.5 rounded-lg px-3 py-2.5 mb-4 ${found ? sev.chipBg : "bg-slate-light"}`}>
             <Info size={14} className={`shrink-0 mt-0.5 ${found ? sev.text : "text-slate"}`} />
             <p className={`text-xs leading-relaxed ${found ? sev.text : "text-slate"}`}>

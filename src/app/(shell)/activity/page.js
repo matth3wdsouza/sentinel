@@ -70,10 +70,10 @@ export default function ActivityPage() {
 
       <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} ariaLabel="Activity view" />
 
-      <div id="panel-summary" role="tabpanel" className={activeTab === "summary" ? "" : "hidden"}>
+      <div id="panel-summary" role="tabpanel" aria-labelledby="tab-summary" tabIndex={-1} className={activeTab === "summary" ? "" : "hidden"}>
         <SummaryTab activity={activity} loadError={loadError} onRetry={retryLoad} />
       </div>
-      <div id="panel-log" role="tabpanel" className={activeTab === "log" ? "" : "hidden"}>
+      <div id="panel-log" role="tabpanel" aria-labelledby="tab-log" tabIndex={-1} className={activeTab === "log" ? "" : "hidden"}>
         <LogTab
           activity={activity}
           loadError={loadError}

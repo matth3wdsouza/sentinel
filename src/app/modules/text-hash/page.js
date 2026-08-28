@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import CompanionLinks from "@/components/CompanionLinks";
 import { Hash, Info } from "lucide-react";
+import { Button } from "@/components/Button";
 import { computeHashes } from "@/lib/hashing";
 import { usePreference } from "@/lib/usePreference";
 import { saveActivity } from "@/lib/api";
@@ -181,7 +182,7 @@ export default function TextHashPage() {
     >
       {/* Input */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1" htmlFor="text-input">
+        <label className="block text-sm font-medium text-ink mb-1.5" htmlFor="text-input">
           Text to hash
         </label>
         <textarea
@@ -192,7 +193,7 @@ export default function TextHashPage() {
           rows={4}
           spellCheck={false}
           autoComplete="off"
-          className="w-full rounded-lg border border-slate/20 bg-surface px-3 py-2.5 text-sm text-ink placeholder:text-slate font-mono resize-y focus:outline-none focus:ring-2 focus:ring-teal/40"
+          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:outline-none focus:border-teal transition resize-y font-mono"
         />
         {text.length > 0 && (
           <p className="text-xs text-slate mt-1">
@@ -217,13 +218,9 @@ export default function TextHashPage() {
       {error && <InlineError className="mt-4">{error}</InlineError>}
 
       {showReset && (
-        <button
-          onClick={resetForm}
-          className="flex items-center gap-1.5 text-sm text-slate hover:text-teal transition mt-1"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        <Button variant="ghost" resetIcon onClick={resetForm} className="mt-1">
           Reset
-        </button>
+        </Button>
       )}
 
       {/* Results */}

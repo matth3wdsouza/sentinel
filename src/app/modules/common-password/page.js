@@ -143,6 +143,7 @@ export default function CommonPasswordPage() {
             onChange={handlePasswordChange}
             onEnter={handleCheck}
             placeholder="Enter a password"
+            ariaLabel="Password to check"
           />
           <TryExamples examples={EXAMPLES} onLoad={loadExample} />
         </div>

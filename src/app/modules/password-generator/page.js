@@ -226,7 +226,7 @@ export default function PasswordGeneratorPage() {
               </p>
 
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-medium text-ink mb-1">
                   Custom characters to exclude
                 </label>
                 <input

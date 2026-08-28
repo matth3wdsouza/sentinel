@@ -101,6 +101,7 @@ function EncryptTab({ moduleId }) {
             value={passphrase}
             onChange={(e) => { setPassphrase(e.target.value); setResult(null); setError(null); }}
             placeholder="Choose a strong passphrase"
+            ariaLabel="Passphrase"
             autoComplete="new-password"
           />
         </div>
@@ -112,6 +113,7 @@ function EncryptTab({ moduleId }) {
             value={confirm}
             onChange={(e) => { setConfirm(e.target.value); setResult(null); setError(null); }}
             placeholder="Repeat your passphrase"
+            ariaLabel="Confirm passphrase"
             onEnter={handleEncrypt}
             autoComplete="new-password"
           />
@@ -278,6 +280,7 @@ function DecryptTab({ moduleId }) {
           value={passphrase}
           onChange={(e) => { setPassphrase(e.target.value); setResult(null); setError(null); }}
           placeholder="Enter the passphrase"
+          ariaLabel="Passphrase"
           onEnter={handleDecrypt}
         />
       </div>
@@ -343,12 +346,12 @@ export default function EncryptorPage() {
       description="Encrypt text with a passphrase using AES-256-GCM."
     >
 
-        <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
+        <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} ariaLabel="Encryptor mode" />
 
-        <div id="panel-encrypt" role="tabpanel" className={activeTab === "encrypt" ? "" : "hidden"}>
+        <div id="panel-encrypt" role="tabpanel" aria-labelledby="tab-encrypt" tabIndex={-1} className={activeTab === "encrypt" ? "" : "hidden"}>
           <EncryptTab moduleId={moduleId} />
         </div>
-        <div id="panel-decrypt" role="tabpanel" className={activeTab === "decrypt" ? "" : "hidden"}>
+        <div id="panel-decrypt" role="tabpanel" aria-labelledby="tab-decrypt" tabIndex={-1} className={activeTab === "decrypt" ? "" : "hidden"}>
           <DecryptTab moduleId={moduleId} />
         </div>
     </ModulePage>

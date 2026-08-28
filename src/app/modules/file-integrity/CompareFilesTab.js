@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import { GitCompare } from "lucide-react";
 import { computeHashes, BIG_FILE_SUGGESTION_BYTES } from "@/lib/hashing";
 import { saveActivity } from "@/lib/api";
@@ -58,6 +58,7 @@ export default function CompareFilesTab({ moduleId }) {
   const [fileB, setFileB] = useState(null);
   const [algorithm, setAlgorithm] = useState("SHA-256");
   const [showAlgoChoice, setShowAlgoChoice] = useState(false);
+  const algoChoiceId = useId();
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [isComparing, setIsComparing] = useState(false);
@@ -167,7 +168,7 @@ export default function CompareFilesTab({ moduleId }) {
   }
 
   return (
-    <div className="max-w-2xl">
+    <>
       <GuidedCard
         icon={GitCompare}
         heading="Compare two files"
@@ -207,13 +208,15 @@ export default function CompareFilesTab({ moduleId }) {
       <div className="mb-4">
         <button
           onClick={() => setShowAlgoChoice((prev) => !prev)}
+          aria-expanded={showAlgoChoice}
+          aria-controls={algoChoiceId}
           className="text-sm text-teal"
         >
           {showAlgoChoice ? "Hide" : "Use a different"} algorithm (default: SHA-256)
         </button>
 
         {showAlgoChoice && (
-          <div className="mt-2 space-y-1">
+          <div id={algoChoiceId} className="mt-2 space-y-1">
             {ALGORITHMS.map((algo) => (
               <OptionRow
                 key={algo}
@@ -316,6 +319,6 @@ export default function CompareFilesTab({ moduleId }) {
           </ResultCard>
         </div>
       )}
-    </div>
+    </>
   );
 }
