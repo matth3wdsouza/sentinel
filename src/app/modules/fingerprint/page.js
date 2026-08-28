@@ -171,7 +171,6 @@ function PassiveTab({ moduleId }) {
     return (
       <GuidedCard
         icon={Fingerprint}
-        accent="indigo"
         heading="Passive exposure"
         description={
           "Every website you visit receives dozens of browser details with " +
@@ -371,7 +370,6 @@ function GeoSection({ moduleId }) {
     <div className="space-y-4">
       <GuidedCard
         icon={MapPin}
-        accent="indigo"
         heading="Geolocation"
         description={
           "Websites can request your location via the Geolocation API. " +
@@ -518,7 +516,6 @@ function MediaSection({ moduleId }) {
     <div className="space-y-4">
       <GuidedCard
         icon={Camera}
-        accent="indigo"
         heading="Camera & Microphone Devices"
         description={
           "Browsers hide device labels (camera and microphone names) until " +

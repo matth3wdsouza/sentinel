@@ -229,7 +229,6 @@ export default function JWTInspectorPage() {
     >
       <GuidedCard
         icon={KeySquare}
-        accent="blue"
         heading="What is a JWT?"
         description={
           "A JSON Web Token is a signed piece of data commonly used in web " +

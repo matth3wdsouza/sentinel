@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import CompanionLinks from "@/components/CompanionLinks";
 import { FileCheck } from "lucide-react";
 import { computeHashes, BIG_FILE_SUGGESTION_BYTES } from "@/lib/hashing";
 import { saveActivity } from "@/lib/api";
@@ -83,7 +83,6 @@ export default function GenerateHashTab({ moduleId }) {
     <div className="max-w-2xl">
       <GuidedCard
         icon={FileCheck}
-        accent="blue"
         heading="Verify file integrity"
         description={
           "Compute a cryptographic fingerprint of your file. Share the hash " +
@@ -103,12 +102,6 @@ export default function GenerateHashTab({ moduleId }) {
           open={showLegacy}
           onOpenChange={setShowLegacy}
         />
-        <Link
-          href="/modules/text-hash"
-          className="inline-block text-sm text-teal mt-3"
-        >
-          Need to hash text instead? →
-        </Link>
       </div>
 
       <div className="flex items-center gap-4">
@@ -165,6 +158,13 @@ export default function GenerateHashTab({ moduleId }) {
           />
         </div>
       )}
+
+      <CompanionLinks
+        className="mt-6"
+        links={[
+          { href: "/modules/text-hash", label: "Need to hash text instead?" },
+        ]}
+      />
     </div>
   );
 }

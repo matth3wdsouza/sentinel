@@ -366,15 +366,27 @@ elevated). All phases are complete and stable:
     via `preferences["welcome-dismissed"]`. (`src/app/page.js`)
 
 - **Phase 9** — cross-module navigation and onboarding:
-  - **GuidedCard component** — shared empty-state card (`icon`, `accent`,
+  - **GuidedCard component** — shared empty-state card (`icon`,
     `heading`, `description`, optional `children`) extracted from ~10 inline
-    copies across clipboard, fingerprint, and the six new cards.
-    (`src/components/GuidedCard.js`).
-  - **Cross-module links** — contextual `<Link>` suggestions in six modules:
-    Guessability → Password Generator (weak result), Text Hash → File
-    Integrity, File Integrity (GenerateHash) → Text Hash, Encryptor →
-    Passphrase Generator, EXIF → Fingerprint. Follows the HIBP → Password
-    Generator pattern (teal text inside or below ResultCard).
+    copies across clipboard, fingerprint, and the six new cards. Derives its
+    accent from the current pathname via `ALL_MODULES`, exactly like
+    `ModulePage`, so a card can never drift out of sync with its module's
+    home-grid colour (an earlier manual `accent` prop fell back to blue for
+    amber/violet modules). (`src/components/GuidedCard.js`).
+  - **CompanionLinks component** — the shared cross-module "next step"
+    links inside result cards (`src/components/CompanionLinks.js`). Renders
+    each contextual suggestion as a pill-style button: a bordered teal chip
+    that resolves the target module's own icon from `ALL_MODULES` by path
+    (overridable via `icon`), keeps the page's plain-language action label,
+    and nudges an arrow on hover. Grown out of the original HIBP → Password
+    Generator teal-text pattern and now adopted by all seven sites: HIBP →
+    Password Generator, Guessability → Password Generator (weak result),
+    Text Hash → File Integrity, File Integrity (GenerateHash) → Text Hash,
+    Encryptor → Passphrase Generator, EXIF → Fingerprint, and Common
+    Password Checker (→ Password Generator when common, or Guessability +
+    HIBP when not). Links sit at the end of their flow (inside the result
+    card or below the results) so a secondary suggestion never interrupts
+    a form mid-way; no `next/link` imports remain in module pages.
   - **Guided empty state cards** — added to Base64, JWT Inspector, File
     Integrity (all three tabs), and QR Decode. Icon card with heading,
     2-sentence explanation, and privacy note. Matches the Clipboard/

@@ -311,7 +311,6 @@ export default function DecodeTab({ moduleId }) {
     <div className="space-y-5">
       <GuidedCard
         icon={QrCode}
-        accent="blue"
         heading="Decode a QR code"
         description={
           "Upload an image containing a QR code to reveal the hidden URL, Wi-Fi " +

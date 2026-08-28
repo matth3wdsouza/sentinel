@@ -189,7 +189,6 @@ function ReadSection({ moduleId }) {
     <div className="space-y-4">
       <GuidedCard
         icon={Clipboard}
-        accent="rose"
         heading="Read your clipboard"
         description={
           "Clicking the button below triggers the real browser clipboard " +
@@ -283,7 +282,6 @@ function WriteSection({ moduleId }) {
     <div className="space-y-4">
       <GuidedCard
         icon={ClipboardX}
-        accent="rose"
         heading="Sites can also overwrite your clipboard"
         description={
           "The clipboard write API requires no permission prompt in most " +

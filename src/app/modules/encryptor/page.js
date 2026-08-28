@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import CompanionLinks from "@/components/CompanionLinks";
 import { LockKeyhole } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import PasswordField from "@/components/PasswordField";
@@ -121,13 +121,6 @@ function EncryptTab({ moduleId }) {
         </div>
       </div>
 
-      <Link
-        href="/modules/passphrase-generator"
-        className="inline-block text-sm text-teal"
-      >
-        Generate a strong passphrase →
-      </Link>
-
       {/* Actions */}
       <div className="flex items-center gap-4">
         <Button
@@ -172,6 +165,16 @@ function EncryptTab({ moduleId }) {
           </div>
         </ResultCard>
       )}
+
+      <CompanionLinks
+        className="mt-6"
+        links={[
+          {
+            href: "/modules/passphrase-generator",
+            label: "Generate a strong passphrase",
+          },
+        ]}
+      />
     </div>
   );
 }

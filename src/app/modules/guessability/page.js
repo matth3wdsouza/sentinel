@@ -6,7 +6,7 @@ import PasswordField from "@/components/PasswordField";
 import ModulePage from "@/components/ModulePage";
 import { Button } from "@/components/Button";
 import Disclosure from "@/components/Disclosure";
-import Link from "next/link";
+import CompanionLinks from "@/components/CompanionLinks";
 import { Gauge } from "lucide-react";
 
 const SCORE_LABELS = ["Very weak", "Weak", "Fair", "Good", "Strong"];
@@ -265,12 +265,14 @@ export default function GuessabilityPage() {
         {result && <GuessabilityResult result={result} />}
 
         {result && result.score <= 1 && (
-          <Link
-            href="/modules/password-generator"
-            className="inline-block text-sm text-teal mt-1"
-          >
-            Generate a stronger password →
-          </Link>
+          <CompanionLinks
+            links={[
+              {
+                href: "/modules/password-generator",
+                label: "Generate a stronger password",
+              },
+            ]}
+          />
         )}
     </ModulePage>
   );

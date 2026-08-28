@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import CompanionLinks from "@/components/CompanionLinks";
 import { Hash, Info } from "lucide-react";
 import { computeHashes } from "@/lib/hashing";
 import { usePreference } from "@/lib/usePreference";
@@ -211,12 +211,6 @@ export default function TextHashPage() {
           open={showLegacy}
           onOpenChange={setShowLegacy}
         />
-        <Link
-          href="/modules/file-integrity"
-          className="inline-block text-sm text-teal mt-3"
-        >
-          Need to hash a file instead? →
-        </Link>
       </div>
 
       {/* Error */}
@@ -240,6 +234,13 @@ export default function TextHashPage() {
           </ResultCard>
         </div>
       )}
+
+      <CompanionLinks
+        className="mt-6"
+        links={[
+          { href: "/modules/file-integrity", label: "Need to hash a file instead?" },
+        ]}
+      />
     </ModulePage>
   );
 }

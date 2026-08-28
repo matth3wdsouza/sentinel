@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Link from "next/link";
+import CompanionLinks from "@/components/CompanionLinks";
 import { checkPasswordBreach, sha1Hex } from "@/lib/hibp";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
@@ -226,14 +226,16 @@ export default function HibpPage() {
               }
               explanation={getExplanation(result)}
             >
-              <Link
-                href="/modules/password-generator"
-                className="inline-block text-sm text-teal mt-1"
-              >
-                {result.breached
-                  ? "Generate a new password instead →"
-                  : "Generate an even stronger one →"}
-              </Link>
+              <CompanionLinks
+                links={[
+                  {
+                    href: "/modules/password-generator",
+                    label: result.breached
+                      ? "Generate a new password instead"
+                      : "Generate an even stronger one",
+                  },
+                ]}
+              />
             </ResultCard>
           </div>
         )}

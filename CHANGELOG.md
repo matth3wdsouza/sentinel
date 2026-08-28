@@ -4,6 +4,29 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed — GuidedCard derives the module colour
+
+- **`GuidedCard` no longer takes an `accent` prop** (`src/components/
+  GuidedCard.js`). Like `ModulePage`, it derives its accent from the current
+  pathname via `ALL_MODULES` (falling back to teal), so step-card icons
+  always match their module's home-grid colour. This fixes a silent visual
+  bug where the component's own colour table only knew blue/rose/indigo/
+  teal, so cards on amber (File Integrity, QR) and violet (Clipboard,
+  Fingerprint) modules rendered blue. All eight call sites drop the prop.
+
+### Refactored — shared CompanionLinks component
+
+- **All cross-module "next step" links now render through one shared
+  `CompanionLinks` component** (`src/components/CompanionLinks.js`) instead
+  of inline teal `<Link>` text. Each suggestion is a pill-style button: it
+  resolves the target module's own icon from the registry by path, keeps
+  the page's plain-language action label, and nudges an arrow on hover.
+  Adopted by all seven sites — HIBP, Guessability, Text Hash, File
+  Integrity (GenerateHash), Encryptor, EXIF, and Common Password Checker.
+  Links sit at the end of their flow (inside the result card or below the
+  results) rather than mid-form, and no `next/link` imports remain in
+  module pages. Tests/build/lint unaffected.
+
 ### Added — Common Password Checker module
 
 - **A new Passwords & Passphrases module that checks whether a password is

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import CompanionLinks from "@/components/CompanionLinks";
 import {
   ScanEye,
   MapPin,
@@ -562,12 +562,14 @@ export default function ExifPage() {
                 {/* Act */}
                 <ActionBlock result={result} />
 
-                <Link
-                  href="/modules/fingerprint"
-                  className="inline-block text-sm text-teal"
-                >
-                  See what your browser reveals too →
-                </Link>
+                <CompanionLinks
+                  links={[
+                    {
+                      href: "/modules/fingerprint",
+                      label: "See what your browser reveals too",
+                    },
+                  ]}
+                />
 
               </div>
             )}

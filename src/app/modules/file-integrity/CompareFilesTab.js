@@ -170,7 +170,6 @@ export default function CompareFilesTab({ moduleId }) {
     <div className="max-w-2xl">
       <GuidedCard
         icon={GitCompare}
-        accent="blue"
         heading="Compare two files"
         description={
           "Upload two files to check whether they are byte-for-byte identical. " +

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { matchCommonPassword, loadCommonPasswords } from "@/lib/commonPasswords";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
@@ -10,6 +9,7 @@ import PasswordField from "@/components/PasswordField";
 import ModulePage from "@/components/ModulePage";
 import InlineError from "@/components/InlineError";
 import TryExamples from "@/components/TryExamples";
+import CompanionLinks from "@/components/CompanionLinks";
 import { Button } from "@/components/Button";
 import { ShieldX, Info } from "lucide-react";
 
@@ -199,31 +199,27 @@ export default function CommonPasswordPage() {
             details={details}
             explanation={getExplanation(result)}
           >
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
-              {result.found ? (
-                <Link
-                  href="/modules/password-generator"
-                  className="inline-block text-sm text-teal mt-1"
-                >
-                  Generate a new password instead →
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    href="/modules/guessability"
-                    className="inline-block text-sm text-teal mt-1"
-                  >
-                    Check how easy it is to guess →
-                  </Link>
-                  <Link
-                    href="/modules/hibp"
-                    className="inline-block text-sm text-teal mt-1"
-                  >
-                    Check for prior breaches →
-                  </Link>
-                </>
-              )}
-            </div>
+            <CompanionLinks
+              links={
+                result.found
+                  ? [
+                      {
+                        href: "/modules/password-generator",
+                        label: "Generate a new password instead",
+                      },
+                    ]
+                  : [
+                      {
+                        href: "/modules/guessability",
+                        label: "Check how easy it is to guess",
+                      },
+                      {
+                        href: "/modules/hibp",
+                        label: "Check for prior breaches",
+                      },
+                    ]
+              }
+            />
           </ResultCard>
         )}
       </div>

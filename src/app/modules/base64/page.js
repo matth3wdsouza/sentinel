@@ -255,7 +255,6 @@ export default function Base64Page() {
 
       <GuidedCard
         icon={Binary}
-        accent="blue"
         heading="What is Base64?"
         description={
           "Base64 encodes arbitrary data as plain ASCII text — useful when a " +

@@ -133,7 +133,6 @@ export default function CompareHashTab({ moduleId }) {
     <div className="max-w-2xl">
       <GuidedCard
         icon={Scale}
-        accent="blue"
         heading="Compare a hash"
         description={
           "Paste a known hash (from a download page, vendor site, or previous " +
