@@ -14,6 +14,7 @@ import {
   KeySquare,
   Timer,
   Link,
+  FileSearch2,
 } from "lucide-react";
 
 // Canonical module registry — single source of truth for every page that
@@ -166,6 +167,16 @@ export const CATEGORIES = [
         path: "/modules/totp",
         status: "available",
         icon: Timer,
+        accent: "blue",         // Developer Tools
+      },
+      {
+        id: "file-signature",
+        title: "File Signature Verifier",
+        description:
+          "Check the magic bytes of a file against its declared extension to detect spoofed file types.",
+        path: "/modules/file-signature",
+        status: "available",
+        icon: FileSearch2,
         accent: "blue",         // Developer Tools
       },
     ],
