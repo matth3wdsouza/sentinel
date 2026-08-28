@@ -199,13 +199,30 @@ planned modules are achievable entirely client-side.
     `ui.tryExamples` preference (Settings → Modules, default on).
     (`src/lib/unicodeInspector.js`,
     `src/app/modules/unicode-inspector/page.js`)
+18. **Common Password Checker** — ✅ built. Checks whether a password is
+    among the 100,000 most common breached passwords. The NCSC "Top
+    100,000 passwords" list (derived from HIBP breach data, Open Government
+    Licence v3.0) ships in-repo as
+    `public/wordlists/common-passwords.txt.gz` (~100k lines, 816KB raw,
+    430KB gzipped) and is fetched same-origin and decompressed client-side
+    with `DecompressionStream` on first check — no CSP change (already
+    `connect-src 'self'`) and no third-party request. Matching is
+    case-insensitive with surrounding whitespace trimmed; rank is the
+    line's position (1 = most common; a mid-file blank line in the source
+    is skipped without shifting ranks). A found password shows its exact
+    position (`#N`) on screen — display-only, never logged; the activity
+    entry records just `matchFound`, mirroring HIBP's no-breach-counts
+    rule. Result cards cross-link to Password Generator (found) or
+    Guessability + HIBP (not found), and the module reuses the TryExamples
+    shortcuts. (`src/lib/commonPasswords.js`,
+    `src/app/modules/common-password/page.js`)
 
 Certificate Inspection (formerly Module 3) has been **removed from the
 roadmap** — see "Architecture change" above.
 
 A longer list of additional candidate modules was discussed as good
-client-side-only fits for later, none yet committed to the roadmap: local
-common-password list check, site permissions audit.
+client-side-only fits for later, none yet committed to the roadmap: site
+permissions audit.
 
 ## UI / design system
 

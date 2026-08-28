@@ -4,6 +4,24 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added — Common Password Checker module
+
+- **A new Passwords & Passphrases module that checks whether a password is
+  among the 100,000 most common breached passwords.** The NCSC's "Top
+  100,000 passwords" list (derived from Have I Been Pwned breach data, Open
+  Government Licence v3.0) ships with the app as a gzipped `.txt.gz` in
+  `public/wordlists/` and is fetched same-origin and decompressed
+  client-side with `DecompressionStream` on first check — fully local, no
+  third-party request, the password never leaves the page. Matching is
+  case-insensitive with surrounding whitespace trimmed. A found password
+  shows its exact position on the list (e.g. `#3,847`) — display-only,
+  never logged. The activity entry records just the `matchFound` outcome,
+  mirroring HIBP's no-breach-counts rule. Result cards link out to Password
+  Generator (found) or Guessability and HIBP (not found), and the module
+  adopts the "Try an example" shortcuts (`ui.tryExamples`).
+  (`src/lib/commonPasswords.js`,
+  `src/app/modules/common-password/page.js`)
+
 ### Added — Hidden Unicode Inspector module
 
 - **A new Inspect & Analyse module that reveals invisible or deceptive

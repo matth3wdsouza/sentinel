@@ -4,6 +4,7 @@ import {
   KeyRound,
   Gauge,
   ShieldAlert,
+  ShieldX,
   Dice5,
   LockKeyhole,
   Fingerprint,
@@ -76,6 +77,16 @@ export const CATEGORIES = [
         path: "/modules/hibp",
         status: "available",
         icon: ShieldAlert,
+        accent: "emerald",      // Passwords & Passphrases
+      },
+      {
+        id: "common-password",
+        title: "Common Password Checker",
+        description:
+          "Check whether a password is among the 100,000 most common breached passwords.",
+        path: "/modules/common-password",
+        status: "available",
+        icon: ShieldX,
         accent: "emerald",      // Passwords & Passphrases
       },
     ],

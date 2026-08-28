@@ -9,6 +9,7 @@ A privacy-first security toolkit that runs entirely in your browser. No accounts
 - **Passphrase Generator** — Diceware-style passphrases from EFF/BIP39 wordlists
 - **Guessability** — Pattern-based password strength analysis (powered by zxcvbn)
 - **HIBP Breach Check** — k-anonymity check against the Have I Been Pwned API; your password never leaves your browser
+- **Common Password Checker** — Check whether a password is among the 100,000 most common breached passwords; the list ships with the app, so it's fully local
 
 ### Inspect & Analyse
 - **File Integrity Verification** — Generate and compare MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes to verify downloads
