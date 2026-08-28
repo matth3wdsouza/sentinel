@@ -176,13 +176,24 @@ planned modules are achievable entirely client-side.
 12. **Base64 Encoder / Decoder** — ✅ built (see detailed status below)
 13. **JWT Inspector** — ✅ built (see detailed status below)
 14. **TOTP Generator** — ✅ built (see detailed status below)
+15. **URL Inspector** — ✅ built. Client-side URL parsing with phishing
+    indicator flags: scheme abuse, IP literals, misleading subdomains,
+    at-sign auth tricks, punycode/IDN, suspicious TLDs, encoded characters,
+    and a typosquatting detector (leet-speak substitution map + Levenshtein
+    edit-distance matching against a known-brand list). Verdict is
+    safe/suspicious/dangerous. (`src/lib/urlInspector.js`,
+    `src/app/modules/url-inspector/page.js`)
+16. **File Signature Verifier** — ✅ built. Streams the first ~4KB of a file
+    and matches its magic bytes against a bundled signature table to detect
+    spoofed extensions and renamed executables. Verdict is
+    match/mismatch/unknown/empty. (`src/lib/fileSignature.js`,
+    `src/app/modules/file-signature/page.js`)
 
 Certificate Inspection (formerly Module 3) has been **removed from the
 roadmap** — see "Architecture change" above.
 
 A longer list of additional candidate modules was discussed as good
-client-side-only fits for later, none yet committed to the roadmap: file
-signature/magic-byte verification, URL structure analyzer, local
+client-side-only fits for later, none yet committed to the roadmap: local
 common-password list check, site permissions audit, hidden/invisible
 Unicode inspector.
 

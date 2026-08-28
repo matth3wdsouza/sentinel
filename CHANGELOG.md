@@ -4,6 +4,40 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added — URL Inspector module
+
+- **A new Inspect & Analyse module that decomposes a URL and flags phishing
+  indicators.** Pure client-side parsing and heuristic checks; no network
+  calls, so the URL itself never leaves the browser. Flags cover scheme
+  abuse (`javascript:` / `data:` URIs), plain-HTTP connections, IP-literal
+  hostnames, misleading subdomains (`google.com.evil.com`), the at-sign
+  auth trick (`https://google.com@evil.com`), punycode and non-ASCII IDNs,
+  suspicious TLDs, percent-encoded hostnames, encoded-URL redirects in
+  query params, encoded-newline header injection, and deep paths. A
+  typosquatting detector normalises leet-speak substitutions
+  (`go0gle.com` → `google`) via a substitution map plus Levenshtein
+  edit-distance matching (`gmaii.com`, `gooogle.com`), distinguishing
+  danger-level exact abnormalisations from warning-level near-misses.
+  Output is a safe/suspicious/dangerous verdict with each flagged part
+  explained in plain language. (`src/lib/urlInspector.js`,
+  `src/app/modules/url-inspector/page.js`)
+
+### Added — File Signature Verifier module
+
+- **A new Developer Tools module that verifies a file's declared extension
+  against its actual magic bytes.** Reads only the first ~4KB of the file
+  through a streamed `FileReader`, so even multi-GB files are inspected
+  without buffering them. A bundled signature table (~40 entries) covers
+  documents (PDF, OLE2, Office Open XML), images (PNG/JPEG/GIF/BMP/TIFF/
+  WebP/ICO), executables (PE/MZ, ELF, Mach-O), archives (ZIP/RAR/GZ/BZ2/
+  7Z/TAR), media (MP3/MP4/WAV/AVI/OGG/MKV/FLV), fonts (OTF/TTF/WOFF/WOFF2),
+  code (XML/HTML/SVG/JSON/SQLite), and crypto formats (PEM/DER). Office
+  Open XML is sub-classified into docx/xlsx/pptx. Catches renamed
+  executables (`report.pdf` that is really PE), spoofed extensions, and
+  ZIP-based files claimed to be legacy OLE2 documents, and reports match /
+  mismatch / unknown / empty verdicts. (`src/lib/fileSignature.js`,
+  `src/app/modules/file-signature/page.js`)
+
 ### Added — named colour schemes
 
 - **Five colour schemes, all designed in-house**, selectable from Settings

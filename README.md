@@ -14,12 +14,14 @@ A privacy-first security toolkit that runs entirely in your browser. No accounts
 - **File Integrity Verification** — Generate and compare MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes to verify downloads
 - **EXIF Metadata Inspection** — See GPS coordinates, device info, and timestamps embedded in your photos
 - **QR Code** — Decode a QR code before you follow it, or generate your own
+- **URL Inspector** — Decompose a URL and flag phishing indicators: homograph tricks, typosquatting, suspicious TLDs, and more
 
 ### Developer Tools
 - **Text Hash Generator** — Hash any string instantly across SHA-256, SHA-384, SHA-512, SHA-1, and MD5
 - **Base64 Encoder / Decoder** — Encode and decode Base64 and Base64url (JWT-safe)
 - **JWT Inspector** — Decode a JSON Web Token, read timestamps in plain English, and spot dangerous algorithm settings
 - **TOTP Generator** — Enter a TOTP secret or `otpauth://` URI for a live 6-digit code with countdown
+- **File Signature Verifier** — Check a file's magic bytes against its declared extension to detect spoofed file types
 
 ### Miscellaneous
 - **Text Encryptor** — AES-256-GCM encryption with PBKDF2 key derivation; nothing leaves your browser
