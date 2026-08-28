@@ -15,10 +15,11 @@ Tests: vitest uses **happy-dom**, not jsdom. New tests go in `src/__tests__/*.te
 ## Architecture
 
 - **`src/lib/modules.js` is the canonical module registry** (`CATEGORIES` + flat `ALL_MODULES`). Adding a module means adding it here; the home grid, settings, and accent lookup all derive from it. `status` can be `"available"`/`"coming-soon"`/`"retired"`.
-- Current module set: **16 modules across 4 categories** — Passwords & Passphrases, Inspect & Analyse, Developer Tools, Miscellaneous. `src/lib/modules.js` is authoritative; `README.md`'s module list mirrors it.
+- Current module set: **17 modules across 4 categories** — Passwords & Passphrases, Inspect & Analyse, Developer Tools, Miscellaneous. `src/lib/modules.js` is authoritative; `README.md`'s module list mirrors it.
 - Module pages live at `src/app/modules/<id>/page.js`, marked `"use client"`, and are wrapped in `<ModulePage>`. **Do not pass an accent prop** — `ModulePage` derives it from the pathname via `ALL_MODULES`. Accent palette is finite (one hue per category: emerald/amber/blue/violet); reuse, don't mint new hues (`src/lib/moduleAccents.js`).
 - Pure logic goes in `src/lib/`, shared UI in `src/components/`. Modules follow an Analyze → Explain → Recommend → Act pattern in the UI.
 - **Persistence**: IndexedDB only, via `src/lib/db.js` — two stores: `activity` (log entries, key `module_type`) and `preferences` (upserts via `put()`). Use the `usePreference(key, default, { debounceMs })` hook for persisted component state (sliders want `debounceMs ~300`). **Theme lives in `localStorage`, deliberately NOT in preferences** (see `themeInitScript` in `layout.js`).
+- Prebuilt sample-input shortcuts use `TryExamples` in `src/components/` (`{ examples, onLoad }`; examples fill the textarea only — the user still presses Analyse). Rendering is gated on the global `ui.tryExamples` preference, toggled in Settings → Modules.
 - Wordlists for the passphrase module are plain `.txt` files in `public/wordlists/`, fetched at runtime.
 
 ## Gotchas

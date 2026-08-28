@@ -188,14 +188,24 @@ planned modules are achievable entirely client-side.
     spoofed extensions and renamed executables. Verdict is
     match/mismatch/unknown/empty. (`src/lib/fileSignature.js`,
     `src/app/modules/file-signature/page.js`)
+17. **Hidden Unicode Inspector** — ✅ built. Scans pasted text for invisible
+    or deceptive characters: bidi controls (danger), zero-width characters,
+    soft hyphens, control characters, and look-alike homoglyphs (warning),
+    combining marks and variation selectors (info). Verdict is
+    clean/suspicious/dangerous, with per-code-point breakdown and a
+    "make it visible" render view. Prebuilt "Try an example" shortcuts
+    (`src/components/TryExamples.js`) let a visitor see the effect without
+    crafting an invisible string; they're globally hidden by the
+    `ui.tryExamples` preference (Settings → Modules, default on).
+    (`src/lib/unicodeInspector.js`,
+    `src/app/modules/unicode-inspector/page.js`)
 
 Certificate Inspection (formerly Module 3) has been **removed from the
 roadmap** — see "Architecture change" above.
 
 A longer list of additional candidate modules was discussed as good
 client-side-only fits for later, none yet committed to the roadmap: local
-common-password list check, site permissions audit, hidden/invisible
-Unicode inspector.
+common-password list check, site permissions audit.
 
 ## UI / design system
 

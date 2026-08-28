@@ -6,8 +6,10 @@ import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import ThemeToggle from "@/components/ThemeToggle";
 import SchemePicker from "@/components/SchemePicker";
+import Switch from "@/components/Switch";
 import { clearPreferences } from "@/lib/db";
 import { clearAllActivity } from "@/lib/api";
+import { usePreference } from "@/lib/usePreference";
 
 // ─── Section wrapper ──────────────────────────────────────────────────────────
 
@@ -49,6 +51,7 @@ function SettingsRow({ label, description, children }) {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
+  const [tryExamples, setTryExamples] = usePreference("ui.tryExamples", true);
   const [resetConfirming, setResetConfirming] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
   const [resetType, setResetType] = useState(null);
@@ -144,6 +147,16 @@ export default function SettingsPage() {
 
       {/* ── Modules ──────────────────────────────────────────────────────── */}
       <SettingsSection title="Modules">
+        <SettingsRow
+          label="Show examples"
+          description="Load sample inputs into module pages so a tool's effect can be seen in one click. Turn this off to hide them everywhere."
+        >
+          <Switch
+            checked={tryExamples}
+            onChange={setTryExamples}
+            ariaLabel="Show examples"
+          />
+        </SettingsRow>
         <Link
           href="/settings/modules"
           className="flex items-center justify-between gap-6 px-5 py-4 hover:bg-slate/5 transition rounded-2xl"

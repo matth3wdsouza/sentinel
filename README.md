@@ -15,6 +15,7 @@ A privacy-first security toolkit that runs entirely in your browser. No accounts
 - **EXIF Metadata Inspection** — See GPS coordinates, device info, and timestamps embedded in your photos
 - **QR Code** — Decode a QR code before you follow it, or generate your own
 - **URL Inspector** — Decompose a URL and flag phishing indicators: homograph tricks, typosquatting, suspicious TLDs, and more
+- **Hidden Unicode Inspector** — Paste text and reveal invisible or deceptive characters: zero-width spaces, bidi overrides, and look-alike homoglyphs
 
 ### Developer Tools
 - **Text Hash Generator** — Hash any string instantly across SHA-256, SHA-384, SHA-512, SHA-1, and MD5

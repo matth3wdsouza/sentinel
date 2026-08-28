@@ -15,6 +15,7 @@ import {
   Timer,
   Link,
   FileSearch2,
+  Strikethrough,
 } from "lucide-react";
 
 // Canonical module registry — single source of truth for every page that
@@ -121,6 +122,16 @@ export const CATEGORIES = [
         path: "/modules/url-inspector",
         status: "available",
         icon: Link,
+        accent: "amber",        // Inspect & Analyse
+      },
+      {
+        id: "unicode-inspector",
+        title: "Hidden Unicode Inspector",
+        description:
+          "Reveal invisible or deceptive characters — zero-width spaces, bidi overrides, and look-alike homoglyphs.",
+        path: "/modules/unicode-inspector",
+        status: "available",
+        icon: Strikethrough,
         accent: "amber",        // Inspect & Analyse
       },
     ],

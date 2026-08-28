@@ -4,6 +4,31 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added — Hidden Unicode Inspector module
+
+- **A new Inspect & Analyse module that reveals invisible or deceptive
+  characters in pasted text.** Pure client-side string scanning; the text
+  never leaves the browser. Eight detection categories with a
+  safety/suspicious/dangerous verdict: **bidi controls** (the RTL/LTR
+  overrides and embeddings behind display-spoofing attacks) are danger-
+  level; **zero-width characters** (ZWSP/ZWNJ/ZWJ, LRM/RLM, word joiner,
+  BOM, ideographic space), **soft hyphens**, **C0/C1 control characters**,
+  and **homoglyphs** (a curated Cyrillic/Greek/Fullwidth look-alike table
+  with each character's Latin doppelgänger) are warning-level; combining
+  marks, variation selectors, and the replacement character are info-level.
+  The result lists every flagged code point with a human-readable name,
+  occurrence count, per-category tallies, and a plain-language explanation,
+  plus a "make it visible" view that re-renders the text with hidden
+  characters highlighted or replaced by visible markers
+  (`⇠` / `␣` / `-` / `▤`). Prebuilt "Try an example" shortcuts
+  (`src/components/TryExamples.js`) fill the textarea with a sample —
+  spoofed filename, hidden-space password, homoglyph lookalike — the user
+  still presses Analyse, and the shortcuts are globally hidden by a new
+  **Settings → Modules** toggle (`ui.tryExamples`, default on).
+  (`src/lib/unicodeInspector.js`,
+  `src/app/modules/unicode-inspector/page.js`). Activity logging records
+  coarse metadata only — verdict and category counts, never the text.
+
 ### Added — URL Inspector module
 
 - **A new Inspect & Analyse module that decomposes a URL and flags phishing

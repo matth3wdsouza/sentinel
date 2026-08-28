@@ -2,6 +2,7 @@
 
 import { Layers } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import Switch from "@/components/Switch";
 import { ACCENTS } from "@/lib/moduleAccents";
 import { CATEGORIES, ALL_MODULES } from "@/lib/modules";
 import { usePreference } from "@/lib/usePreference";
@@ -20,20 +21,11 @@ function ModuleRow({ module, disabled, onToggle }) {
       <p className={`text-sm font-medium flex-1 min-w-0 ${disabled ? "text-slate" : "text-ink"}`}>
         {module.title}
       </p>
-      <button
-        role="switch"
-        aria-checked={!disabled}
-        onClick={() => onToggle(module.id)}
-        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal ${
-          disabled ? "bg-slate/25" : "bg-teal"
-        }`}
-      >
-        <span
-          className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${
-            disabled ? "translate-x-0" : "translate-x-4"
-          }`}
-        />
-      </button>
+      <Switch
+        checked={!disabled}
+        onChange={() => onToggle(module.id)}
+        ariaLabel={module.title}
+      />
     </div>
   );
 }
