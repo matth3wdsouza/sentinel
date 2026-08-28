@@ -181,24 +181,12 @@ function arrayBufferToText(bytes) {
   }
 }
 
-export function analyzeFileSignature(file) {
-  const extension = getExtension(file.name);
-  const header = file.size === 0 ? null : undefined;
-
-  return {
-    fileName: file.name,
-    declaredExtension: extension,
-    fileSize: file.size,
-  };
-}
-
 // ── Public API ─────────────────────────────────────────────────────────────
 
 export async function analyzeFile(file) {
   const ext = getExtension(file.name);
   if (!ext) {
     return {
-      fileName: file.name,
       declaredExtension: null,
       detected: null,
       verdict: "unknown",
@@ -209,7 +197,6 @@ export async function analyzeFile(file) {
   const header = await readFileHeader(file);
   if (header.length === 0) {
     return {
-      fileName: file.name,
       declaredExtension: ext,
       detected: null,
       verdict: "empty",
@@ -220,7 +207,6 @@ export async function analyzeFile(file) {
   const match = matchSignature(header);
   if (!match) {
     return {
-      fileName: file.name,
       declaredExtension: ext,
       detected: null,
       verdict: "unknown",
@@ -263,7 +249,6 @@ export async function analyzeFile(file) {
   }
 
   return {
-    fileName: file.name,
     declaredExtension: ext,
     detected,
     verdict,
