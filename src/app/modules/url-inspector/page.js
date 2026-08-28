@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Link, AlertTriangle, ShieldCheck, Info, ExternalLink } from "lucide-react";
+import { Link, Info } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
 import Disclosure from "@/components/Disclosure";
@@ -15,21 +15,18 @@ import { analyzeURL, DANGER, WARNING, INFO } from "@/lib/urlInspector";
 const VERDICT_CONFIG = {
   safe: {
     verdict: "success",
-    icon: ShieldCheck,
     label: "No issues detected",
     explanation:
       "This URL doesn't trigger any of the heuristics we check for. That doesn't guarantee it's safe — always exercise caution with unfamiliar links.",
   },
   suspicious: {
     verdict: "mismatch",
-    icon: AlertTriangle,
     label: "Suspicious",
     explanation:
       "This URL triggered one or more warning-level checks. Proceed with caution — it may be legitimate, but the patterns are commonly seen in phishing.",
   },
   dangerous: {
     verdict: "mismatch",
-    icon: AlertTriangle,
     label: "Dangerous",
     explanation:
       "This URL triggered one or more danger-level checks. Strong indicators of phishing, spoofing, or malicious intent. Do not visit this link.",
