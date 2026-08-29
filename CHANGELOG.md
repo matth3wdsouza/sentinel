@@ -4,6 +4,23 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added — Scam Message Analyser module
+
+- **New module: Scam Message Analyser** — the 19th module (Miscellaneous).
+  Paste in a suspicious SMS, email, or chat message and it flags the common
+  hallmarks of text-message scams (smishing) across seven severity-weighted
+  categories: credential/OTP requests, financial pressure, secrecy pressure,
+  impersonation, urgency language, suspicious links, and pressure grammar.
+  Verdict is clean/suspicious/dangerous, with a per-flag breakdown,
+  prebuilt examples, and (when a suspicious link is present) a cross-link to
+  the URL Inspector. Fully client-side: pure heuristic logic, no network, no
+  worker. (`src/lib/scamAnalyser.js`,
+  `src/app/modules/scam-message-analyser/page.js`)
+- **Privacy note on the analyser** — activity logging records only the
+  verdict and per-category counts, never the message text, its links, or
+  quoted phrases; links are flagged but never followed or resolved, so no
+  CSP change was needed.
+
 ### Changed — DRY sweep + accessibility pass
 
 - **text-hash Reset now uses the shared `<Button>`** — the last module hand-rolling

@@ -17,6 +17,7 @@ import {
   Link,
   FileSearch2,
   Strikethrough,
+  MessageSquareWarning,
 } from "lucide-react";
 
 // Canonical module registry — single source of truth for every page that
@@ -235,6 +236,16 @@ export const CATEGORIES = [
         path: "/modules/clipboard",
         status: "available",
         icon: ClipboardCheck,
+        accent: "violet",       // Miscellaneous
+      },
+      {
+        id: "scam-message-analyser",
+        title: "Scam Message Analyser",
+        description:
+          "Paste a suspicious SMS or email and see which common scam indicators it hits — urgency, money pressure, OTP requests, impersonation, and suspicious links.",
+        path: "/modules/scam-message-analyser",
+        status: "available",
+        icon: MessageSquareWarning,
         accent: "violet",       // Miscellaneous
       },
     ],

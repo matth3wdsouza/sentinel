@@ -29,6 +29,7 @@ A privacy-first security toolkit that runs entirely in your browser. No accounts
 - **Text Encryptor** — AES-256-GCM encryption with PBKDF2 key derivation; nothing leaves your browser
 - **Browser Fingerprint** — See what your browser silently reveals to every site you visit
 - **Clipboard Inspector** — See what sites can read from (and write to) your clipboard
+- **Scam Message Analyser** — Paste a suspicious SMS or email and see which common scam indicators it hits — urgency, money pressure, OTP requests, impersonation, and suspicious links
 
 ## Privacy
 

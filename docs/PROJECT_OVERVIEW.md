@@ -216,6 +216,22 @@ planned modules are achievable entirely client-side.
     Guessability + HIBP (not found), and the module reuses the TryExamples
     shortcuts. (`src/lib/commonPasswords.js`,
     `src/app/modules/common-password/page.js`)
+19. **Scam Message Analyser** — ✅ built. Pastes-in an SMS/email/message and
+    scores it against the recurring hallmarks of text-message scams
+    (smishing): credential/OTP requests, financial pressure, secrecy
+    pressure, impersonation claims, urgency language, suspicious links, and
+    pressure grammar. Pure client-side heuristic keyword + pattern matching
+    — no network, no worker, no LLM — with the keyword tables kept inline in
+    the lib (the same approach as `urlInspector.js`'s
+    `SUSPICIOUS_KEYWORDS`/`KNOWN_BRANDS`). Verdict is
+    clean/suspicious/dangerous (danger if any high-signal flag fires). Links
+    are handled heuristically only (shortened or unusual-TLD domains are
+    flagged) and **never followed or resolved**. The UI states the output is
+    "indicators, not proof" and cross-links to the URL Inspector when a
+    suspicious link is present. Activity logging keeps the privacy invariant:
+    it records only per-category counts and the verdict — never the message
+    text, the links, or quoted phrases. (`src/lib/scamAnalyser.js`,
+    `src/app/modules/scam-message-analyser/page.js`)
 
 Certificate Inspection (formerly Module 3) has been **removed from the
 roadmap** — see "Architecture change" above.
@@ -444,6 +460,26 @@ elevated). All phases are complete and stable:
   - Two audit candidates required no change on inspection: the `SchemePicker`
     radiogroup already carries `aria-label="Colour scheme"`, and the themed
     `CodeBlock` `text-slate`-on-`slate-light` copy is 4.64:1 (passes AA).
+
+- **Phase 11** — Scam Message Analyser module (19th module, Miscellaneous):
+  - Added a client-side-only heuristic scorer for pasted SMS/email/message
+    text. It flags the recurring hallmarks of text-message scams (smishing)
+    across seven severity-weighted categories: credential/OTP requests,
+    financial pressure, secrecy pressure, impersonation, urgency language,
+    suspicious links, and pressure grammar. Pure sync logic, no network, no
+    worker, no LLM — the keyword tables live inline in
+    `src/lib/scamAnalyser.js` (mirroring `urlInspector.js`).
+  - Verdict is clean/suspicious/dangerous (danger if any high-signal flag
+    fires). The UI renders a `ResultCard` verdict, per-category count chips,
+    and a per-flag `Disclosure` breakdown, plus a privacy info box stating
+    the output is "indicators, not proof". When a suspicious link is present
+    it cross-links to the URL Inspector.
+  - Links are handled heuristic-only (shortened or unusual-TLD domains are
+    flagged) and never followed or resolved — so there's no CSP `connect-src`
+    change and no privacy cost.
+  - Activity logging honours the privacy invariant: it records only the
+    verdict and per-category counts — never the message text, the links, or
+    quoted phrases.
 
 ## Refactor — Rounds 1–3
 
