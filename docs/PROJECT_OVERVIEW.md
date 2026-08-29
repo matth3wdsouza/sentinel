@@ -232,6 +232,24 @@ planned modules are achievable entirely client-side.
     it records only per-category counts and the verdict — never the message
     text, the links, or quoted phrases. (`src/lib/scamAnalyser.js`,
     `src/app/modules/scam-message-analyser/page.js`)
+20. **PIN & Pattern Analyser** — ✅ built. Pastes-in a numeric PIN/passcode and
+    scores how guessable it is by detecting the common "lazy" PIN patterns:
+    names from the most-leaked-PIN blacklist (NCSC/HIBP-derived), single
+    repeated digits and back-to-back repeats, monotonic ascending/descending
+    sequences (`1234`, `654321`), repeating couplet pairs (`1212`), date-like
+    values (`19xx`/`20xx`/MMDD/YYMMDD), and keypad walks (`2580`, `147`).
+    This is the numeric sibling of Guessability — zxcvbn has no PIN
+    heuristics, so it gets its own focused detector. Pure client-side, no
+    network/worker. Verdict is weak/fair/strong (weak if any danger-tier
+    flag fires), rendered through the standard ResultCard, with each detected
+    pattern shown in a Disclosure and a "patterns, not proof" info box. A
+    global `MAX_PIN_LENGTH = 12` caps analysis; non-digit input is flagged as
+    not-a-PIN. Cross-links to Password Generator (make a random one) and
+    Guessability when weak. Activity logging keeps the privacy invariant: it
+    records only verdict, length, unique-digit count, pattern count, and
+    coarse per-pattern booleans — never the PIN or its digit values. Input is
+    a masked PasswordField. (`src/lib/pinAnalyser.js`,
+    `src/app/modules/pin-analyser/page.js`)
 
 Certificate Inspection (formerly Module 3) has been **removed from the
 roadmap** — see "Architecture change" above.
@@ -480,6 +498,24 @@ elevated). All phases are complete and stable:
   - Activity logging honours the privacy invariant: it records only the
     verdict and per-category counts — never the message text, the links, or
     quoted phrases.
+
+- **Phase 12** — PIN & Pattern Analyser module (20th module, Passwords):
+  - Added a pure numeric-pattern scorer for pasted PINs/passcodes — the
+    numeric sibling of Guessability, since zxcvbn has no PIN heuristics.
+    Detects: the most-leaked-PIN blacklist, single repeated digits /
+    back-to-back repeats, monotonic sequences (`1234`, `654321`), repeating
+    couplet pairs (`1212`), date-like values (`19xx`/`20xx`/MMDD/YYMMDD),
+    and keypad walks (`2580`, `147`). Pure sync logic, no network/worker.
+  - Verdict is weak/fair/strong (weak if any danger-tier flag fires),
+    rendered via `ResultCard` with each detected pattern in a `Disclosure`,
+    a "patterns, not proof" info box, and CompanionLinks to Password
+    Generator + Guessability when weak. Input is a masked `PasswordField`
+    (consistent with HIBP/Guessability/Common-Password) capped at
+    `MAX_PIN_LENGTH = 12`; non-digit input is flagged as not-a-PIN.
+  - Activity logging honours the privacy invariant: it records only the
+    verdict, length, unique-digit count, pattern count, and coarse
+    booleans (hasCommon/hasRepeat/hasSequence/hasCouplet/hasDate) — never
+    the PIN or its digit values.
 
 ## Refactor — Rounds 1–3
 
@@ -1013,6 +1049,7 @@ src/
 │   ├── wordlist.js          # passphrase generation, wordlist validation
 │   ├── hibp.js              # sha1Hex(), checkPasswordBreach()
 │   ├── guessability.js      # analyzePassword() — zxcvbn-ts wrapper
+│   ├── pinAnalyser.js       # analyzePIN() — numeric PIN pattern detector
 │   ├── exif.js              # parseExif(file) — exifr wrapper, normalised output
 │   ├── encrypt.js           # encryptText(), decryptText() — AES-256-GCM via Web Crypto
 │   ├── fingerprint.js       # browser fingerprint signal collection

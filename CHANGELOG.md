@@ -4,6 +4,23 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added — PIN & Pattern Analyser module
+
+- **New module: PIN & Pattern Analyser** — the 20th module (Passwords &
+  Passphrases). Paste in a numeric PIN/passcode and it scores how guessable it
+  is by detecting the common "lazy" patterns: the most-leaked-PIN blacklist,
+  repeated/single digits, monotonic sequences (`1234`, `654321`), repeating
+  pairs (`1212`), date-like values (`1990`, `0714`), and keypad walks (`2580`).
+  Verdict is weak/fair/strong, each detected pattern shown in a collapsible
+  breakdown, with a masked input (consistent with HIBP/Guessability),
+  prebuilt examples, and CompanionLinks to Password Generator + Guessability
+  when weak. The numeric sibling of Guessability, since zxcvbn has no PIN
+  heuristics. Pure client-side, no network/worker. (`src/lib/pinAnalyser.js`,
+  `src/app/modules/pin-analyser/page.js`)
+- **Privacy note on the analyser** — activity logging records only verdict,
+  length, unique-digit count, pattern count, and coarse booleans, never the
+  PIN or its digit values; analysis caps at 12 digits; no CSP change needed.
+
 ### Added — Scam Message Analyser module
 
 - **New module: Scam Message Analyser** — the 19th module (Miscellaneous).

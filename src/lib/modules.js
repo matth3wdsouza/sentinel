@@ -18,6 +18,7 @@ import {
   FileSearch2,
   Strikethrough,
   MessageSquareWarning,
+  Square,
 } from "lucide-react";
 
 // Canonical module registry — single source of truth for every page that
@@ -88,6 +89,16 @@ export const CATEGORIES = [
         path: "/modules/common-password",
         status: "available",
         icon: ShieldX,
+        accent: "emerald",      // Passwords & Passphrases
+      },
+      {
+        id: "pin-analyser",
+        title: "PIN & Pattern Analyser",
+        description:
+          "Analyse a numeric PIN or passcode for the common guessable patterns — sequences, repeats, dates, keypad walks, and the most leaked codes.",
+        path: "/modules/pin-analyser",
+        status: "available",
+        icon: Square,
         accent: "emerald",      // Passwords & Passphrases
       },
     ],
