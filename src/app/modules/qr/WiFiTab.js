@@ -61,7 +61,8 @@ export default function WiFiTab({ moduleId }) {
           <select
             value={security}
             onChange={(e) => setSecurity(e.target.value)}
-            className="text-sm text-ink bg-surface border border-slate/30 rounded-lg px-2 py-1.5 focus:outline-none focus:border-teal transition"
+            aria-label="Security"
+            className="text-sm text-ink bg-surface border border-slate/30 rounded-lg px-2 py-1.5 focus:border-teal transition"
           >
             {WIFI_SECURITY.map((s) => <option key={s}>{s}</option>)}
           </select>
@@ -72,7 +73,8 @@ export default function WiFiTab({ moduleId }) {
             value={ssid}
             onChange={(e) => setSsid(e.target.value)}
             placeholder="Your network name"
-            className="text-sm text-ink bg-surface border border-slate/30 rounded-lg px-3 py-1.5 focus:outline-none focus:border-teal transition w-48"
+            aria-label="Network name (SSID)"
+            className="text-sm text-ink bg-surface border border-slate/30 rounded-lg px-3 py-1.5 focus:border-teal transition w-48"
           />
         </ControlRow>
         {security !== "None" && (
@@ -83,7 +85,8 @@ export default function WiFiTab({ moduleId }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Wi-Fi password"
-                className="text-sm text-ink bg-surface border border-slate/30 rounded-lg pl-3 pr-10 py-1.5 focus:outline-none focus:border-teal transition w-48"
+                aria-label="Wi-Fi password"
+                className="text-sm text-ink bg-surface border border-slate/30 rounded-lg pl-3 pr-10 py-1.5 focus:border-teal transition w-48"
               />
               <button
                 onClick={() => setShowPassword((v) => !v)}
@@ -101,6 +104,7 @@ export default function WiFiTab({ moduleId }) {
             type="checkbox"
             checked={hidden}
             onChange={(e) => setHidden(e.target.checked)}
+            aria-label="Hidden network"
             className="accent-teal"
           />
           <span className="text-xs text-slate">SSID not broadcast</span>

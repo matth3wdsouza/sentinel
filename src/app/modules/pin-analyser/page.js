@@ -122,21 +122,16 @@ export default function PinAnalyserPage() {
       return;
     }
 
-    // Privacy invariant: log only the verdict and coarse pattern booleans —
-    // never the PIN itself (and never the digit values).
+    // Privacy invariant: log only the verdict and pattern count — never the
+    // PIN itself (nor its length, unique-digit count, or which patterns
+    // matched, which would narrow the actual PIN). Guessability, this module's
+    // strength-analysis sibling, logs nothing at all.
     saveActivity({
       moduleType: moduleId,
       summary: "PIN analysed for guessable patterns",
       details: {
         verdict: analysis.verdict,
-        length: analysis.length,
-        uniqueDigits: analysis.uniqueDigits,
         patternCount: analysis.patterns.length,
-        hasCommon: analysis.patterns.some((p) => p.id === "common-list"),
-        hasRepeat: analysis.patterns.some((p) => p.id === "repeat"),
-        hasSequence: analysis.patterns.some((p) => p.id === "sequence"),
-        hasCouplet: analysis.patterns.some((p) => p.id === "couplet"),
-        hasDate: analysis.patterns.some((p) => p.id === "date"),
       },
     });
   }
@@ -190,6 +185,7 @@ export default function PinAnalyserPage() {
             placeholder="Enter a numeric PIN"
             ariaLabel="PIN or passcode"
             maxLength={MAX_PIN_LENGTH}
+            inputMode="numeric"
           />
           <TryExamples examples={EXAMPLES} onLoad={loadExample} />
         </div>
@@ -217,6 +213,7 @@ export default function PinAnalyserPage() {
           <>
             <ResultCard
               verdict={verdictConfig.verdict}
+              headingLevel="h2"
               heading={verdictConfig.label}
               explanation={{ means: verdictConfig.explanation }}
             />

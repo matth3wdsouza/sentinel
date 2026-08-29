@@ -127,7 +127,8 @@ export default function URLInspectorPage() {
             rows={3}
             spellCheck={false}
             autoComplete="off"
-            className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:outline-none focus:border-teal transition resize-y font-mono"
+            aria-label="URL to analyse"
+            className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
           />
         </div>
 
@@ -149,6 +150,7 @@ export default function URLInspectorPage() {
             {/* Verdict */}
             <ResultCard
               verdict={VERDICT_CONFIG[result.verdict].verdict}
+              headingLevel="h2"
               heading={VERDICT_CONFIG[result.verdict].label}
               explanation={{
                 means: VERDICT_CONFIG[result.verdict].explanation,

@@ -42,6 +42,7 @@ export default function FallbackCommands({ algorithm, filenames, extraNote }) {
           <button
             key={osKey}
             onClick={() => setSelectedOS(osKey)}
+            aria-pressed={selectedOS === osKey}
             className={`px-3 py-1 rounded text-xs transition ${
               selectedOS === osKey
                 ? "bg-teal text-on-teal"

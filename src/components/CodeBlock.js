@@ -56,6 +56,9 @@ export default function CodeBlock({ code, label = "command", variant = "dark", p
         }`}
       >
         {copied ? <Check size={13} /> : <Copy size={13} />}
+        <span role="status" className="sr-only">
+          {copied ? `Copied ${label}` : ""}
+        </span>
       </button>
     </div>
   );

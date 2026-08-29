@@ -17,6 +17,7 @@ export default function PasswordField({
   ariaLabel,
   maxLength,
   autoComplete = "off",
+  inputMode,
 }) {
   const [show, setShow] = useState(false);
 
@@ -33,7 +34,8 @@ export default function PasswordField({
         aria-label={ariaLabel ?? placeholder}
         autoComplete={autoComplete}
         maxLength={maxLength}
-        className="w-full border border-slate/30 rounded-xl pl-4 pr-10 py-2.5 text-sm font-mono text-ink bg-surface focus:outline-none focus:border-teal transition"
+        inputMode={inputMode}
+        className="w-full border border-slate/30 rounded-xl pl-4 pr-10 py-2.5 text-sm font-mono text-ink bg-surface focus:border-teal transition"
       />
       <button
         type="button"

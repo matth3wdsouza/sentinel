@@ -138,9 +138,10 @@ export default function TextHashPage() {
           lastLogRef.current = { algoKey, lengthBucket, at: now };
           saveActivity({
             moduleType: moduleId,
-            summary: `Hashed a ${text.length}-character string`,
+            summary: "Hashed a string",
+            // charCount is deliberately not logged: the input can itself be a
+            // secret, so its length is persisted nowhere.
             details: {
-              charCount: text.length,
               algorithms: selectedAlgos,
             },
           });
@@ -193,7 +194,7 @@ export default function TextHashPage() {
           rows={4}
           spellCheck={false}
           autoComplete="off"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:outline-none focus:border-teal transition resize-y font-mono"
+          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
         />
         {text.length > 0 && (
           <p className="text-xs text-slate mt-1">

@@ -48,7 +48,7 @@ const BANNER_CONFIG = {
 };
 
 const SELECT_CLASSNAME =
-  "w-full border border-slate/30 rounded-lg px-3 py-1.5 text-sm bg-surface focus:outline-none focus:border-teal transition";
+  "w-full border border-slate/30 rounded-lg px-3 py-1.5 text-sm bg-surface focus:border-teal transition";
 
 const PREF_KEY = "passphrase-generator.settings";
 
@@ -278,6 +278,7 @@ export default function PassphraseGeneratorPage() {
           <select
             value={selectedListId}
             onChange={(e) => selectWordlist(e.target.value)}
+            aria-label="Wordlist"
             className={SELECT_CLASSNAME}
           >
             {BUILT_IN_WORDLISTS.map((wl) => (
@@ -383,6 +384,7 @@ export default function PassphraseGeneratorPage() {
                 max={MAX_WORD_COUNT}
                 value={wordCount}
                 onChange={(e) => updateSettings({ wordCount: Number(e.target.value) })}
+                aria-label="Number of words"
                 className="w-full accent-teal"
               />
             </div>
@@ -405,10 +407,11 @@ export default function PassphraseGeneratorPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Word case</label>
+              <label className="block text-sm font-medium text-ink mb-1.5">Word case</label>
               <select
                 value={wordCase}
                 onChange={(e) => updateSettings({ wordCase: e.target.value })}
+                aria-label="Word case"
                 className={SELECT_CLASSNAME}
               >
                 {WORD_CASE_OPTIONS.map((option) => (

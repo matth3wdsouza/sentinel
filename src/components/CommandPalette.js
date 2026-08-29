@@ -207,7 +207,7 @@ export default function CommandPalette() {
       aria-label="Command palette"
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-ink/30 backdrop-blur-sm" onClick={close} />
+      <div className="absolute inset-0 bg-ink/30 backdrop-blur-sm" onClick={close} aria-hidden="true" />
 
       {/* Panel */}
       <div className="relative w-full max-w-2xl mx-4 rounded-xl bg-surface shadow-2xl border border-slate/20 animate-palette-enter overflow-hidden">
@@ -223,6 +223,12 @@ export default function CommandPalette() {
             placeholder="Search modules…"
             className="w-full py-4 text-sm bg-transparent text-ink placeholder:text-slate focus:outline-none focus:[box-shadow:none]"
             aria-label="Search modules"
+            aria-controls="command-palette-listbox"
+            aria-activedescendant={
+              selectableItems[selectedIndex]
+                ? `palette-option-${selectableItems[selectedIndex].id}`
+                : undefined
+            }
             autoComplete="off"
           />
           <div className="shrink-0 flex items-center gap-1">
@@ -243,6 +249,7 @@ export default function CommandPalette() {
         ) : (
           <ul
             ref={listRef}
+            id="command-palette-listbox"
             role="listbox"
             aria-label="Modules"
             className="max-h-80 overflow-y-auto py-1"
@@ -269,6 +276,7 @@ export default function CommandPalette() {
               return (
                 <li
                   key={item.id}
+                  id={`palette-option-${item.id}`}
                   role="option"
                   aria-selected={isSelected}
                   onClick={() => navigate(item.href)}

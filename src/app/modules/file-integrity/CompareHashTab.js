@@ -146,7 +146,7 @@ export default function CompareHashTab({ moduleId }) {
       </div>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium text-ink mb-1">
+        <label className="block text-sm font-medium text-ink mb-1.5">
           Paste the hash you want to compare against
         </label>
         <input
@@ -154,7 +154,9 @@ export default function CompareHashTab({ moduleId }) {
           value={pastedHash}
           onChange={handleHashChange}
           placeholder="e.g. 24cc7e0d9e28b4ff32b4f097f2fc816a..."
-          className="w-full border border-slate/30 rounded-lg px-3 py-2 text-sm font-mono text-ink bg-surface focus:outline-none focus:border-teal transition"
+          aria-label="Paste the hash you want to compare against"
+          spellCheck={false}
+          className="w-full border border-slate/30 rounded-lg px-3 py-2 text-sm font-mono text-ink bg-surface focus:border-teal transition"
         />
         {pastedHash.trim() && (
           <p className="text-xs text-slate mt-1">

@@ -6,5 +6,9 @@
 // component; pass `className` to override spacing per context.
 
 export default function InlineError({ children, className = "" }) {
-  return <p className={`text-mismatch text-sm ${className}`}>{children}</p>;
+  return (
+    <p role="alert" className={`text-mismatch text-sm ${className}`}>
+      {children}
+    </p>
+  );
 }

@@ -42,12 +42,12 @@ function EncodeTab({ moduleId }) {
       setError(null);
       saveActivity({
         moduleType: moduleId,
-        summary: `Encoded a ${input.length}-character string to Base64${urlSafe ? "url" : ""}`,
+        summary: `Encoded a string to Base64${urlSafe ? "url" : ""}`,
+        // Lengths are deliberately not logged: the input can itself be a
+        // secret/token, so its size is persisted nowhere.
         details: {
           action: "encode",
           variant: urlSafe ? "base64url" : "standard",
-          inputLength: input.length,
-          outputLength: encoded.length,
         },
       });
     } catch (err) {
@@ -77,7 +77,8 @@ function EncodeTab({ moduleId }) {
           rows={4}
           spellCheck={false}
           autoComplete="off"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:outline-none focus:border-teal transition resize-y font-mono"
+          aria-label="Text to encode"
+          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
         />
       </div>
 
@@ -106,6 +107,7 @@ function EncodeTab({ moduleId }) {
       {result && (
         <ResultCard
           verdict="success"
+          headingLevel="h2"
           heading="Encoded"
           explanation={{
             means: urlSafe
@@ -150,12 +152,11 @@ function DecodeTab({ moduleId }) {
       setError(null);
       saveActivity({
         moduleType: moduleId,
-        summary: `Decoded a ${trimmed.length}-character Base64${urlSafe ? "url" : ""} string`,
+        summary: `Decoded a Base64${urlSafe ? "url" : ""} string`,
+        // Lengths deliberately not logged (see encode note above).
         details: {
           action: "decode",
           variant: urlSafe ? "base64url" : "standard",
-          inputLength: trimmed.length,
-          outputLength: decoded.length,
         },
       });
     } catch (err) {
@@ -185,7 +186,8 @@ function DecodeTab({ moduleId }) {
           rows={4}
           spellCheck={false}
           autoComplete="off"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:outline-none focus:border-teal transition resize-y font-mono"
+          aria-label="Base64 to decode"
+          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
         />
       </div>
 
@@ -212,6 +214,7 @@ function DecodeTab({ moduleId }) {
       {error === "INVALID_BASE64" && (
         <ResultCard
           verdict="mismatch"
+          headingLevel="h2"
           heading="Invalid Base64"
           explanation={{
             means:
@@ -225,6 +228,7 @@ function DecodeTab({ moduleId }) {
       {result !== null && (
         <ResultCard
           verdict="success"
+          headingLevel="h2"
           heading="Decoded"
           explanation={{
             means: "The Base64 string was valid and has been decoded to text.",

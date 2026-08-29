@@ -77,6 +77,9 @@ export default function GeneratorResultCard({
             >
               {copied ? <Check size={16} /> : <Copy size={16} />}
               {copied ? copiedLabel : copyLabel}
+              <span role="status" className="sr-only">
+                {copied ? "Copied to clipboard" : ""}
+              </span>
             </button>
             <button
               onClick={onRegenerate}

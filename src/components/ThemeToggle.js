@@ -73,28 +73,28 @@ export default function ThemeToggle() {
     } catch (e) {}
   }
 
+  const current = MODES.find((m) => m.value === mode) ?? MODES[1];
+  const CurrentIcon = current.icon;
+
   return (
-    <div
-      className="inline-flex rounded-lg border border-slate/30 overflow-hidden"
-      role="radiogroup"
-      aria-label="Theme"
-    >
-      {MODES.map(({ value, icon: Icon, label }) => (
-        <button
-          key={value}
-          role="radio"
-          aria-checked={mode === value}
-          aria-label={label}
-          onClick={() => select(value)}
-          className={`px-3 py-1.5 text-sm transition ${
-            mode === value
-              ? "bg-teal-light text-teal-chip"
-              : "bg-paper text-slate hover:text-ink"
-          }`}
-        >
-          <Icon size={15} />
-        </button>
-      ))}
+    <div className="relative inline-flex items-center">
+      <CurrentIcon
+        size={15}
+        aria-hidden="true"
+        className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate"
+      />
+      <select
+        value={mode}
+        onChange={(e) => select(e.target.value)}
+        aria-label="Theme"
+        className="border border-slate/30 rounded-lg bg-surface pl-8 pr-8 py-1.5 text-sm text-ink focus:border-teal transition"
+      >
+        {MODES.map(({ value, label }) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

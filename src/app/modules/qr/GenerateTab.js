@@ -42,7 +42,8 @@ export default function GenerateTab({ moduleId }) {
           onChange={(e) => setText(e.target.value)}
           placeholder="Enter a URL, plain text, or anything you want to encode…"
           rows={4}
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:outline-none focus:border-teal transition resize-y"
+          aria-label="Text or URL to encode"
+          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y"
         />
         <div className="flex items-center justify-between mt-1">
           <p className="text-xs text-slate">{text.length} characters</p>

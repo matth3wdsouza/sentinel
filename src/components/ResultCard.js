@@ -89,6 +89,7 @@ function ExplanationSection({ label, text }) {
 export default function ResultCard({
   verdict = "neutral",
   heading,
+  headingLevel = "h3",
   details = [],
   explanation,
   variant,   // "bare" opts out of the rail + icon + heading chrome entirely
@@ -96,6 +97,7 @@ export default function ResultCard({
 }) {
   const [showHelp, setShowHelp] = useState(false);
   const explanationId = useId();
+  const HeadingTag = headingLevel;
 
   // Bare variant — surface card only, no verdict chrome. Children own the
   // internal layout completely; details and heading props are ignored.
@@ -123,7 +125,7 @@ export default function ResultCard({
           <span className={`inline-flex p-2 rounded-full ${chipBg} ${chipText}`}>
             <Icon size={17} />
           </span>
-          <h3 className="font-display font-semibold text-ink">{heading}</h3>
+          <HeadingTag className="font-display font-semibold text-ink">{heading}</HeadingTag>
           {hasExplanation && (
             <button
               onClick={() => setShowHelp((prev) => !prev)}

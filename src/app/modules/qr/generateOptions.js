@@ -27,7 +27,7 @@ export function QRCanvas({ canvasRef, show, onDownload, filename = "sentinel-qr.
     <>
       <div className={show ? "" : "hidden"}>
         <div className="flex justify-center bg-white rounded-xl p-4 shadow-card border border-slate/10">
-          <canvas ref={canvasRef} />
+          <canvas ref={canvasRef} role="img" aria-label="QR code" />
         </div>
       </div>
       {show && (
@@ -63,6 +63,7 @@ export function GenerateOptions({ darkColor, setDarkColor, lightColor, setLightC
           type="color"
           value={darkColor}
           onChange={(e) => setDarkColor(e.target.value)}
+          aria-label="Foreground colour"
           className="w-8 h-8 rounded cursor-pointer border border-slate/20"
         />
         <span className="text-xs text-slate font-mono">{darkColor}</span>
@@ -72,6 +73,7 @@ export function GenerateOptions({ darkColor, setDarkColor, lightColor, setLightC
           type="color"
           value={lightColor}
           onChange={(e) => setLightColor(e.target.value)}
+          aria-label="Background colour"
           className="w-8 h-8 rounded cursor-pointer border border-slate/20"
         />
         <span className="text-xs text-slate font-mono">{lightColor}</span>
@@ -80,7 +82,8 @@ export function GenerateOptions({ darkColor, setDarkColor, lightColor, setLightC
         <select
           value={ecLevel}
           onChange={(e) => setEcLevel(e.target.value)}
-          className="text-sm text-ink bg-surface border border-slate/30 rounded-lg px-2 py-1.5 focus:outline-none focus:border-teal transition"
+          aria-label="Error correction"
+          className="text-sm text-ink bg-surface border border-slate/30 rounded-lg px-2 py-1.5 focus:border-teal transition"
         >
           {EC_LEVELS.map((l) => (
             <option key={l.value} value={l.value}>{l.label}</option>
@@ -134,7 +137,8 @@ export function useQRGenerator({ canvasRef, text, darkColor, lightColor, errorCo
         // sub-type, or a 30s window changed. Otherwise tweaking colours or the
         // error-correction level spams the activity log with near-identical
         // rows. Content is deliberately never persisted (see AGENTS.md
-        // invariant).
+        // invariant) — and the content length is not logged either, since for
+        // the Wi-Fi tab the text embeds the network password.
         const now = Date.now();
         const lengthBucket = Math.round(text.trim().length / 8) * 8;
         const lastLog = lastLogRef.current;
@@ -148,7 +152,7 @@ export function useQRGenerator({ canvasRef, text, darkColor, lightColor, errorCo
           saveActivity({
             moduleType: moduleId,
             summary: `QR code generated (${subType})`,
-            details: { contentLength: text.trim().length },
+            details: {},
           });
         }
       }

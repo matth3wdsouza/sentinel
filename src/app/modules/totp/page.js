@@ -165,7 +165,7 @@ function TOTPDisplay({ totp, onCopy }) {
               Scan with any TOTP app (Google Authenticator, Authy, 1Password…) to add this secret.
             </p>
             <div className="flex justify-center bg-white rounded-xl p-4 shadow-card border border-slate/10 w-fit">
-              <canvas ref={canvasRef} />
+              <canvas ref={canvasRef} role="img" aria-label="QR code for authenticator apps" />
             </div>
             <button
               onClick={handleDownloadQR}
@@ -270,7 +270,8 @@ export default function TOTPPage() {
           rows={3}
           spellCheck={false}
           autoComplete="off"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:outline-none focus:border-teal transition resize-none font-mono"
+          aria-label="Secret or otpauth:// URI"
+          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-none font-mono"
         />
         <p className="text-xs text-slate mt-1">
           The secret never leaves your browser and is not stored between sessions.

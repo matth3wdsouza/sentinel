@@ -75,7 +75,7 @@ function JWTResult({ header, payload, signature }) {
   return (
     <div className="mt-6 space-y-4">
       {/* Header */}
-      <ResultCard verdict={verdict} heading={heading}>
+      <ResultCard verdict={verdict} heading={heading} headingLevel="h2">
         <div className="divide-y divide-slate/10">
           <Field
             label="Algorithm (alg)"
@@ -249,7 +249,8 @@ export default function JWTInspectorPage() {
           rows={4}
           spellCheck={false}
           autoComplete="off"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:outline-none focus:border-teal transition resize-y font-mono"
+          aria-label="JSON Web Token"
+          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
         />
       </div>
 

@@ -25,6 +25,9 @@ export default function CopyButton({ value, label, className = "-m-2 p-2", onCop
       className={`shrink-0 ${className} inline-flex items-center justify-center rounded text-slate hover:text-teal transition`}
     >
       {copied ? <Check size={13} /> : <Copy size={13} />}
+      <span role="status" className="sr-only">
+        {copied ? "Copied" : ""}
+      </span>
     </button>
   );
 }

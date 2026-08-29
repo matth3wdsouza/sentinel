@@ -209,6 +209,7 @@ export default function HibpPage() {
           <div className="mt-6">
             <ResultCard
               verdict={result.breached ? "mismatch" : "match"}
+              headingLevel="h2"
               heading={
                 result.breached
                   ? "Found in a known breach"

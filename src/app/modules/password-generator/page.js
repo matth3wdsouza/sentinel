@@ -179,6 +179,7 @@ export default function PasswordGeneratorPage() {
                 max={128}
                 value={options.length}
                 onChange={(e) => updateOption("length", Number(e.target.value))}
+                aria-label="Length"
                 className="w-full accent-teal"
               />
             </div>
@@ -226,7 +227,7 @@ export default function PasswordGeneratorPage() {
               </p>
 
               <div>
-                <label className="block text-sm font-medium text-ink mb-1">
+                <label className="block text-sm font-medium text-ink mb-1.5">
                   Custom characters to exclude
                 </label>
                 <input
@@ -234,7 +235,8 @@ export default function PasswordGeneratorPage() {
                   value={options.customExclusions}
                   onChange={(e) => updateOption("customExclusions", e.target.value)}
                   placeholder="e.g. { } ` ~"
-                  className="w-full border border-slate/30 rounded-lg px-3 py-1.5 text-sm font-mono bg-surface focus:outline-none focus:border-teal transition"
+                  aria-label="Custom characters to exclude"
+                  className="w-full border border-slate/30 rounded-lg px-3 py-1.5 text-sm font-mono bg-surface focus:border-teal transition"
                 />
               </div>
             </Disclosure>

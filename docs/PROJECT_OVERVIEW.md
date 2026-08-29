@@ -246,8 +246,9 @@ planned modules are achievable entirely client-side.
     global `MAX_PIN_LENGTH = 12` caps analysis; non-digit input is flagged as
     not-a-PIN. Cross-links to Password Generator (make a random one) and
     Guessability when weak. Activity logging keeps the privacy invariant: it
-    records only verdict, length, unique-digit count, pattern count, and
-    coarse per-pattern booleans — never the PIN or its digit values. Input is
+    records only the verdict and pattern count — never the PIN, nor its length,
+    unique-digit count, or which patterns matched (those would narrow the
+    actual PIN). This mirrors Guessability's "log nothing" discipline. Input is
     a masked PasswordField. (`src/lib/pinAnalyser.js`,
     `src/app/modules/pin-analyser/page.js`)
 
@@ -513,9 +514,26 @@ elevated). All phases are complete and stable:
     (consistent with HIBP/Guessability/Common-Password) capped at
     `MAX_PIN_LENGTH = 12`; non-digit input is flagged as not-a-PIN.
   - Activity logging honours the privacy invariant: it records only the
-    verdict, length, unique-digit count, pattern count, and coarse
-    booleans (hasCommon/hasRepeat/hasSequence/hasCouplet/hasDate) — never
-    the PIN or its digit values.
+    verdict and pattern count — never the PIN, nor its length, unique-digit
+    count, or which patterns matched (those would narrow the actual PIN).
+
+- **Phase 13 — privacy-invariant tightening** — a follow-up to the four-way
+  audit of the existing modules. Three modules were persisting the *length or
+  structural fingerprint of the sensitive input itself* — beyond the "what you
+  did, never what you did it to" bar every other module respects (HIBP logs
+  only a breached boolean; Guessability logs nothing):
+  - **PIN & Pattern Analyser** stopped logging `length`, `uniqueDigits`, and
+    the `hasCommon/hasRepeat/hasSequence/hasCouplet/hasDate` booleans — those,
+    with a timestamp, narrow the actual PIN. It now logs only the verdict and
+    pattern count, mirroring Guessability's "log nothing" discipline.
+  - **QR generate** stopped logging `contentLength` — for the Wi-Fi tab the
+    text is the full `WIFI:…;P:<password>;` string, so the logged length was
+    the length of a string embedding the Wi-Fi password. The length bucket is
+    still used internally for coalescing, but never persisted.
+  - **text-hash** stopped logging `charCount` and the length-scoped summary
+    (the hashed input can be a secret); **base64** stopped logging
+    `inputLength`/`outputLength` and length-scoped summaries. Both now record
+    only non-secret coarse keys (`algorithms` / `variant`).
 
 ## Refactor — Rounds 1–3
 
@@ -593,8 +611,8 @@ and should stay as-is.
 - **QR activity logging coalesced** — `useQRGenerator` (`generateOptions.js`)
   now logs using the same pattern text-hash does: keyed on `subType` + an
   8-char length bucket + a 30s window, so colour/error-correction tweaks and
-  same-bucket keystrokes no longer spam the activity feed. The logged
-  `contentLength` stays exact, matching text-hash's `charCount`.
+  same-bucket keystrokes no longer spam the activity feed. Content length is
+  not logged (see Phase 13 — privacy tightening), so no `contentLength`.
 - **QR decode distinguishes corrupt files** — `decodeQR` (`qr.js`)
   pre-validates the upload with `createImageBitmap` and returns `IMAGE_ERROR`
   on decode failure (mapped to the existing "Couldn't read image" message).

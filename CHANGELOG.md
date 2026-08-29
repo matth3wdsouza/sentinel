@@ -17,9 +17,27 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   when weak. The numeric sibling of Guessability, since zxcvbn has no PIN
   heuristics. Pure client-side, no network/worker. (`src/lib/pinAnalyser.js`,
   `src/app/modules/pin-analyser/page.js`)
-- **Privacy note on the analyser** — activity logging records only verdict,
-  length, unique-digit count, pattern count, and coarse booleans, never the
-  PIN or its digit values; analysis caps at 12 digits; no CSP change needed.
+- **Privacy note on the analyser** — activity logging records only verdict
+  and pattern count, never the PIN (or its length, unique-digit count, or which
+  patterns matched); analysis caps at 12 digits; no CSP change needed.
+
+### Changed — Privacy-invariant tightening (audit follow-up)
+
+- **PIN & Pattern Analyser** stopped logging the PIN's length, unique-digit
+  count, and which patterns matched — those, with a timestamp, narrow the
+  actual PIN. It now logs only the verdict and pattern count, mirroring
+  Guessability's "log nothing" discipline.
+  (`src/app/modules/pin-analyser/page.js`)
+- **QR generate** stopped logging `contentLength` — for the Wi-Fi tab the text
+  is the full `WIFI:…;P:<password>;` string, so that logged length was the
+  length of a string embedding the Wi-Fi password. The length bucket is still
+  used internally for coalescing, but never persisted.
+  (`src/app/modules/qr/generateOptions.js`)
+- **text-hash** stopped logging `charCount` and its length-scoped summary (the
+  hashed input can itself be a secret); **base64** stopped logging
+  `inputLength`/`outputLength` and length-scoped summaries. Both retain only
+  non-secret coarse keys (`algorithms` / `variant`).
+  (`src/app/modules/text-hash/page.js`, `src/app/modules/base64/page.js`)
 
 ### Added — Scam Message Analyser module
 
@@ -884,7 +902,7 @@ synchronous read of a URL param, the correct shape there).
 
 ### Changed — review follow-ups (third review pass)
 
-- **QR activity logging coalesced** — `useQRGenerator` (`src/app/modules/qr/generateOptions.js`) now logs using the same pattern text-hash does: keyed on `subType` + an 8-char length bucket + a 30s window. Colour/error-correction tweaks and same-bucket keystrokes no longer spam the activity feed; `contentLength` stays exact, matching text-hash's `charCount`.
+- **QR activity logging coalesced** — `useQRGenerator` (`src/app/modules/qr/generateOptions.js`) now logs using the same pattern text-hash does: keyed on `subType` + an 8-char length bucket + a 30s window. Colour/error-correction tweaks and same-bucket keystrokes no longer spam the activity feed. (`contentLength` was later removed entirely — see the privacy-tightening entry above.)
 - **QR decode now distinguishes corrupt files** — `decodeQR` (`src/lib/qr.js`) pre-validates the upload with `createImageBitmap` and returns `IMAGE_ERROR` (mapped to the existing "Couldn't read image" message). Previously a corrupt upload sat in @zxing/browser's 10s image-load timeout and surfaced as the misleading "Decoder unavailable" (`LIBRARY_ERROR`).
 - **Home screen no longer flashes disabled modules** — `src/app/page.js` gates the search-results, category-grid, and no-results blocks behind `isLoaded`, so disabled modules don't flash visible for a tick while `disabled-modules` resolves from IndexedDB (the flag was dead code; the gate was already documented in `PROJECT_OVERVIEW.md`).
 - **FileInput re-selection works** — the hidden `<input type="file">` clears its value after each selection, so re-picking the *same* file re-fires `change` instead of silently doing nothing (e.g. re-verifying a file after Reset). (`src/components/FileInput.js`)

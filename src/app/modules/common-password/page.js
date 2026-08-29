@@ -192,6 +192,7 @@ export default function CommonPasswordPage() {
         {result && (
           <ResultCard
             verdict={result.found ? "mismatch" : "success"}
+            headingLevel="h2"
             heading={
               result.found
                 ? "A very common password"

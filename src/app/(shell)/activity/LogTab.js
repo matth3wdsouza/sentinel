@@ -224,7 +224,7 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
             value={moduleFilter}
             onChange={(e) => handleFilterChange(e.target.value)}
             aria-label="Filter activity by module"
-            className="border border-slate/30 rounded-lg px-3 py-1.5 text-sm bg-surface focus:outline-none focus:border-teal transition"
+            className="border border-slate/30 rounded-lg px-3 py-1.5 text-sm bg-surface focus:border-teal transition"
           >
             <option value="all">All activity</option>
             {moduleTypesPresent.map((type) => (
@@ -305,11 +305,12 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
 
       {filtered.length > 0 && (
         <div className="flex items-center justify-between mt-4 gap-3">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1" role="group" aria-label="Page size">
             {PAGE_SIZE_OPTIONS.map((size) => (
               <button
                 key={size}
                 onClick={() => handlePageSizeChange(size)}
+                aria-pressed={pageSize === size}
                 className={`px-2.5 py-1 rounded-lg text-xs font-medium transition ${
                   pageSize === size
                     ? "bg-teal-light text-teal-chip"

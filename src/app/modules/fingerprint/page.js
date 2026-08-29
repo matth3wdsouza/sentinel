@@ -383,6 +383,7 @@ function GeoSection({ moduleId }) {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setHighAccuracy(false)}
+                aria-pressed={!highAccuracy}
                 className={`flex-1 px-3 py-2 rounded-lg border text-sm transition ${
                   !highAccuracy
                     ? "border-teal bg-teal-light text-teal-chip font-medium"
@@ -393,6 +394,7 @@ function GeoSection({ moduleId }) {
               </button>
               <button
                 onClick={() => setHighAccuracy(true)}
+                aria-pressed={highAccuracy}
                 className={`flex-1 px-3 py-2 rounded-lg border text-sm transition ${
                   highAccuracy
                     ? "border-teal bg-teal-light text-teal-chip font-medium"

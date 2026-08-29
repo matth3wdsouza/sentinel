@@ -40,6 +40,9 @@ export default function TextOutput({
           {copied ? <Check size={12} /> : <Copy size={12} />}
           {copied ? "Copied" : "Copy"}
         </button>
+        <span role="status" className="sr-only">
+          {copied ? "Copied to clipboard" : ""}
+        </span>
       </div>
       <div
         className={`border border-slate/20 rounded-xl px-4 py-3 text-sm text-ink bg-surface whitespace-pre-wrap break-words ${mono ? "font-mono" : ""} ${containerClassName}`}

@@ -100,6 +100,7 @@ export default function FileSignaturePage() {
             {result.verdict === "match" && (
               <ResultCard
                 verdict="match"
+                headingLevel="h2"
                 heading="File type verified"
                 explanation={{
                   means: result.message,
@@ -139,6 +140,7 @@ export default function FileSignaturePage() {
             {result.verdict === "mismatch" && (
               <ResultCard
                 verdict="mismatch"
+                headingLevel="h2"
                 heading="File type mismatch!"
                 explanation={{
                   means: result.message,
@@ -173,6 +175,7 @@ export default function FileSignaturePage() {
             {result.verdict === "unknown" && (
               <ResultCard
                 verdict="neutral"
+                headingLevel="h2"
                 heading="Unknown file type"
                 explanation={{
                   means:
@@ -203,6 +206,7 @@ export default function FileSignaturePage() {
             {result.verdict === "empty" && (
               <ResultCard
                 verdict="neutral"
+                headingLevel="h2"
                 heading="Empty file"
                 explanation={{
                   means: "The file contains no data. An empty file can't have magic bytes to verify.",

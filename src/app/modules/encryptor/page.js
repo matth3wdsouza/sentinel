@@ -87,7 +87,8 @@ function EncryptTab({ moduleId }) {
           onChange={(e) => { setPlaintext(e.target.value); setResult(null); setError(null); }}
           placeholder="Paste or type the text you want to encrypt…"
           rows={5}
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:outline-none focus:border-teal transition resize-y font-mono"
+          aria-label="Text to encrypt"
+          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
         />
       </div>
 
@@ -149,6 +150,7 @@ function EncryptTab({ moduleId }) {
       {result && (
         <ResultCard
           verdict="success"
+          headingLevel="h2"
           heading="Text encrypted"
           explanation={{
             means:
@@ -267,7 +269,8 @@ function DecryptTab({ moduleId }) {
           onChange={(e) => { setCiphertext(e.target.value); setResult(null); setError(null); }}
           placeholder="Paste the sentinel:v1:… encrypted output here…"
           rows={4}
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:outline-none focus:border-teal transition resize-y font-mono"
+          aria-label="Encrypted text"
+          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
         />
       </div>
 
@@ -319,6 +322,7 @@ function DecryptTab({ moduleId }) {
       {result !== null && (
         <ResultCard
           verdict="success"
+          headingLevel="h2"
           heading="Decryption succeeded"
           explanation={{
             means: "The passphrase matched and the encrypted text was authentic — it hasn't been modified since it was encrypted.",
