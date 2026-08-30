@@ -16,7 +16,8 @@ const SUSPICIOUS_TLDS = new Set([
 const KNOWN_BRANDS = [
   "google", "gmail", "youtube", "facebook", "meta", "instagram", "whatsapp",
   "paypal", "apple", "microsoft", "office365", "outlook", "live", "hotmail",
-  "amazon", "netflix", "twitter", "x", "linkedin", "github", "dropbox",
+  "amazon", "netflix", "twitter", "x", "linkedin", "github", "gitlab",
+  "bitbucket", "dropbox",
   "icloud", "samsung", "adobe", "dhl", "fedex", "ups", "usps", "royalmail",
   "gov", "irs", "hmrc", "dwp", "nhs",
 ];

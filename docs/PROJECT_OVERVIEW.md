@@ -637,6 +637,22 @@ elevated). All phases are complete and stable:
     Text Hash ↔ File Integrity precedent).
   - No lib logic or tests changed anywhere on this pass.
 
+- **Phase 18 — gitlab/bitbucket typosquat false positive** (found during
+  end-to-end testing of the QR → URL Inspector flow added in Phase 17):
+  - `gitlab` and `bitbucket` are legitimate code-hosting brands but only
+    `github` was in `KNOWN_BRANDS`, so the fuzzy near-miss matcher read
+    `gitlab.com`/`gitlab.io` as an edit-distance-2 lookalike of `github` and
+    reported them **suspicious**. Both brands added to the list — the real
+    domains are now ignored while lookalikes of `gitlab`/`bitbucket`
+    (`git1ab.com`, `b1tbucket.com`) are caught. Regression tests added.
+  - Known residual class, deliberately not chased: 4-letter brands still
+    match legitimate dist-1 domains like `love.com` (→`live`) and
+    `mete.com` (→`meta`). No static allowlist can fix this without turning
+    into whack-a-mole, and network reputation lookups are off-limits under
+    the no-external-calls invariant — the softened verdict framing (see the
+    following phase) treats such flags as "verify independently" hints
+    rather than accusations, which is the systematic mitigation.
+
 ## Refactor — Rounds 1–3
 
 A systematic refactor was completed after the 10th module was built, to

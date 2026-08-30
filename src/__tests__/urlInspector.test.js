@@ -252,6 +252,25 @@ describe("flags: typosquatting", () => {
     const result = analyzeURL("https://up5.com");
     expect(result.flags.some((f) => f.type === "typosquatting")).toBe(true);
   });
+
+  it("does not flag gitlab as typosquatting github", () => {
+    for (const host of ["gitlab.com", "gitlab.io", "www.gitlab.com/foo"]) {
+      const result = analyzeURL(`https://${host}`);
+      expect(result.flags.some((f) => f.type === "typosquatting")).toBe(false);
+    }
+  });
+
+  it("does not flag bitbucket as typosquatting", () => {
+    const result = analyzeURL("https://bitbucket.org");
+    expect(result.flags.some((f) => f.type === "typosquatting")).toBe(false);
+  });
+
+  it("flags leet substitutions of the gitlab and bitbucket brands", () => {
+    for (const host of ["git1ab.com", "b1tbucket.com"]) {
+      const result = analyzeURL(`https://${host}`);
+      expect(result.flags.some((f) => f.type === "typosquatting")).toBe(true);
+    }
+  });
 });
 
 describe("verdict", () => {

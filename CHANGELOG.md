@@ -4,6 +4,16 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed — gitlab/bitbucket typosquat false positive
+
+`gitlab` and `bitbucket` are major legitimate code-hosting brands, but only
+`github` was in the URL Inspector's brand list. The fuzzy near-miss matcher
+therefore flagged the real `github`'s edit-distance-2 cousin `gitlab` as
+"close to github" — so `gitlab.com` and `gitlab.io` were being reported as
+**suspicious**. Adding the two brands to the list means the domains no longer
+flag, while genuine lookalikes (e.g. `git1ab.com`, `b1tbucket.com`) now
+correctly match them. `github.com` and its typosquats are unchanged.
+
 ### Changed — UI consistency pass
 
 Reviewed for cross-module UI consistency; no bugs found. Resolved four
