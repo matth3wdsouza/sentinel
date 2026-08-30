@@ -11,6 +11,7 @@ import TextArea from "@/components/TextArea";
 import AnalyseActions from "@/components/AnalyseActions";
 import VerdictCard from "@/components/VerdictCard";
 import FindingsList from "@/components/FindingsList";
+import SeverityChips from "@/components/SeverityChips";
 import InfoCallout from "@/components/InfoCallout";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
@@ -176,21 +177,13 @@ export default function UnicodeInspectorPage() {
                   <h3 className="font-display font-semibold text-ink mb-3">
                     Found ({result.hiddenCount})
                   </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {visibleCategories.map(([category, count]) => {
-                      const severity = CATEGORY_CONFIG[category].severity;
-                      const style = SEVERITY_STYLE[severity];
-                      return (
-                        <span
-                          key={category}
-                          className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${style.badge}`}
-                        >
-                          <span className={`size-1.5 rounded-full ${style.dot}`} />
-                          {count} × {CATEGORY_CONFIG[category].label}
-                        </span>
-                      );
-                    })}
-                  </div>
+                  <SeverityChips
+                    rows={visibleCategories.map(([category, count]) => ({
+                      severity: CATEGORY_CONFIG[category].severity,
+                      label: CATEGORY_CONFIG[category].label,
+                      count,
+                    }))}
+                  />
                 </div>
               </ResultCard>
             )}

@@ -21,11 +21,13 @@ import {
 import ModulePage from "@/components/ModulePage";
 import FileInput from "@/components/FileInput";
 import CodeBlock from "@/components/CodeBlock";
-import CopyButton from "@/components/CopyButton";
+import KeyValueRow from "@/components/KeyValueRow";
 import Disclosure from "@/components/Disclosure";
 import InlineError from "@/components/InlineError";
 import { Button } from "@/components/Button";
 import { parseExif, privacySummary } from "@/lib/exif";
+import { formatBytes } from "@/lib/format";
+import { osmLink } from "@/lib/geo";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
@@ -47,27 +49,17 @@ const SEVERITY = {
 // ─── FieldRow ─────────────────────────────────────────────────────────────────
 
 function FieldRow({ label, value, mono, copyable }) {
-  if (value === null || value === undefined) {
-    return (
-      <div className="flex items-center justify-between py-2 border-b border-slate/10 last:border-0">
-        <span className="text-xs text-slate">{label}</span>
-        <span className="text-xs text-slate italic">Not found</span>
-      </div>
-    );
-  }
-
-  const display = String(value);
-
   return (
-    <div className="flex items-start justify-between gap-3 py-2 border-b border-slate/10 last:border-0">
-      <span className="text-xs text-slate shrink-0">{label}</span>
-      <div className="flex items-center gap-1.5 min-w-0">
-        <span className={`text-xs text-ink text-right break-all ${mono ? "font-mono" : ""}`}>
-          {display}
-        </span>
-        {copyable && <CopyButton value={display} label={label} />}
-      </div>
-    </div>
+    <KeyValueRow
+      label={label}
+      value={value}
+      mono={mono}
+      copyable={copyable}
+      copyLabel={label}
+      emptyText="Not found"
+      variant="row"
+      className="py-2 border-b border-slate/10 last:border-0"
+    />
   );
 }
 
@@ -120,7 +112,7 @@ function MetadataGroup({ icon: Icon, title, severity, found, explanation, childr
 
 function GPSActions({ lat, lng }) {
   const coordString = `${lat}, ${lng}`;
-  const osmUrl = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}&zoom=15`;
+  const osmUrl = osmLink(lat, lng);
   const [copied, copy] = useCopyToClipboard();
 
   function handleCopy() {
@@ -304,10 +296,7 @@ function ImagePreview({ file }) {
 
   if (!url) return null;
 
-  const sizeLabel =
-    file.size < 1024 * 1024
-      ? `${(file.size / 1024).toFixed(1)} KB`
-      : `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
+  const sizeLabel = formatBytes(file.size);
 
   return (
     <div className="rounded-xl bg-surface shadow-card overflow-hidden mb-6">

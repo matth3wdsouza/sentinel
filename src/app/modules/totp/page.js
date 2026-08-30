@@ -6,6 +6,8 @@ import * as OTPAuth from "otpauth";
 import { generateQR } from "@/lib/qr";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import ModulePage from "@/components/ModulePage";
+import TextArea from "@/components/TextArea";
+import { downloadCanvas } from "@/lib/download";
 import { Button } from "@/components/Button";
 import InlineError from "@/components/InlineError";
 import { saveActivity } from "@/lib/api";
@@ -97,11 +99,7 @@ function TOTPDisplay({ totp, onCopy }) {
   }, [showQR, totp]);
 
   function handleDownloadQR() {
-    if (!canvasRef.current) return;
-    const link = document.createElement("a");
-    link.download = "totp-qr.png";
-    link.href = canvasRef.current.toDataURL("image/png");
-    link.click();
+    downloadCanvas(canvasRef.current, "totp-qr.png");
   }
 
   if (!codes) return <InlineError className="mt-4">Failed to compute codes.</InlineError>;
@@ -263,15 +261,14 @@ export default function TOTPPage() {
         <label className="block text-sm font-medium text-ink mb-1.5">
           Secret or otpauth:// URI
         </label>
-        <textarea
+        <TextArea
           value={input}
           onChange={handleInputChange}
           placeholder={"Base32 secret — e.g. JBSWY3DPEHPK3PXP\nor otpauth://totp/Example?secret=…&issuer=Example"}
           rows={3}
-          spellCheck={false}
-          autoComplete="off"
-          aria-label="Secret or otpauth:// URI"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-none font-mono"
+          ariaLabel="Secret or otpauth:// URI"
+          mono
+          resizable={false}
         />
         <p className="text-xs text-slate mt-1">
           The secret never leaves your browser and is not stored between sessions.

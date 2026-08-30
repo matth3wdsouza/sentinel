@@ -3,6 +3,8 @@
 import { useState, useRef } from "react";
 import { QrCode } from "lucide-react";
 import InlineError from "@/components/InlineError";
+import TextArea from "@/components/TextArea";
+import { downloadCanvas } from "@/lib/download";
 import { QRCanvas, GenerateOptions, useQRGenerator } from "./generateOptions";
 
 export default function GenerateTab({ moduleId }) {
@@ -24,11 +26,7 @@ export default function GenerateTab({ moduleId }) {
   });
 
   function handleDownload() {
-    if (!canvasRef.current) return;
-    const link = document.createElement("a");
-    link.download = "sentinel-qr.png";
-    link.href = canvasRef.current.toDataURL("image/png");
-    link.click();
+    downloadCanvas(canvasRef.current, "sentinel-qr.png");
   }
 
   return (
@@ -37,13 +35,12 @@ export default function GenerateTab({ moduleId }) {
         <label className="block text-sm font-medium text-ink mb-1.5">
           Text or URL to encode
         </label>
-        <textarea
+        <TextArea
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Enter a URL, plain text, or anything you want to encode…"
           rows={4}
-          aria-label="Text or URL to encode"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y"
+          ariaLabel="Text or URL to encode"
         />
         <div className="flex items-center justify-between mt-1">
           <p className="text-xs text-slate">{text.length} characters</p>

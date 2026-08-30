@@ -672,6 +672,40 @@ elevated). All phases are complete and stable:
   tracking-parameter warning and cleaned-URL row (both now copyable) and the
   explicit Open buttons.
 
+- **Phase 21 — de-duplication sweep** (the "consolidate, don't mint" pass
+  over the drift left from rapid prototyping; the ONLY deliberate behavior
+  change is noted at the end):
+  - **Single source for URL signals and verdicts.** `SUSPICIOUS_TLDS` (22
+    TLDs) and `TRACKING_PARAMS` (12 params) now live once in
+    `src/lib/urlSignals.js` — previously the URL Inspector and Scam Message
+    Analyser each owned their own TLD copy (the scam list was ~18) and the
+    clipboard/QR tracking-parameter lists were separate too. `computeVerdict`
+    lives in `src/lib/severity.js` (`DANGER`/`WARNING`/`INFO` severities) and
+    is shared by the URL, scam, and Unicode inspectors with a `safeToken`
+    override so each keeps its own wording ("safe" vs "clean"); the PIN
+    analyser deliberately keeps its own weak/fair/strong vocabulary. This
+    makes the *scam analyser* check the full union — it now flags `sbs`,
+    `cfd`, `surf`, and `rest` (regression-tested).
+  - **Shared `KeyValueRow` component** (`src/components/KeyValueRow.js`)
+    replaces six hand-rolled breakdown rows: URLPartsTable, JWT `Field`,
+    text-hash `HashRow`, EXIF `FieldRow`, fingerprint `DataTable`, and the QR
+    decoder's Tracking/Full/Cleaned URL rows. Variants cover stacked vs.
+    row layout, mono/copyable values, and `warning`/`mismatch`/`match` tones.
+  - **`TextArea` used everywhere** — all eight remaining raw `<textarea>`s
+    (base64 × 2, encryptor × 2, JWT, text-hash, TOTP, QR generate) now use
+    `@/components/TextArea`.
+  - **Shared `SeverityChips`** component used by the scam and Unicode
+    inspectors; small helpers extracted to their own modules:
+    `downloadCanvas` (`lib/download.js`), `osmLink` (`lib/geo.js`),
+    `formatBytes` (`lib/format.js`), and `toggleAlgorithm` (`lib/hashing.js`)
+    shared by text-hash and file-integrity's GenerateHashTab.
+  - **Coalesced activity logging lives once** — `useCoalescedActivity`
+    (`src/lib/useCoalescedActivity.js`) extracts the copy-pasted 30s/`subType`
+    coalescing that text-hash and the QR generator each carried inline.
+    (Whether the auto-running text-hash/QR modules should instead log from a
+    button press like every other module is an open decision, parked.)
+  - Net `-61` lines. No other UI or logging behavior changed.
+
 ## Refactor — Rounds 1–3
 
 A systematic refactor was completed after the 10th module was built, to

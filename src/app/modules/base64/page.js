@@ -7,6 +7,7 @@ import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import CodeBlock from "@/components/CodeBlock";
 import TextOutput from "@/components/TextOutput";
+import TextArea from "@/components/TextArea";
 import InlineError from "@/components/InlineError";
 import OptionRow from "@/components/OptionRow";
 import { Button } from "@/components/Button";
@@ -70,15 +71,13 @@ function EncodeTab({ moduleId }) {
         <label className="block text-sm font-medium text-ink mb-1.5">
           Text to encode
         </label>
-        <textarea
+        <TextArea
           value={input}
           onChange={handleInputChange}
           placeholder="Paste or type any string…"
           rows={4}
-          spellCheck={false}
-          autoComplete="off"
-          aria-label="Text to encode"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
+          ariaLabel="Text to encode"
+          mono
         />
       </div>
 
@@ -179,15 +178,13 @@ function DecodeTab({ moduleId }) {
         <label className="block text-sm font-medium text-ink mb-1.5">
           Base64 to decode
         </label>
-        <textarea
+        <TextArea
           value={input}
           onChange={handleInputChange}
           placeholder="Paste a Base64 or Base64url string…"
           rows={4}
-          spellCheck={false}
-          autoComplete="off"
-          aria-label="Base64 to decode"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
+          ariaLabel="Base64 to decode"
+          mono
         />
       </div>
 

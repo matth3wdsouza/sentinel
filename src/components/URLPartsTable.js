@@ -1,6 +1,6 @@
 "use client";
 
-import CopyButton from "@/components/CopyButton";
+import KeyValueRow from "@/components/KeyValueRow";
 
 const URL_PARTS = [
   { key: "protocol", label: "Scheme" },
@@ -25,18 +25,15 @@ export default function URLPartsTable({ parts = {} }) {
         const value = parts[key];
         if (!value) return null;
         return (
-          <div
+          <KeyValueRow
             key={key}
-            className="flex items-start justify-between gap-3 py-1"
-          >
-            <div className="min-w-0">
-              <p className="text-xs uppercase tracking-wide text-slate">
-                {label}
-              </p>
-              <p className="text-sm text-ink font-mono break-all">{value}</p>
-            </div>
-            <CopyButton value={value} label={label} className="mt-2 p-2" />
-          </div>
+            label={label}
+            value={value}
+            mono
+            copyable
+            copyLabel={label}
+            className="py-1"
+          />
         );
       })}
     </div>

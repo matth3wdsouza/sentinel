@@ -1,9 +1,4 @@
-export function formatBytes(bytes) {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-}
+import { formatBytes } from "@/lib/format";
 
 // Reads a streamed hash's progress (bytes done/total) and renders a bar.
 // Only mounted while hashing is in flight; the worker throttles progress

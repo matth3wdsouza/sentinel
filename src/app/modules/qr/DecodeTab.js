@@ -7,7 +7,7 @@ import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import CompanionLinks from "@/components/CompanionLinks";
 import URLPartsTable from "@/components/URLPartsTable";
-import CopyButton from "@/components/CopyButton";
+import KeyValueRow from "@/components/KeyValueRow";
 import { Button } from "@/components/Button";
 import { decodeQR, analyzeQRContent } from "@/lib/qr";
 import { saveActivity } from "@/lib/api";
@@ -128,28 +128,32 @@ function URLPreview({ detail }) {
 
       <div className="divide-y divide-slate/10">
         {detail.trackingParams.length > 0 && (
-          <div className="py-2 flex items-start justify-between gap-4">
-            <span className="text-xs text-slate shrink-0 w-28">Tracking params</span>
-            <span className="text-xs text-mismatch font-mono text-right break-all">
-              {detail.trackingParams.join(", ")}
-            </span>
-          </div>
+          <KeyValueRow
+            label="Tracking params"
+            value={detail.trackingParams.join(", ")}
+            mono
+            tone="mismatch"
+            className="py-2"
+          />
         )}
-        <div className="py-2 flex items-start justify-between gap-4">
-          <span className="text-xs text-slate shrink-0 w-28">Full URL</span>
-          <span className="flex-1 min-w-0 flex items-start justify-end gap-2">
-            <span className="text-xs text-ink font-mono break-all text-right">{detail.href}</span>
-            <CopyButton value={detail.href} label="full URL" className="p-1.5 -m-1.5" />
-          </span>
-        </div>
+        <KeyValueRow
+          label="Full URL"
+          value={detail.href}
+          mono
+          copyable
+          copyLabel="full URL"
+          className="py-2"
+        />
         {detail.trackingParams.length > 0 && (
-          <div className="py-2 flex items-start justify-between gap-4">
-            <span className="text-xs text-slate shrink-0 w-28">Cleaned URL</span>
-            <span className="flex-1 min-w-0 flex items-start justify-end gap-2">
-              <span className="text-xs text-match font-mono break-all text-right">{detail.cleanUrl}</span>
-              <CopyButton value={detail.cleanUrl} label="cleaned URL" className="p-1.5 -m-1.5" />
-            </span>
-          </div>
+<KeyValueRow
+          label="Cleaned URL"
+          value={detail.cleanUrl}
+          mono
+          copyable
+          copyLabel="cleaned URL"
+          tone="match"
+          className="py-2"
+        />
         )}
       </div>
 

@@ -8,6 +8,7 @@ import PasswordField from "@/components/PasswordField";
 import ResultCard from "@/components/ResultCard";
 import CodeBlock from "@/components/CodeBlock";
 import TextOutput from "@/components/TextOutput";
+import TextArea from "@/components/TextArea";
 import InlineError from "@/components/InlineError";
 import { Button } from "@/components/Button";
 import Tabs from "@/components/Tabs";
@@ -82,13 +83,12 @@ function EncryptTab({ moduleId }) {
         <label className="block text-sm font-medium text-ink mb-1.5">
           Text to encrypt
         </label>
-        <textarea
+        <TextArea
           value={plaintext}
           onChange={(e) => { setPlaintext(e.target.value); setResult(null); setError(null); }}
           placeholder="Paste or type the text you want to encrypt…"
-          rows={5}
-          aria-label="Text to encrypt"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
+          ariaLabel="Text to encrypt"
+          mono
         />
       </div>
 
@@ -264,13 +264,13 @@ function DecryptTab({ moduleId }) {
         <label className="block text-sm font-medium text-ink mb-1.5">
           Encrypted text
         </label>
-        <textarea
+        <TextArea
           value={ciphertext}
           onChange={(e) => { setCiphertext(e.target.value); setResult(null); setError(null); }}
           placeholder="Paste the sentinel:v1:… encrypted output here…"
           rows={4}
-          aria-label="Encrypted text"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
+          ariaLabel="Encrypted text"
+          mono
         />
       </div>
 

@@ -4,6 +4,31 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Refactored — de-duplication sweep
+
+A cross-module DRY consolidation following the URL decomposition sharing; no
+UI or logging behavior changed net of one deliberate exception (below).
+
+- **Single source for URL signals and verdicts** — `SUSPICIOUS_TLDS` and
+  `TRACKING_PARAMS` now live only in `src/lib/urlSignals.js` (previously the
+  URL Inspector and Scam Message Analyser each owned a copy of the TLD list,
+  and the clipboard/QR modules had their own tracking-parameter lists).
+  `computeVerdict` moved to `src/lib/severity.js` and is shared by the URL,
+  scam, and Unicode inspectors with a `safeToken` override; the PIN analyser
+  keeps its own weak/fair/strong vocabulary.
+- **One behavioral consequence** (deliberate, regression-tested): the scam
+  analyser now checks the full 22-TLD union, adding `sbs`, `cfd`, `surf`,
+  and `rest` to its suspicious list.
+- **Shared `KeyValueRow` component** — replaces six hand-rolled breakdown
+  rows (URLPartsTable, JWT field, text-hash hash row, EXIF field row,
+  fingerprint data table, QR decoder URL rows).
+- **`TextArea` used everywhere** — all eight remaining raw `<textarea>`s now
+  use the shared component.
+- **Small helpers extracted** — `downloadCanvas`, `osmLink`, `formatBytes`,
+  `toggleAlgorithm`, and a shared `SeverityChips` component.
+- **Coalesced activity logging lives in one hook** (`useCoalescedActivity`)
+  instead of being copy-pasted in text-hash and the QR generator.
+
 ### Refactored — shared URL decomposition (QR ↔ URL Inspector)
 
 The QR Decoder's URL preview rendered its own Domain/Protocol rows with no

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Download } from "lucide-react";
 import { generateQR } from "@/lib/qr";
-import { saveActivity } from "@/lib/api";
+import { useCoalescedActivity } from "@/lib/useCoalescedActivity";
 
 // ─── ControlRow ───────────────────────────────────────────────────────────────
 // Inline label + control row used in generate options. Named ControlRow (not
@@ -106,7 +106,7 @@ export function GenerateOptions({ darkColor, setDarkColor, lightColor, setLightC
 export function useQRGenerator({ canvasRef, text, darkColor, lightColor, errorCorrectionLevel, subType, moduleId }) {
   const [state, setState] = useState("idle");
   const [errorMsg, setErrorMsg] = useState(null);
-  const lastLogRef = useRef(null);
+  const logCoalesced = useCoalescedActivity(moduleId);
 
   useEffect(() => {
     if (!text.trim()) {
@@ -133,33 +133,20 @@ export function useQRGenerator({ canvasRef, text, darkColor, lightColor, errorCo
         setState("done");
 
         // QR regenerates continuously (debounced once per input pause), so
-        // activity entries are coalesced — only log when the length bucket,
-        // sub-type, or a 30s window changed. Otherwise tweaking colours or the
-        // error-correction level spams the activity log with near-identical
-        // rows. Content is deliberately never persisted (see AGENTS.md
-        // invariant) — and the content length is not logged either, since for
-        // the Wi-Fi tab the text embeds the network password.
-        const now = Date.now();
-        const lengthBucket = Math.round(text.trim().length / 8) * 8;
-        const lastLog = lastLogRef.current;
-        const shouldLog =
-          !lastLog ||
-          lastLog.subType !== subType ||
-          lastLog.lengthBucket !== lengthBucket ||
-          now - lastLog.at > 30000;
-        if (shouldLog) {
-          lastLogRef.current = { subType, lengthBucket, at: now };
-          saveActivity({
-            moduleType: moduleId,
-            summary: `QR code generated (${subType})`,
-            details: {},
-          });
-        }
+        // activity entries are coalesced by the shared hook — tweaking
+        // colours or the error-correction level shouldn't spam the log.
+        // Content is deliberately never persisted (AGENTS.md invariant) and
+        // the content length is not logged either, since for the Wi-Fi tab
+        // the text embeds the network password.
+        logCoalesced(text.trim().length, subType, () => ({
+          summary: `QR code generated (${subType})`,
+          details: {},
+        }));
       }
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [text, darkColor, lightColor, errorCorrectionLevel, canvasRef, moduleId, subType]);
+  }, [text, darkColor, lightColor, errorCorrectionLevel, canvasRef, subType, logCoalesced]);
 
   return { state, errorMsg };
 }

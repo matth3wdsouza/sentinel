@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import InlineError from "@/components/InlineError";
+import { downloadCanvas } from "@/lib/download";
 import { ControlRow, QRCanvas, GenerateOptions, useQRGenerator } from "./generateOptions";
 
 const WIFI_SECURITY = ["WPA/WPA2", "WEP", "None"];
@@ -38,11 +39,7 @@ export default function WiFiTab({ moduleId }) {
   });
 
   function handleDownload() {
-    if (!canvasRef.current) return;
-    const link = document.createElement("a");
-    link.download = "sentinel-wifi-qr.png";
-    link.href = canvasRef.current.toDataURL("image/png");
-    link.click();
+    downloadCanvas(canvasRef.current, "sentinel-wifi-qr.png");
   }
 
   return (

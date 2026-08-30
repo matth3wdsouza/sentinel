@@ -3,7 +3,7 @@
 import { useState } from "react";
 import CompanionLinks from "@/components/CompanionLinks";
 import { FileCheck } from "lucide-react";
-import { computeHashes, BIG_FILE_SUGGESTION_BYTES } from "@/lib/hashing";
+import { computeHashes, toggleAlgorithm, BIG_FILE_SUGGESTION_BYTES } from "@/lib/hashing";
 import { saveActivity } from "@/lib/api";
 import FallbackCommands from "./FallbackCommands";
 import HashProgress from "./HashProgress";
@@ -33,9 +33,7 @@ export default function GenerateHashTab({ moduleId }) {
   }
 
   function toggleAlgo(algo) {
-    setSelectedAlgos((prev) =>
-      prev.includes(algo) ? prev.filter((a) => a !== algo) : [...prev, algo]
-    );
+    setSelectedAlgos((prev) => toggleAlgorithm(algo, prev));
   }
 
   function handleFileChange(selected) {

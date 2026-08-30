@@ -13,9 +13,11 @@ import ModulePage from "@/components/ModulePage";
 import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import CopyButton from "@/components/CopyButton";
+import KeyValueRow from "@/components/KeyValueRow";
 import { Button } from "@/components/Button";
 import Tabs from "@/components/Tabs";
 import { collectPassive, collectGeo, collectMedia } from "@/lib/fingerprint";
+import { osmLink } from "@/lib/geo";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
 
@@ -34,14 +36,15 @@ function DataTable({ rows }) {
   return (
     <div className="mt-1 mb-1 divide-y divide-slate/10">
       {rows.map(({ label, value }) => (
-        <div key={label} className="py-2 flex items-start justify-between gap-4">
-          <span className="text-xs text-slate shrink-0 w-40">{label}</span>
-          <span className="text-xs text-ink font-mono text-right break-all">
-            {value ?? (
-              <span className="text-slate italic">Not available</span>
-            )}
-          </span>
-        </div>
+        <KeyValueRow
+          key={label}
+          label={label}
+          value={value}
+          mono
+          variant="row"
+          emptyText="Not available"
+          className="py-2"
+        />
       ))}
     </div>
   );
@@ -458,7 +461,7 @@ function GeoSection({ moduleId }) {
           {result.latitude && result.longitude && (
             <div className="mt-3 pt-3 border-t border-slate/10">
               <a
-                href={`https://www.openstreetmap.org/?mlat=${result.latitude}&mlon=${result.longitude}&zoom=14`}
+                href={osmLink(result.latitude, result.longitude, 14)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs text-teal hover:underline"

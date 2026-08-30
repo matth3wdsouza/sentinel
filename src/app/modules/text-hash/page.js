@@ -4,14 +4,15 @@ import { useState, useEffect, useRef } from "react";
 import CompanionLinks from "@/components/CompanionLinks";
 import { Hash, Info } from "lucide-react";
 import { Button } from "@/components/Button";
-import { computeHashes } from "@/lib/hashing";
+import { computeHashes, toggleAlgorithm } from "@/lib/hashing";
 import { usePreference } from "@/lib/usePreference";
-import { saveActivity } from "@/lib/api";
+import { useCoalescedActivity } from "@/lib/useCoalescedActivity";
 import { useModuleId } from "@/lib/useModuleId";
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
 import AlgorithmPicker from "@/components/AlgorithmPicker";
-import CopyButton from "@/components/CopyButton";
+import KeyValueRow from "@/components/KeyValueRow";
+import TextArea from "@/components/TextArea";
 import InlineError from "@/components/InlineError";
 
 // computeHashes accepts any Blob/File and streams it in chunks. Wrap the
@@ -25,13 +26,15 @@ function stringToBlob(str) {
 // would be misleading. The explanation is still accessible via an info button.
 function HashRow({ algo, hash }) {
   return (
-    <div className="flex items-start justify-between gap-3 px-5 py-3.5 border-b border-slate/10 last:border-0">
-      <div className="min-w-0">
-        <p className="text-xs uppercase tracking-wide text-slate mb-1">{algo}</p>
-        <p className="text-xs font-mono text-ink break-all leading-relaxed">{hash}</p>
-      </div>
-      <CopyButton value={hash} label={`${algo} hash`} className="mt-2 p-2" />
-    </div>
+    <KeyValueRow
+      label={algo}
+      value={hash}
+      mono
+      copyable
+      copyLabel={`${algo} hash`}
+      size="xs"
+      className="px-5 py-3.5 border-b border-slate/10 last:border-0"
+    />
   );
 }
 
@@ -82,8 +85,8 @@ export default function TextHashPage() {
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
   const debounceRef = useRef(null);
-  // Coalescing anchor for activity entries (see the effect below).
-  const lastLogRef = useRef(null);
+  // Coalesced activity logging (see the effect below).
+  const logCoalesced = useCoalescedActivity(moduleId);
   // Guard against stale async results: hashing now runs in a worker, so if
   // the text changes while a previous hash is still in flight, only the
   // latest request may update the UI (or the activity log).
@@ -121,31 +124,16 @@ export default function TextHashPage() {
         setError(null);
 
         // Hashing runs continuously (once per pause in typing), so activity
-        // entries are coalesced — only log when the length bucket or
-        // algorithm set changed, or the last entry was over 30s ago.
-        // Otherwise one document would produce dozens of near-identical rows.
-        // Digests are deliberately never persisted (see AGENTS.md invariant).
-        const now = Date.now();
-        const lengthBucket = Math.round(text.length / 8) * 8;
-        const algoKey = selectedAlgos.join(",");
-        const lastLog = lastLogRef.current;
-        const shouldLog =
-          !lastLog ||
-          lastLog.algoKey !== algoKey ||
-          lastLog.lengthBucket !== lengthBucket ||
-          now - lastLog.at > 30000;
-        if (shouldLog) {
-          lastLogRef.current = { algoKey, lengthBucket, at: now };
-          saveActivity({
-            moduleType: moduleId,
-            summary: "Hashed a string",
-            // charCount is deliberately not logged: the input can itself be a
-            // secret, so its length is persisted nowhere.
-            details: {
-              algorithms: selectedAlgos,
-            },
-          });
-        }
+        // entries are coalesced by the shared hook — one document shouldn't
+        // produce dozens of near-identical rows. The hook logs coarse metadata
+        // only; digests are deliberately never persisted (AGENTS.md invariant)
+        // and even the string length is kept out of the entry itself.
+        logCoalesced(text.length, selectedAlgos.join(","), () => ({
+          summary: "Hashed a string",
+          details: {
+            algorithms: selectedAlgos,
+          },
+        }));
       } catch (err) {
         if (requestId !== requestRef.current) return;
         setError(err.message);
@@ -154,12 +142,10 @@ export default function TextHashPage() {
     }, 350);
 
     return () => clearTimeout(debounceRef.current);
-  }, [text, selectedAlgos, algosLoading, moduleId]);
+  }, [text, selectedAlgos, algosLoading, moduleId, logCoalesced]);
 
   function toggleAlgo(algo) {
-    setSelectedAlgos((prev) =>
-      prev.includes(algo) ? prev.filter((a) => a !== algo) : [...prev, algo]
-    );
+    setSelectedAlgos((prev) => toggleAlgorithm(algo, prev));
   }
 
   function handleTextChange(e) {
@@ -186,15 +172,13 @@ export default function TextHashPage() {
         <label className="block text-sm font-medium text-ink mb-1.5" htmlFor="text-input">
           Text to hash
         </label>
-        <textarea
+        <TextArea
           id="text-input"
           value={text}
           onChange={handleTextChange}
           placeholder="Paste or type any string…"
           rows={4}
-          spellCheck={false}
-          autoComplete="off"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
+          mono
         />
         {text.length > 0 && (
           <p className="text-xs text-slate mt-1">

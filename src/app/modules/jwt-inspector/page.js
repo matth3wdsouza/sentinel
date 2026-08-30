@@ -5,6 +5,8 @@ import { KeySquare } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
+import KeyValueRow from "@/components/KeyValueRow";
+import TextArea from "@/components/TextArea";
 import { Button } from "@/components/Button";
 import CodeBlock from "@/components/CodeBlock";
 import { saveActivity } from "@/lib/api";
@@ -20,12 +22,13 @@ const WEAK_ALGS = ["HS1", "RS1"];
 // A single labelled field row — used for both header and payload fields.
 function Field({ label, value, mono = false, warning }) {
   return (
-    <div className="py-1.5">
-      <p className="text-xs uppercase tracking-wide text-slate">{label}</p>
-      <p className={`text-sm text-ink break-all ${mono ? "font-mono" : ""} ${warning ? "text-mismatch font-medium" : ""}`}>
-        {value}
-      </p>
-    </div>
+    <KeyValueRow
+      label={label}
+      value={value}
+      mono={mono}
+      tone={warning ? "warning" : undefined}
+      className="py-1.5"
+    />
   );
 }
 
@@ -242,15 +245,13 @@ export default function JWTInspectorPage() {
         <label className="block text-sm font-medium text-ink mb-1.5">
           JSON Web Token
         </label>
-        <textarea
+        <TextArea
           value={input}
           onChange={handleInputChange}
           placeholder="Paste a JWT here — eyJ…"
           rows={4}
-          spellCheck={false}
-          autoComplete="off"
-          aria-label="JSON Web Token"
-          className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
+          ariaLabel="JSON Web Token"
+          mono
         />
       </div>
 
