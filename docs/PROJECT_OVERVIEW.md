@@ -535,6 +535,35 @@ elevated). All phases are complete and stable:
     `inputLength`/`outputLength` and length-scoped summaries. Both now record
     only non-secret coarse keys (`algorithms` / `variant`).
 
+- **Phase 14 — inspector modules DRY consolidation** — the four inspect-style
+  pages (URL, Unicode, Scam, PIN) had drifted into four parallel
+  implementations of the same flow: state + handlers, severity chip styling,
+  verdict card, Analyse/Reset row, collapsible findings list, footer info box,
+  and the multi-line input. All of it now lives once, either unit-tested or
+  pure presentational:
+  - **`src/lib/useInspector.js`** — the shared input/result/error/expanded
+    state machine + the standard handlers (`handleChange`, `handleAnalyse`,
+    `loadExample`, `reset`, `toggle`, `canAnalyse`, `showReset`). Pages supply
+    their analysis + activity-logging logic via an `onAnalyse` callback and
+    keep their `saveActivity` bodies verbatim; a `trim` option covers URL's
+    whitespace handling. Unit-tested (`src/__tests__/useInspector.test.js`,
+    12 cases).
+  - **`src/lib/severity.js`** — canonical `SEVERITY_STYLE` (dot + badge +
+    label) keyed by the shared "danger"/"warning"/"info" severity tokens the
+    analyses already return. Chip labels standardised to High signal /
+    Warning / Info. Unicode's made-visible highlight tints derive from the
+    same badge classes, so the palettes can't drift apart.
+  - **`src/components/`** — `VerdictCard` (keeps the page-level `h2` heading
+    in one place), `AnalyseActions` (the Analyse/Reset row), `FindingsList`
+    (the Disclosure-list chrome with a per-module `renderLabel` prop),
+    `InfoCallout` (the closing "indicators, not proof" note), and `TextArea`
+    (the shared multi-line field mirroring `PasswordField`, with a `mono`
+    variant for URL input).
+  - Behavior unchanged other than the standardised severity chip labels and
+    url gaining `autoCorrect="off"`. Each page's module-specific sections
+    (decomposed URL / query table, made-visible highlight + markers legend,
+    indicator-chip cards, CompanionLinks) stay inline where they belong.
+
 ## Refactor — Rounds 1–3
 
 A systematic refactor was completed after the 10th module was built, to

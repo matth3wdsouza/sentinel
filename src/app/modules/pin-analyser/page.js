@@ -1,24 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { Square, Info } from "lucide-react";
+import { Square } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
-import ResultCard from "@/components/ResultCard";
-import Disclosure from "@/components/Disclosure";
 import TryExamples from "@/components/TryExamples";
 import CompanionLinks from "@/components/CompanionLinks";
 import PasswordField from "@/components/PasswordField";
-import { Button } from "@/components/Button";
 import InlineError from "@/components/InlineError";
+import AnalyseActions from "@/components/AnalyseActions";
+import VerdictCard from "@/components/VerdictCard";
+import FindingsList from "@/components/FindingsList";
+import InfoCallout from "@/components/InfoCallout";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
-import {
-  analyzePIN,
-  DANGER,
-  WARNING,
-  INFO,
-  MAX_PIN_LENGTH,
-} from "@/lib/pinAnalyser";
+import useInspector from "@/lib/useInspector";
+import { analyzePIN, MAX_PIN_LENGTH } from "@/lib/pinAnalyser";
+import { SEVERITY_STYLE } from "@/lib/severity";
 
 const VERDICT_CONFIG = {
   weak: {
@@ -38,24 +34,6 @@ const VERDICT_CONFIG = {
     label: "No obvious patterns found",
     explanation:
       "This PIN shows none of the common guessable patterns a pattern-based check looks for. 'Nothing flagged' is not a guarantee — a PIN is still limited by its length and by who might see it. Treat it as reasonable, not bulletproof.",
-  },
-};
-
-const SEVERITY_STYLE = {
-  [DANGER]: {
-    dot: "bg-mismatch",
-    badge: "bg-mismatch-light text-mismatch-chip",
-    label: "High signal",
-  },
-  [WARNING]: {
-    dot: "bg-amber-500",
-    badge: "bg-amber-50 text-amber-700",
-    label: "Pattern",
-  },
-  [INFO]: {
-    dot: "bg-slate-400",
-    badge: "bg-slate-100 text-slate",
-    label: "Info",
   },
 };
 
@@ -96,10 +74,23 @@ const EXAMPLES = [
 
 export default function PinAnalyserPage() {
   const moduleId = useModuleId();
-  const [input, setInput] = useState("");
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-  const [expandedPatterns, setExpandedPatterns] = useState({});
+
+  const {
+    input,
+    result,
+    error,
+    setResult,
+    setError,
+    expanded,
+    handleChange,
+    handleAnalyse,
+    loadExample,
+    reset,
+    toggle,
+    clearExpanded,
+    canAnalyse,
+    showReset,
+  } = useInspector({ onAnalyse: runAnalysis });
 
   function runAnalysis(value) {
     const analysis = analyzePIN(value);
@@ -110,7 +101,7 @@ export default function PinAnalyserPage() {
     }
     setResult(analysis);
     setError(null);
-    setExpandedPatterns({});
+    clearExpanded();
 
     if (!analysis.isNumeric) {
       // Still log that a non-numeric value was run, but only coarse data.
@@ -136,31 +127,6 @@ export default function PinAnalyserPage() {
     });
   }
 
-  function handleAnalyse() {
-    if (!input) return;
-    runAnalysis(input);
-  }
-
-  function loadExample(example) {
-    setInput(example.text);
-    setResult(null);
-    setError(null);
-    setExpandedPatterns({});
-  }
-
-  function reset() {
-    setInput("");
-    setResult(null);
-    setError(null);
-    setExpandedPatterns({});
-  }
-
-  function togglePattern(p) {
-    setExpandedPatterns((prev) => ({ ...prev, [p.id]: !prev[p.id] }));
-  }
-
-  const canAnalyse = input.length > 0;
-  const showReset = input.length > 0 || result || error;
   const verdictConfig = result?.verdict ? VERDICT_CONFIG[result.verdict] : null;
 
   return (
@@ -176,11 +142,7 @@ export default function PinAnalyserPage() {
           </label>
           <PasswordField
             value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              setResult(null);
-              setError(null);
-            }}
+            onChange={handleChange}
             onEnter={handleAnalyse}
             placeholder="Enter a numeric PIN"
             ariaLabel="PIN or passcode"
@@ -190,16 +152,12 @@ export default function PinAnalyserPage() {
           <TryExamples examples={EXAMPLES} onLoad={loadExample} />
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button onClick={handleAnalyse} disabled={!canAnalyse}>
-            Analyse
-          </Button>
-          {showReset && (
-            <Button variant="ghost" resetIcon onClick={reset}>
-              Reset
-            </Button>
-          )}
-        </div>
+        <AnalyseActions
+          onAnalyse={handleAnalyse}
+          canAnalyse={canAnalyse}
+          onReset={reset}
+          showReset={showReset}
+        />
 
         {error && <InlineError>{error}</InlineError>}
 
@@ -211,64 +169,45 @@ export default function PinAnalyserPage() {
 
         {result && result.isNumeric && verdictConfig && (
           <>
-            <ResultCard
-              verdict={verdictConfig.verdict}
-              headingLevel="h2"
-              heading={verdictConfig.label}
-              explanation={{ means: verdictConfig.explanation }}
-            />
+            <VerdictCard config={verdictConfig} />
 
             {result.patterns.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="font-display font-semibold text-ink">
-                  What was looked for ({result.patterns.length})
-                </h3>
-                {result.patterns.map((pattern) => {
+              <FindingsList
+                heading={`What was looked for (${result.patterns.length})`}
+                items={result.patterns}
+                getKey={(pattern) => pattern.id}
+                renderLabel={(pattern) => {
                   const style = SEVERITY_STYLE[pattern.tier];
-                  const isOpen = expandedPatterns[pattern.id] ?? false;
                   return (
-                    <Disclosure
-                      key={pattern.id}
-                      label={
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <span
-                            className={`text-[11px] font-medium px-1.5 py-0.5 rounded shrink-0 ${style.badge}`}
-                          >
-                            {style.label}
-                          </span>
-                          <span className="text-sm font-medium text-ink truncate">
-                            {pattern.label}
-                          </span>
-                        </div>
-                      }
-                      open={isOpen}
-                      onToggle={() => togglePattern(pattern)}
-                      className="rounded-xl bg-surface shadow-card overflow-hidden"
-                      buttonClassName="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-slate/5 transition"
-                      contentClassName="px-4 pb-4"
-                    >
-                      <p className="text-sm text-slate leading-relaxed">
-                        {pattern.detail}
-                      </p>
-                    </Disclosure>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded shrink-0 ${style.badge}`}>
+                        {style.label}
+                      </span>
+                      <span className="text-sm font-medium text-ink truncate">
+                        {pattern.label}
+                      </span>
+                    </div>
                   );
-                })}
-              </div>
+                }}
+                expanded={expanded}
+                onToggle={toggle}
+              >
+                {(pattern) => (
+                  <p className="text-sm text-slate leading-relaxed">
+                    {pattern.detail}
+                  </p>
+                )}
+              </FindingsList>
             )}
 
-            <div className="rounded-xl bg-slate/5 border border-slate/20 px-4 py-3">
-              <div className="flex items-start gap-2.5">
-                <Info size={16} className="text-slate mt-0.5 shrink-0" />
-                <p className="text-xs text-slate leading-relaxed">
-                  This tool reports patterns, not proof. A PIN with no obvious
-                  pattern can still be guessed or observed, and a &apos;pattern&apos;
-                  like a sequence or a date is a likelihood signal, not a
-                  certainty. Nothing you type here ever leaves your device,
-                  and only coarse counts are saved to your activity log — the
-                  PIN itself is never logged.
-                </p>
-              </div>
-            </div>
+            <InfoCallout>
+              This tool reports patterns, not proof. A PIN with no obvious
+              pattern can still be guessed or observed, and a &apos;pattern&apos;
+              like a sequence or a date is a likelihood signal, not a
+              certainty. Nothing you type here ever leaves your device,
+              and only coarse counts are saved to your activity log — the
+              PIN itself is never logged.
+            </InfoCallout>
 
             {result.verdict !== "strong" && (
               <CompanionLinks

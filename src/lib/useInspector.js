@@ -1,0 +1,72 @@
+"use client";
+
+import { useState } from "react";
+
+// Shared analyser-page state machine for the inspector modules (URL, Unicode,
+// Scam, PIN). The page supplies its own analysis+logging logic via
+// `onAnalyse`, which receives the raw (or, with `trim`, trimmed) input; the
+// hook owns the input/result/error/expanded state and the standard handlers.
+// `setResult`/`setError`/`clearExpanded` are returned so each page's
+// runAnalysis body can stay exactly as it was.
+export default function useInspector({ onAnalyse, trim = false } = {}) {
+  const [input, setInput] = useState("");
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [expanded, setExpanded] = useState({});
+
+  const value = trim ? input.trim() : input;
+
+  function handleChange(e) {
+    setInput(e.target.value);
+    setResult(null);
+    setError(null);
+  }
+
+  function handleAnalyse() {
+    if (!value) return;
+    onAnalyse?.(value);
+  }
+
+  function clearExpanded() {
+    setExpanded({});
+  }
+
+  function loadExample(example) {
+    setInput(example.text);
+    setResult(null);
+    setError(null);
+    clearExpanded();
+  }
+
+  function reset() {
+    setInput("");
+    setResult(null);
+    setError(null);
+    clearExpanded();
+  }
+
+  function toggle(index) {
+    setExpanded((prev) => ({ ...prev, [index]: !prev[index] }));
+  }
+
+  const canAnalyse = value.length > 0;
+  const showReset = value.length > 0 || result !== null || error !== null;
+
+  return {
+    input,
+    setInput,
+    result,
+    setResult,
+    error,
+    setError,
+    expanded,
+    handleChange,
+    handleAnalyse,
+    loadExample,
+    reset,
+    toggle,
+    clearExpanded,
+    canAnalyse,
+    showReset,
+  };
+}

@@ -1,23 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { MessageSquareWarning, Info } from "lucide-react";
+import { MessageSquareWarning } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
-import Disclosure from "@/components/Disclosure";
 import TryExamples from "@/components/TryExamples";
 import CompanionLinks from "@/components/CompanionLinks";
-import { Button } from "@/components/Button";
 import InlineError from "@/components/InlineError";
+import TextArea from "@/components/TextArea";
+import AnalyseActions from "@/components/AnalyseActions";
+import VerdictCard from "@/components/VerdictCard";
+import FindingsList from "@/components/FindingsList";
+import InfoCallout from "@/components/InfoCallout";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
-import {
-  analyzeMessage,
-  DANGER,
-  WARNING,
-  INFO,
-  CATEGORY_CONFIG,
-} from "@/lib/scamAnalyser";
+import useInspector from "@/lib/useInspector";
+import { analyzeMessage, CATEGORY_CONFIG } from "@/lib/scamAnalyser";
+import { SEVERITY_STYLE } from "@/lib/severity";
 
 const VERDICT_CONFIG = {
   clean: {
@@ -37,24 +35,6 @@ const VERDICT_CONFIG = {
     label: "Signs of a likely scam",
     explanation:
       "This message combines high-signal scam indicators — requests for codes or account details, money pressure, gift-card or wire payments, secrecy demands, or suspicious links. Do not tap links, send money, reuse credentials, or share codes. Verify through an official channel you found yourself.",
-  },
-};
-
-const SEVERITY_STYLE = {
-  [DANGER]: {
-    dot: "bg-mismatch",
-    badge: "bg-mismatch-light text-mismatch-chip",
-    label: "High signal",
-  },
-  [WARNING]: {
-    dot: "bg-amber-500",
-    badge: "bg-amber-50 text-amber-700",
-    label: "Warning",
-  },
-  [INFO]: {
-    dot: "bg-slate-400",
-    badge: "bg-slate-100 text-slate",
-    label: "Info",
   },
 };
 
@@ -100,10 +80,23 @@ const EXAMPLES = [
 
 export default function ScamMessageAnalyserPage() {
   const moduleId = useModuleId();
-  const [input, setInput] = useState("");
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-  const [expandedFlags, setExpandedFlags] = useState({});
+
+  const {
+    input,
+    result,
+    error,
+    setResult,
+    setError,
+    expanded,
+    handleChange,
+    handleAnalyse,
+    loadExample,
+    reset,
+    toggle,
+    clearExpanded,
+    canAnalyse,
+    showReset,
+  } = useInspector({ onAnalyse: runAnalysis });
 
   function runAnalysis(text) {
     const analysis = analyzeMessage(text);
@@ -114,7 +107,7 @@ export default function ScamMessageAnalyserPage() {
     }
     setResult(analysis);
     setError(null);
-    setExpandedFlags({});
+    clearExpanded();
 
     // Privacy invariant: log only coarse category counts and the verdict —
     // never the message text, the links it contains, or quoted phrases.
@@ -130,31 +123,6 @@ export default function ScamMessageAnalyserPage() {
     });
   }
 
-  function handleAnalyse() {
-    if (!input) return;
-    runAnalysis(input);
-  }
-
-  function loadExample(example) {
-    setInput(example.text);
-    setResult(null);
-    setError(null);
-    setExpandedFlags({});
-  }
-
-  function reset() {
-    setInput("");
-    setResult(null);
-    setError(null);
-    setExpandedFlags({});
-  }
-
-  function toggleFlag(f) {
-    setExpandedFlags((prev) => ({ ...prev, [f.id]: !prev[f.id] }));
-  }
-
-  const canAnalyse = input.length > 0;
-  const showReset = input.length > 0 || result || error;
   const visibleCounts = result
     ? Object.entries(result.counts).filter(([, count]) => count > 0)
     : [];
@@ -170,47 +138,28 @@ export default function ScamMessageAnalyserPage() {
           <label className="block text-sm font-medium text-ink mb-1.5">
             Message text
           </label>
-          <textarea
+          <TextArea
             value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              setResult(null);
-              setError(null);
-            }}
+            onChange={handleChange}
             placeholder="Paste an SMS, email, or chat message here…"
+            ariaLabel="Message text"
             rows={7}
-            spellCheck={false}
-            autoComplete="off"
-            autoCorrect="off"
-            aria-label="Message text"
-            className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y"
           />
           <TryExamples examples={EXAMPLES} onLoad={loadExample} />
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button onClick={handleAnalyse} disabled={!canAnalyse}>
-            Analyse
-          </Button>
-          {showReset && (
-            <Button variant="ghost" resetIcon onClick={reset}>
-              Reset
-            </Button>
-          )}
-        </div>
+        <AnalyseActions
+          onAnalyse={handleAnalyse}
+          canAnalyse={canAnalyse}
+          onReset={reset}
+          showReset={showReset}
+        />
 
         {error && <InlineError>{error}</InlineError>}
 
         {result && (
           <>
-            <ResultCard
-              verdict={VERDICT_CONFIG[result.verdict].verdict}
-              headingLevel="h2"
-              heading={VERDICT_CONFIG[result.verdict].label}
-              explanation={{
-                means: VERDICT_CONFIG[result.verdict].explanation,
-              }}
-            />
+            <VerdictCard config={VERDICT_CONFIG[result.verdict]} />
 
             {visibleCounts.length > 0 && (
               <ResultCard variant="bare">
@@ -238,54 +187,40 @@ export default function ScamMessageAnalyserPage() {
             )}
 
             {result.flags.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="font-display font-semibold text-ink">
-                  What was flagged
-                </h3>
-                {result.flags.map((flag) => {
+              <FindingsList
+                heading="What was flagged"
+                items={result.flags}
+                getKey={(flag) => flag.id}
+                renderLabel={(flag) => {
                   const style = SEVERITY_STYLE[flag.severity];
-                  const isOpen = expandedFlags[flag.id] ?? false;
                   return (
-                    <Disclosure
-                      key={flag.id}
-                      label={
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded shrink-0 ${style.badge}`}>
-                            {style.label}
-                          </span>
-                          <span className="text-sm font-medium text-ink truncate">
-                            {flag.message}
-                          </span>
-                        </div>
-                      }
-                      open={isOpen}
-                      onToggle={() => toggleFlag(flag)}
-                      className="rounded-xl bg-surface shadow-card overflow-hidden"
-                      buttonClassName="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-slate/5 transition"
-                      contentClassName="px-4 pb-4"
-                    >
-                      <p className="text-sm text-slate leading-relaxed">
-                        {flag.detail}
-                      </p>
-                    </Disclosure>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded shrink-0 ${style.badge}`}>
+                        {style.label}
+                      </span>
+                      <span className="text-sm font-medium text-ink truncate">
+                        {flag.message}
+                      </span>
+                    </div>
                   );
-                })}
-              </div>
+                }}
+                expanded={expanded}
+                onToggle={toggle}
+              >
+                {(flag) => (
+                  <p className="text-sm text-slate leading-relaxed">{flag.detail}</p>
+                )}
+              </FindingsList>
             )}
 
-            <div className="rounded-xl bg-slate/5 border border-slate/20 px-4 py-3">
-              <div className="flex items-start gap-2.5">
-                <Info size={16} className="text-slate mt-0.5 shrink-0" />
-                <p className="text-xs text-slate leading-relaxed">
-                  This tool reports indicators, not proof. A clever scam can
-                  slip past keyword checks, and a normal message can contain a
-                  stray keyword. When in doubt, verify through an official
-                  channel you reached yourself — never the number or link in
-                  the message. Nothing you paste here leaves your device, and
-                  only coarse counts are saved to your activity log.
-                </p>
-              </div>
-            </div>
+            <InfoCallout>
+              This tool reports indicators, not proof. A clever scam can slip
+              past keyword checks, and a normal message can contain a stray
+              keyword. When in doubt, verify through an official channel you
+              reached yourself — never the number or link in the message.
+              Nothing you paste here leaves your device, and only coarse
+              counts are saved to your activity log.
+            </InfoCallout>
 
             {result.suspiciousUrlCount > 0 && (
               <CompanionLinks

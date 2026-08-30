@@ -1,16 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { Link, Info } from "lucide-react";
+import { Link } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
-import Disclosure from "@/components/Disclosure";
 import CopyButton from "@/components/CopyButton";
-import { Button } from "@/components/Button";
 import InlineError from "@/components/InlineError";
+import TextArea from "@/components/TextArea";
+import AnalyseActions from "@/components/AnalyseActions";
+import VerdictCard from "@/components/VerdictCard";
+import FindingsList from "@/components/FindingsList";
+import InfoCallout from "@/components/InfoCallout";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
-import { analyzeURL, DANGER, WARNING, INFO } from "@/lib/urlInspector";
+import { analyzeURL } from "@/lib/urlInspector";
+import useInspector from "@/lib/useInspector";
+import { SEVERITY_STYLE } from "@/lib/severity";
 
 const VERDICT_CONFIG = {
   safe: {
@@ -33,24 +37,6 @@ const VERDICT_CONFIG = {
   },
 };
 
-const SEVERITY_STYLE = {
-  [DANGER]: {
-    dot: "bg-mismatch",
-    badge: "bg-mismatch-light text-mismatch-chip",
-    label: "Danger",
-  },
-  [WARNING]: {
-    dot: "bg-amber-500",
-    badge: "bg-amber-50 text-amber-700",
-    label: "Warning",
-  },
-  [INFO]: {
-    dot: "bg-slate-400",
-    badge: "bg-slate-100 text-slate",
-    label: "Info",
-  },
-};
-
 const URL_PARTS = [
   { key: "protocol", label: "Scheme" },
   { key: "username", label: "Username" },
@@ -64,16 +50,25 @@ const URL_PARTS = [
 
 export default function URLInspectorPage() {
   const moduleId = useModuleId();
-  const [input, setInput] = useState("");
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-  const [expandedFlags, setExpandedFlags] = useState({});
 
-  function handleAnalyse() {
-    const trimmed = input.trim();
-    if (!trimmed) return;
+  const {
+    input,
+    result,
+    error,
+    setResult,
+    setError,
+    expanded,
+    handleChange,
+    handleAnalyse,
+    reset,
+    toggle,
+    clearExpanded,
+    canAnalyse,
+    showReset,
+  } = useInspector({ trim: true, onAnalyse: runAnalysis });
 
-    const analysis = analyzeURL(trimmed);
+  function runAnalysis(value) {
+    const analysis = analyzeURL(value);
     if (!analysis) {
       setResult(null);
       setError("That doesn't look like a valid URL. Make sure it includes a scheme (e.g. https://).");
@@ -82,7 +77,7 @@ export default function URLInspectorPage() {
 
     setResult(analysis);
     setError(null);
-    setExpandedFlags({});
+    clearExpanded();
 
     saveActivity({
       moduleType: moduleId,
@@ -95,20 +90,6 @@ export default function URLInspectorPage() {
     });
   }
 
-  function reset() {
-    setInput("");
-    setResult(null);
-    setError(null);
-    setExpandedFlags({});
-  }
-
-  function toggleFlag(index) {
-    setExpandedFlags((prev) => ({ ...prev, [index]: !prev[index] }));
-  }
-
-  const canAnalyse = input.trim().length > 0;
-  const showReset = input || result || error;
-
   return (
     <ModulePage
       icon={Link}
@@ -120,42 +101,28 @@ export default function URLInspectorPage() {
           <label className="block text-sm font-medium text-ink mb-1.5">
             URL to analyse
           </label>
-          <textarea
+          <TextArea
             value={input}
-            onChange={(e) => { setInput(e.target.value); setResult(null); setError(null); }}
+            onChange={handleChange}
             placeholder="https://example.com/login?redirect=https%3A%2F%2Fevil.com"
+            ariaLabel="URL to analyse"
             rows={3}
-            spellCheck={false}
-            autoComplete="off"
-            aria-label="URL to analyse"
-            className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y font-mono"
+            mono
           />
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button onClick={handleAnalyse} disabled={!canAnalyse}>
-            Analyse
-          </Button>
-          {showReset && (
-            <Button variant="ghost" resetIcon onClick={reset}>
-              Reset
-            </Button>
-          )}
-        </div>
+        <AnalyseActions
+          onAnalyse={handleAnalyse}
+          canAnalyse={canAnalyse}
+          onReset={reset}
+          showReset={showReset}
+        />
 
         {error && <InlineError>{error}</InlineError>}
 
         {result && (
           <>
-            {/* Verdict */}
-            <ResultCard
-              verdict={VERDICT_CONFIG[result.verdict].verdict}
-              headingLevel="h2"
-              heading={VERDICT_CONFIG[result.verdict].label}
-              explanation={{
-                means: VERDICT_CONFIG[result.verdict].explanation,
-              }}
-            />
+            <VerdictCard config={VERDICT_CONFIG[result.verdict]} />
 
             {/* Decomposed URL */}
             <ResultCard variant="bare">
@@ -194,40 +161,29 @@ export default function URLInspectorPage() {
 
             {/* Flags */}
             {result.flags.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="font-display font-semibold text-ink">
-                  Detected Issues ({result.flags.length})
-                </h3>
-                {result.flags.map((flag, i) => {
+              <FindingsList
+                heading={`Detected Issues (${result.flags.length})`}
+                items={result.flags}
+                getKey={(flag) => flag.type}
+                renderLabel={(flag) => {
                   const style = SEVERITY_STYLE[flag.severity];
-                  const isOpen = expandedFlags[i] ?? false;
                   return (
-                    <Disclosure
-                      key={flag.type}
-                      label={
-                        <div className="flex items-center gap-2.5">
-                          <span className={`size-2 rounded-full shrink-0 ${style.dot}`} />
-                          <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded ${style.badge}`}>
-                            {style.label}
-                          </span>
-                          <span className="text-sm font-medium text-ink">
-                            {flag.message}
-                          </span>
-                        </div>
-                      }
-                      open={isOpen}
-                      onToggle={() => toggleFlag(i)}
-                      className="rounded-xl bg-surface shadow-card overflow-hidden"
-                      buttonClassName="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-slate/5 transition"
-                      contentClassName="px-4 pb-4"
-                    >
-                      <p className="text-sm text-slate leading-relaxed">
-                        {flag.detail}
-                      </p>
-                    </Disclosure>
+                    <div className="flex items-center gap-2.5">
+                      <span className={`size-2 rounded-full shrink-0 ${style.dot}`} />
+                      <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded ${style.badge}`}>
+                        {style.label}
+                      </span>
+                      <span className="text-sm font-medium text-ink">{flag.message}</span>
+                    </div>
                   );
-                })}
-              </div>
+                }}
+                expanded={expanded}
+                onToggle={toggle}
+              >
+                {(flag) => (
+                  <p className="text-sm text-slate leading-relaxed">{flag.detail}</p>
+                )}
+              </FindingsList>
             )}
 
             {/* Query Parameters */}
@@ -267,17 +223,11 @@ export default function URLInspectorPage() {
               </ResultCard>
             )}
 
-            {/* Tips */}
-            <div className="rounded-xl bg-slate/5 border border-slate/20 px-4 py-3">
-              <div className="flex items-start gap-2.5">
-                <Info size={16} className="text-slate mt-0.5 shrink-0" />
-                <p className="text-xs text-slate leading-relaxed">
-                  This tool analyses URL structure and known phishing patterns.
-                  It does not check live threat intelligence feeds — always verify
-                  links before entering credentials.
-                </p>
-              </div>
-            </div>
+            <InfoCallout>
+              This tool analyses URL structure and known phishing patterns. It
+              does not check live threat intelligence feeds — always verify
+              links before entering credentials.
+            </InfoCallout>
           </>
         )}
       </div>

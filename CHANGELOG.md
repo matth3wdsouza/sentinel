@@ -4,6 +4,30 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed — Inspector modules DRY consolidation
+
+- **Shared analyser-page state hook `useInspector`** — the four inspect-style
+  modules (URL, Unicode, Scam, PIN) now share the input/result/error/expanded
+  state machine and the standard handlers (`handleChange`, `handleAnalyse`,
+  `loadExample`, `reset`, `toggle`, `canAnalyse`, `showReset`). Each page keeps
+  its own analysis + activity-logging logic; a `trim` option covers the URL
+  module's whitespace handling. Unit-tested. (`src/lib/useInspector.js`,
+  `src/__tests__/useInspector.test.js`)
+- **Shared `SEVERITY_STYLE`** — the dot/badge chip tokens each inspector page
+  re-minted now live once in `src/lib/severity.js`, keyed by the shared
+  "danger"/"warning"/"info" tokens; Unicode's made-visible highlight tints
+  derive from its badge classes. Severity chip labels standardised to
+  "High signal"/"Warning"/"Info".
+- **Shared result-chrome components** — `<VerdictCard>` (keeps the page-level
+  h2 heading in one place), `<AnalyseActions>` (Analyse/Reset row),
+  `<FindingsList>` (the collapsible findings list, with per-module label
+  render prop and Disclosure chrome), `<InfoCallout>` (the closing
+  "reports indicators, not proof" note), and `<TextArea>` (the shared
+  multi-line field, mirroring `PasswordField`). (`src/components/`)
+- Net effect: ~300 lines of duplicated inline page boilerplate consolidated
+  across the four inspector pages; no behaviour change other than the
+  standardised severity labels and url gaining `autoCorrect="off"`.
+
 ### Added — PIN & Pattern Analyser module
 
 - **New module: PIN & Pattern Analyser** — the 20th module (Passwords &

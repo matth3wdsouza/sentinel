@@ -1,22 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Strikethrough, Info } from "lucide-react";
+import { Strikethrough } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
 import Disclosure from "@/components/Disclosure";
 import TryExamples from "@/components/TryExamples";
-import { Button } from "@/components/Button";
 import InlineError from "@/components/InlineError";
+import TextArea from "@/components/TextArea";
+import AnalyseActions from "@/components/AnalyseActions";
+import VerdictCard from "@/components/VerdictCard";
+import FindingsList from "@/components/FindingsList";
+import InfoCallout from "@/components/InfoCallout";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
-import {
-  analyzeUnicode,
-  DANGER,
-  WARNING,
-  INFO,
-  CATEGORY_CONFIG,
-} from "@/lib/unicodeInspector";
+import useInspector from "@/lib/useInspector";
+import { analyzeUnicode, CATEGORY_CONFIG } from "@/lib/unicodeInspector";
+import { SEVERITY_STYLE } from "@/lib/severity";
 
 const VERDICT_CONFIG = {
   clean: {
@@ -39,24 +39,6 @@ const VERDICT_CONFIG = {
   },
 };
 
-const SEVERITY_STYLE = {
-  [DANGER]: {
-    dot: "bg-mismatch",
-    badge: "bg-mismatch-light text-mismatch-chip",
-    label: "Danger",
-  },
-  [WARNING]: {
-    dot: "bg-amber-500",
-    badge: "bg-amber-50 text-amber-700",
-    label: "Warning",
-  },
-  [INFO]: {
-    dot: "bg-slate-400",
-    badge: "bg-slate-100 text-slate",
-    label: "Info",
-  },
-};
-
 // How hidden characters are rendered in the "made visible" view. Categories
 // with a genuinely invisible glyph get a visible marker; categories whose
 // character renders normally are shown as-is but highlighted.
@@ -67,10 +49,12 @@ const HIDDEN_MARK = {
   control: "▤",
 };
 
+// Highlights reuse the shared severity badge tints, keyed by the same
+// severity strings the analysis returns.
 const HIGHLIGHT_STYLE = {
-  [DANGER]: "bg-mismatch-light text-mismatch-chip",
-  [WARNING]: "bg-amber-50 text-amber-700",
-  [INFO]: "bg-slate-100 text-slate",
+  danger: SEVERITY_STYLE.danger.badge,
+  warning: SEVERITY_STYLE.warning.badge,
+  info: SEVERITY_STYLE.info.badge,
 };
 
 // One-click demo fixtures (clicking a shortcut only fills the textarea — the
@@ -98,17 +82,31 @@ const EXAMPLES = [
 
 export default function UnicodeInspectorPage() {
   const moduleId = useModuleId();
-  const [input, setInput] = useState("");
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-  const [expandedChars, setExpandedChars] = useState({});
   const [highlightOpen, setHighlightOpen] = useState(false);
+
+  const {
+    input,
+    result,
+    error,
+    setResult,
+    setError,
+    expanded,
+    handleChange,
+    handleAnalyse,
+    loadExample,
+    reset,
+    toggle,
+    clearExpanded,
+    canAnalyse,
+    showReset,
+  } = useInspector({ onAnalyse: runAnalysis });
 
   function runAnalysis(text) {
     const analysis = analyzeUnicode(text);
     setResult(analysis);
     setError(null);
-    setExpandedChars({});
+    clearExpanded();
+    setHighlightOpen(false);
 
     saveActivity({
       moduleType: moduleId,
@@ -124,32 +122,16 @@ export default function UnicodeInspectorPage() {
     });
   }
 
-  function handleAnalyse() {
-    if (!input) return;
-    runAnalysis(input);
-  }
-
-  function loadExample(example) {
-    setInput(example.text);
-    setResult(null);
-    setError(null);
+  function loadExampleAndResetHighlight(example) {
+    loadExample(example);
     setHighlightOpen(false);
   }
 
-  function reset() {
-    setInput("");
-    setResult(null);
-    setError(null);
-    setExpandedChars({});
+  function resetAll() {
+    reset();
     setHighlightOpen(false);
   }
 
-  function toggleChar(index) {
-    setExpandedChars((prev) => ({ ...prev, [index]: !prev[index] }));
-  }
-
-  const canAnalyse = input.length > 0;
-  const showReset = input.length > 0 || result || error;
   const visibleCategories = result
     ? Object.entries(result.categories).filter(([, count]) => count > 0)
     : [];
@@ -165,47 +147,28 @@ export default function UnicodeInspectorPage() {
           <label className="block text-sm font-medium text-ink mb-1.5">
             Text to inspect
           </label>
-          <textarea
+          <TextArea
             value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              setResult(null);
-              setError(null);
-            }}
+            onChange={handleChange}
             placeholder="Paste an email, URL, password, or code snippet…"
+            ariaLabel="Text to inspect"
             rows={5}
-            spellCheck={false}
-            autoComplete="off"
-            autoCorrect="off"
-            aria-label="Text to inspect"
-            className="w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y"
           />
-          <TryExamples examples={EXAMPLES} onLoad={loadExample} />
+          <TryExamples examples={EXAMPLES} onLoad={loadExampleAndResetHighlight} />
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button onClick={handleAnalyse} disabled={!canAnalyse}>
-            Analyse
-          </Button>
-          {showReset && (
-            <Button variant="ghost" resetIcon onClick={reset}>
-              Reset
-            </Button>
-          )}
-        </div>
+        <AnalyseActions
+          onAnalyse={handleAnalyse}
+          canAnalyse={canAnalyse}
+          onReset={resetAll}
+          showReset={showReset}
+        />
 
         {error && <InlineError>{error}</InlineError>}
 
         {result && (
           <>
-            <ResultCard
-              verdict={VERDICT_CONFIG[result.verdict].verdict}
-              headingLevel="h2"
-              heading={VERDICT_CONFIG[result.verdict].label}
-              explanation={{
-                means: VERDICT_CONFIG[result.verdict].explanation,
-              }}
-            />
+            <VerdictCard config={VERDICT_CONFIG[result.verdict]} />
 
             {visibleCategories.length > 0 && (
               <ResultCard variant="bare">
@@ -233,50 +196,43 @@ export default function UnicodeInspectorPage() {
             )}
 
             {result.flagged.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="font-display font-semibold text-ink">
-                  Character breakdown ({result.flagged.length})
-                </h3>
-                {result.flagged.map((entry, i) => {
+              <FindingsList
+                heading={`Character breakdown (${result.flagged.length})`}
+                items={result.flagged}
+                getKey={(entry) => `${entry.hex}-${entry.category}`}
+                renderLabel={(entry) => {
                   const style = SEVERITY_STYLE[entry.severity];
-                  const isOpen = expandedChars[i] ?? false;
                   return (
-                    <Disclosure
-                      key={`${entry.hex}-${entry.category}`}
-                      label={
-                        <div className="flex items-center gap-2.5">
-                          <span className="min-w-6 size-8 rounded-md border border-slate/30 bg-white flex items-center justify-center font-mono text-sm text-ink">
-                            {entry.char}
-                          </span>
-                          <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded ${style.badge}`}>
-                            {style.label}
-                          </span>
-                          <span className="font-mono text-xs text-slate">
-                            {entry.hex}
-                          </span>
-                          <span className="text-sm font-medium text-ink truncate">
-                            {entry.name}
-                          </span>
-                          {entry.count > 1 && (
-                            <span className="text-xs text-slate shrink-0">
-                              ×{entry.count}
-                            </span>
-                          )}
-                        </div>
-                      }
-                      open={isOpen}
-                      onToggle={() => toggleChar(i)}
-                      className="rounded-xl bg-surface shadow-card overflow-hidden"
-                      buttonClassName="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-slate/5 transition"
-                      contentClassName="px-4 pb-4"
-                    >
-                      <p className="text-sm text-slate leading-relaxed first-letter:uppercase">
-                        {entry.explanation}
-                      </p>
-                    </Disclosure>
+                    <div className="flex items-center gap-2.5">
+                      <span className="min-w-6 size-8 rounded-md border border-slate/30 bg-white flex items-center justify-center font-mono text-sm text-ink">
+                        {entry.char}
+                      </span>
+                      <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded ${style.badge}`}>
+                        {style.label}
+                      </span>
+                      <span className="font-mono text-xs text-slate">
+                        {entry.hex}
+                      </span>
+                      <span className="text-sm font-medium text-ink truncate">
+                        {entry.name}
+                      </span>
+                      {entry.count > 1 && (
+                        <span className="text-xs text-slate shrink-0">
+                          ×{entry.count}
+                        </span>
+                      )}
+                    </div>
                   );
-                })}
-              </div>
+                }}
+                expanded={expanded}
+                onToggle={toggle}
+              >
+                {(entry) => (
+                  <p className="text-sm text-slate leading-relaxed first-letter:uppercase">
+                    {entry.explanation}
+                  </p>
+                )}
+              </FindingsList>
             )}
 
             <Disclosure
@@ -314,17 +270,12 @@ export default function UnicodeInspectorPage() {
               </p>
             </Disclosure>
 
-            <div className="rounded-xl bg-slate/5 border border-slate/20 px-4 py-3">
-              <div className="flex items-start gap-2.5">
-                <Info size={16} className="text-slate mt-0.5 shrink-0" />
-                <p className="text-xs text-slate leading-relaxed">
-                  Invisible characters have legitimate uses — language
-                  following a zero-width joiner in Arabic, accent marks, emoji
-                  sequences. This tool flags them so you can decide whether
-                  their presence makes sense in the text you pasted.
-                </p>
-              </div>
-            </div>
+            <InfoCallout>
+              Invisible characters have legitimate uses — language following a
+              zero-width joiner in Arabic, accent marks, emoji sequences. This
+              tool flags them so you can decide whether their presence makes
+              sense in the text you pasted.
+            </InfoCallout>
           </>
         )}
       </div>
