@@ -213,6 +213,34 @@ describe("flags: typosquatting", () => {
     expect(result.flags.some((f) => f.type === "suspicious-tld")).toBe(true);
     expect(result.verdict).toBe("dangerous");
   });
+
+  it("flags a brand in a misleading subdomain (HMRC)", () => {
+    const result = analyzeURL("https://hmrc.tax-refund-portal.com");
+    expect(result.flags.some((f) => f.type === "misleading-subdomain")).toBe(true);
+    expect(result.verdict).toBe("dangerous");
+  });
+
+  it("does not flag 3-char brand lookalikes as typosquatting (irs)", () => {
+    for (const host of ["irk.com", "irr.com", "ires.com"]) {
+      const result = analyzeURL(`https://${host}`);
+      expect(result.flags.some((f) => f.type === "typosquatting")).toBe(false);
+    }
+  });
+
+  it("does not flag 3-char brand lookalikes as typosquatting (ups)", () => {
+    const result = analyzeURL("https://ors.com");
+    expect(result.flags.some((f) => f.type === "typosquatting")).toBe(false);
+  });
+
+  it("leaves the real irs.gov unflagged", () => {
+    const result = analyzeURL("https://irs.gov");
+    expect(result.flags.some((f) => f.type === "typosquatting")).toBe(false);
+  });
+
+  it("still flags leet substitutions of 3-char brands", () => {
+    const result = analyzeURL("https://up5.com");
+    expect(result.flags.some((f) => f.type === "typosquatting")).toBe(true);
+  });
 });
 
 describe("verdict", () => {

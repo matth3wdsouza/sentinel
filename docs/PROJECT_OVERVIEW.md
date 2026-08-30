@@ -563,6 +563,33 @@ elevated). All phases are complete and stable:
     url gaining `autoCorrect="off"`. Each page's module-specific sections
     (decomposed URL / query table, made-visible highlight + markers legend,
     indicator-chip cards, CompanionLinks) stay inline where they belong.
+- **Phase 15 — URL Inspector & File Signature detector fixes** (changes from
+  the uncommitted `docs/internal/CLAUDE_REVIEW_04.md` review, with regression
+  tests in the existing suites):
+  - **URL Inspector** — the `KNOWN_BRANDS` HMRC entry had a dangling leading
+    space (`" hmrc"`), so HMRC impersonation was never detected; fixed. The
+    fuzzy typosquat guard was `b.length < 3`, which let 3-char brands
+    (`irs`, `ups`, …) match short lookalikes (`irk.com`, `orx.com`) as
+    typosquats; raised to `b.length <= 3`. Exact leet-substitution matches of
+    3-char brands (`up5.com` → `ups`) are unaffected. Garbage entries in
+    `SUSPICIOUS_TLDS` removed.
+  - **File Signature Verifier** — three silent detection bugs fixed: TAR used
+    a never-read `extOffset: 257` field (matcher reads `sig.offset`), so TAR
+    files verified as `unknown`; the generic RIFF entry shadowed WAV/AVI so
+    every `.wav` reported a mismatch; and the ZIP entry (`docx`) won
+    first-match, making the apk/jar/epub signatures dead code, so an `.apk`
+    verified as an "Office document". The TAR signature now uses `offset`,
+    `detectSpecificExtension` reads RIFF form bytes 8–11 (`WAVE`→wav,
+    `AVI `/`AVIX`→avi) and scans ZIP entry paths (`mimetype`/epub,
+    `AndroidManifest.xml`/`classes.dex`→apk, `META-INF/`→jar) with `docx`
+    fallback, and the ZIP signature's type label became the honest "ZIP
+    archive (Office/APK/JAR/EPUB)". Dead duplicate/shadowed signature entries
+    (RAR v4/v5, duplicate `woff`, unreachable apk/jar/epub) removed.
+  - **Left as-is by decision**: `U+3000 IDEOGRAPHIC SPACE` sits under the
+    Unicode inspector's `zeroWidth` category (it is not zero-width, but its
+    dedicated `SPECIFIC_EXPLANATIONS` entry renders an accurate description).
+    Re-bucketing it would churn UI, tests, and severity semantics for a
+    single codepoint, so it stays; noted here for future cleanup.
 
 ## Refactor — Rounds 1–3
 

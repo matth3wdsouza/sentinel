@@ -4,6 +4,34 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed — URL Inspector & File Signature detector bugs
+
+Resolved issues surfaced in review, each with regression tests:
+
+- **HMRC impersonation never detected** — the `KNOWN_BRANDS` HMRC entry had a
+  dangling leading space (`" hmrc"`), so `hmrc.<anything>.com` domains were
+  never flagged. Now flagged as a misleading subdomain.
+- **Short-brand typosquat false positives** — the fuzzy-match guard
+  (`b.length < 3`) let 3-char brands such as `irs` and `ups` through, so
+  lookalikes like `irk.com` / `irr.com` / `ires.com` / `ors.com` were flagged.
+  Guard raised to `b.length <= 3`; exact leet-substitution detection of
+  3-char brands (`up5.com` → `ups`) is unaffected.
+- **TAR archives never detected** — the TAR signature used `extOffset: 257`
+  but the matcher reads `sig.offset`, so files verified against `.tar` always
+  returned `unknown`. Dropped in favour of the real `offset` field.
+- **RIFF verified as the wrong format** — the generic RIFF entry (`webp`)
+  shadowed WAV/AVI, so every `.wav` reported a mismatch. The detector now
+  reads RIFF form bytes 8–11: `WAVE`→`wav`, `AVI `/`AVIX`→`avi`, unknown
+  forms keep the generic "RIFF container" label.
+- **APK/JAR/EPUB reported as Office documents** — the ZIP entry (`docx`) won
+  first-match, and the apk/jar/epub entries were unreachable. The ZIP
+  sub-classifier now scans entry paths for `mimetype`/`application/epub+zip`
+  (epub), `AndroidManifest.xml`/`classes.dex` (apk) and `META-INF/` (jar)
+  before falling back to `docx`; the signature's type label is the honest
+  "ZIP archive (Office/APK/JAR/EPUB)". Dead duplicate/shadowed signatures
+  (RAR v4/v5, duplicate `woff`, the unreachable apk/jar/epub entries) were
+  removed.
+
 ### Changed — Inspector modules DRY consolidation
 
 - **Shared analyser-page state hook `useInspector`** — the four inspect-style

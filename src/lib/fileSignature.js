@@ -9,7 +9,7 @@
 const MAGIC_SIGNATURES = [
   // ── Documents ─────────────────────────────────────────────────────────
   { bytes: [0x25, 0x50, 0x44, 0x46], ext: "pdf", type: "PDF document", description: "Portable Document Format" },
-  { bytes: [0x50, 0x4b, 0x03, 0x04], ext: "docx", type: "Office Open XML (docx/xlsx/pptx)", description: "ZIP-based Office document" },
+  { bytes: [0x50, 0x4b, 0x03, 0x04], ext: "docx", type: "ZIP archive (Office/APK/JAR/EPUB)", description: "ZIP container — check contents for exact type" },
   { bytes: [0x50, 0x4b, 0x05, 0x06], ext: "zip", type: "Empty ZIP archive", description: "ZIP archive (empty)" },
   { bytes: [0x50, 0x4b, 0x07, 0x08], ext: "zip", type: "ZIP archive (spanned)", description: "ZIP archive (spanned)" },
   { bytes: [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1], ext: "doc", type: "Microsoft Compound Document (doc/xls/ppt)", description: "OLE2 compound document" },
@@ -31,13 +31,11 @@ const MAGIC_SIGNATURES = [
   { bytes: [0x63, 0x61, 0x66, 0x65, 0x62, 0x61, 0x62, 0x65], ext: "mach", type: "Mach-O binary", description: "macOS executable" },
 
   // ── Archives ──────────────────────────────────────────────────────────
-  { bytes: [0x52, 0x61, 0x72, 0x21, 0x1a, 0x07], ext: "rar", type: "RAR archive", description: "Roshal Archive (v1.5+)" },
-  { bytes: [0x52, 0x61, 0x72, 0x21, 0x1a, 0x07, 0x01, 0x00], ext: "rar", type: "RAR archive (v4)", description: "Roshal Archive v4" },
-  { bytes: [0x52, 0x61, 0x72, 0x21, 0x1a, 0x07, 0x01, 0x00, 0x01], ext: "rar", type: "RAR archive (v5)", description: "Roshal Archive v5" },
+  { bytes: [0x52, 0x61, 0x72, 0x21, 0x1a, 0x07], ext: "rar", type: "RAR archive", description: "Roshal Archive" },
   { bytes: [0x1f, 0x8b], ext: "gz", type: "GZip archive", description: "GNU zip compressed data" },
   { bytes: [0x42, 0x5a, 0x68], ext: "bz2", type: "BZip2 archive", description: "Bzip2 compressed data" },
   { bytes: [0x28, 0xb5, 0x2f, 0xfd], ext: "7z", type: "7-Zip archive", description: "7-Zip compressed archive" },
-  { bytes: [0x75, 0x73, 0x74, 0x61, 0x72], ext: "tar", extOffset: 257, type: "TAR archive", description: "Tape Archive" },
+  { bytes: [0x75, 0x73, 0x74, 0x61, 0x72], ext: "tar", offset: 257, type: "TAR archive", description: "Tape Archive" },
   { bytes: [0x5a, 0x4d], ext: "exe", type: "Windows executable", description: "DOS executable" },
 
   // ── Media ─────────────────────────────────────────────────────────────
@@ -57,7 +55,6 @@ const MAGIC_SIGNATURES = [
   { bytes: [0x00, 0x01, 0x00, 0x00], ext: "ttf", type: "TrueType font", description: "TrueType font" },
   { bytes: [0x77, 0x4f, 0x46, 0x46], ext: "woff", type: "WOFF font", description: "Web Open Font Format" },
   { bytes: [0x77, 0x4f, 0x46, 0x32], ext: "woff2", type: "WOFF2 font", description: "Web Open Font Format 2" },
-  { bytes: [0x77, 0x4f, 0x46, 0x46], ext: "woff", type: "WOFF font", description: "Web Open Font Format" },
 
   // ── Code / text ─────────────────────────────────────────────────────
   { bytes: [0x3c, 0x3f, 0x78, 0x6d, 0x6c], ext: "xml", type: "XML document", description: "Extensible Markup Language" },
@@ -68,9 +65,6 @@ const MAGIC_SIGNATURES = [
   { bytes: [0x5b], ext: "json", type: "JSON array", description: "JavaScript Object Notation" },
 
   // ── Mobile / misc ────────────────────────────────────────────────
-  { bytes: [0x50, 0x4b, 0x03, 0x04], ext: "apk", type: "APK (ZIP-based)", description: "Android application" },
-  { bytes: [0x50, 0x4b, 0x03, 0x04], ext: "jar", type: "JAR (ZIP-based)", description: "Java archive" },
-  { bytes: [0x50, 0x4b, 0x03, 0x04], ext: "epub", type: "EPUB (ZIP-based)", description: "Electronic Publication" },
   { bytes: [0x4d, 0x5a], ext: "dll", type: "Windows DLL (MZ)", description: "Dynamic Link Library" },
   { bytes: [0x43, 0x52, 0x45, 0x47, 0x00], ext: "reg", type: "Windows Registry file", description: "Registry export" },
   { bytes: [0x4d, 0x53, 0x43, 0x46], ext: "cab", type: "Microsoft Cabinet", description: "Cabinet archive" },
@@ -81,10 +75,6 @@ const MAGIC_SIGNATURES = [
   // ── Certificates / crypto ──────────────────────────────────────────
   { bytes: [0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x42, 0x45, 0x47, 0x49, 0x4e], ext: "pem", type: "PEM certificate/key", description: "PEM-encoded certificate or key" },
   { bytes: [0x30, 0x82], ext: "der", type: "DER certificate", description: "DER-encoded certificate" },
-
-  // ── Misc ────────────────────────────────────────────────────────────
-  { bytes: [0x50, 0x4b, 0x03, 0x04], ext: "apk", type: "APK (ZIP-based)", description: "Android application package" },
-  { bytes: [0x50, 0x4b, 0x03, 0x04], ext: "jar", type: "JAR (ZIP-based)", description: "Java archive" },
 ];
 
 // ── Analysis ────────────────────────────────────────────────────────────────
@@ -152,19 +142,28 @@ export function matchSignature(header) {
 
 function detectSpecificExtension(header, baseExt) {
   if (baseExt === "docx") {
-    // Check if it's actually a specific Office format by looking for
-    // distinctive path markers in the ZIP entries
+    // ZIP containers can't be told apart from their magic bytes alone, so
+    // scan the header text for the distinguishing entry paths. Non-Office
+    // formats are checked first because their markers are more specific;
+    // docx remains the fallback so plain/renamed Zips don't regress.
     const text = arrayBufferToText(header);
+    if (text.includes("application/epub+zip") || text.includes("mimetype")) return "epub";
+    if (text.includes("AndroidManifest.xml") || text.includes("classes.dex")) return "apk";
+    if (text.includes("META-INF/")) return "jar";
     if (text.includes("word/")) return "docx";
     if (text.includes("xl/")) return "xlsx";
     if (text.includes("ppt/")) return "pptx";
     return "docx";
   }
-  if (baseExt === "apk" || baseExt === "jar") {
-    const text = arrayBufferToText(header);
-    if (baseExt === "apk") return "apk";
-    if (text.includes("META-INF/")) return "jar";
-    return baseExt;
+  if (baseExt === "webp") {
+    // RIFF containers carry their real format in bytes 8-11 (WAVE, AVI).
+    const form =
+      header.length >= 12
+        ? String.fromCharCode(header[8], header[9], header[10], header[11])
+        : "";
+    if (form === "WAVE") return "wav";
+    if (form === "AVI " || form === "AVIX") return "avi";
+    return "webp"; // WEBP or an unrecognised form — keeps the generic RIFF label
   }
   return baseExt;
 }

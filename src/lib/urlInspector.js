@@ -10,7 +10,7 @@ const INFO = "info";
 const SUSPICIOUS_TLDS = new Set([
   "xyz", "top", "buzz", "club", "work", "info", "site", "online", "website",
   "space", "fun", "icu", "monster", "cam", "sbs", "cfd", "surf", "rest",
-  "bond", "cyou", "uno", "lol", "	Double", "qo", "1px", "1b", "1w",
+  "bond", "cyou", "uno", "lol",
 ]);
 
 const KNOWN_BRANDS = [
@@ -18,7 +18,7 @@ const KNOWN_BRANDS = [
   "paypal", "apple", "microsoft", "office365", "outlook", "live", "hotmail",
   "amazon", "netflix", "twitter", "x", "linkedin", "github", "dropbox",
   "icloud", "samsung", "adobe", "dhl", "fedex", "ups", "usps", "royalmail",
-  "gov", "irs", " hmrc", "dwp", "nhs",
+  "gov", "irs", "hmrc", "dwp", "nhs",
 ];
 
 const SUSPICIOUS_KEYWORDS = [
@@ -269,7 +269,7 @@ function detectFlags(parsed, raw) {
         } else {
           // Fuzzy match — edit distance 1-2 against any brand name
           const closeMatch = KNOWN_BRANDS.find((b) => {
-            if (b.length < 3) return false; // skip very short brands (x, irs)
+            if (b.length <= 3) return false; // skip short brands (x, irs, ups) — too many false positives
             const dist = levenshtein(normalized, b);
             return dist >= 1 && dist <= 2 && normalized.length >= b.length - 1 && normalized.length <= b.length + 2;
           });

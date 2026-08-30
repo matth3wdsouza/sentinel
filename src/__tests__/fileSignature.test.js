@@ -183,3 +183,63 @@ describe("MAGIC_SIGNATURES", () => {
     expect(MAGIC_SIGNATURES.length).toBeGreaterThan(30);
   });
 });
+
+describe("analyzeFile - RIFF family (wav/avi/webp)", () => {
+  const riffForm = (form) => [
+    0x52, 0x49, 0x46, 0x46, 0x10, 0x00, 0x00, 0x00,
+    ...Array.from(form, (c) => c.charCodeAt(0)),
+  ];
+
+  it("matches a WAV file against .wav", async () => {
+    const result = await analyzeFile(createFile(riffForm("WAVE"), "sound.wav"));
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("wav");
+  });
+
+  it("matches an AVI file against .avi", async () => {
+    const result = await analyzeFile(createFile(riffForm("AVI "), "video.avi"));
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("avi");
+  });
+
+  it("keeps the generic RIFF label for unknown RIFF forms", async () => {
+    const result = await analyzeFile(createFile(riffForm("LIST"), "data.riff"));
+    expect(result.detected.detectedExtension).toBe("webp");
+    expect(result.verdict).toBe("mismatch");
+  });
+});
+
+describe("analyzeFile - TAR", () => {
+  it("matches a TAR archive (ustar magic at offset 257)", async () => {
+    const bytes = new Array(512).fill(0);
+    bytes.splice(257, 5, ...Array.from("ustar", (c) => c.charCodeAt(0)));
+    const result = await analyzeFile(createFile(bytes, "backup.tar"));
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("tar");
+  });
+});
+
+describe("analyzeFile - ZIP sub-types (apk/jar/epub)", () => {
+  const zipEntry = (name) => [
+    0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x00, 0x00,
+    ...Array.from(name, (c) => c.charCodeAt(0)),
+  ];
+
+  it("detects an APK by its AndroidManifest.xml entry", async () => {
+    const result = await analyzeFile(createFile(zipEntry("AndroidManifest.xml"), "app.apk"));
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("apk");
+  });
+
+  it("detects a JAR by its META-INF entry", async () => {
+    const result = await analyzeFile(createFile(zipEntry("META-INF/MANIFEST.MF"), "lib.jar"));
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("jar");
+  });
+
+  it("detects an EPUB by its mimetype entry", async () => {
+    const result = await analyzeFile(createFile(zipEntry("mimetypeapplication/epub+zip"), "book.epub"));
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("epub");
+  });
+});
