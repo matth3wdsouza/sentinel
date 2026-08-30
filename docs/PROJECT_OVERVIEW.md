@@ -653,6 +653,15 @@ elevated). All phases are complete and stable:
     following phase) treats such flags as "verify independently" hints
     rather than accusations, which is the systematic mitigation.
 
+- **Phase 19 — URL Inspector verdict copy softened to signal + verify**:
+  the "dangerous"/"suspicious"/"safe" explanations no longer present the
+  heuristics as a final judgement ("Do not visit this link") but as trip-wire
+  signals with steps to verify a link's destination independently (confirm
+  the domain and scheme, type the official address yourself). The module is
+  an explain-not-judge tool: it teaches *why* a URL shape is phishable, it
+  can't authoritatively clear one. Also the systematic mitigation for the
+  Phase 18 residual false-positive class.
+
 ## Refactor — Rounds 1–3
 
 A systematic refactor was completed after the 10th module was built, to

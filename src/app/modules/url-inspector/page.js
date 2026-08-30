@@ -22,19 +22,19 @@ const VERDICT_CONFIG = {
     verdict: "success",
     label: "No issues detected",
     explanation:
-      "This URL doesn't trigger any of the heuristics we check for. That doesn't guarantee it's safe — always exercise caution with unfamiliar links.",
+      "This URL doesn't trigger any of the heuristics we check for. That's a good sign, but not a guarantee — the most convincing phishing links often look perfectly ordinary. Verify the destination yourself before trusting it.",
   },
   suspicious: {
     verdict: "mismatch",
     label: "Suspicious",
     explanation:
-      "This URL triggered one or more warning-level checks. Proceed with caution — it may be legitimate, but the patterns are commonly seen in phishing.",
+      "This URL triggered one or more warning-level patterns. They're common on phishing links, but they also appear on legitimate sites — so this is a signal to look closer, not a verdict. Verify the destination independently: confirm the domain and scheme, or check the official site yourself.",
   },
   dangerous: {
     verdict: "mismatch",
     label: "Dangerous",
     explanation:
-      "This URL triggered one or more danger-level checks. Strong indicators of phishing, spoofing, or malicious intent. Do not visit this link.",
+      "This URL triggered one or more danger-level patterns — the same shapes phishers use to disguise where a link actually goes. Unless you're certain this is the site you intended, treat it as untrusted and verify the destination before clicking: confirm the domain and scheme, or type the official address in yourself.",
   },
 };
 

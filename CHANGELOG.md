@@ -14,6 +14,16 @@ therefore flagged the real `github`'s edit-distance-2 cousin `gitlab` as
 flag, while genuine lookalikes (e.g. `git1ab.com`, `b1tbucket.com`) now
 correctly match them. `github.com` and its typosquats are unchanged.
 
+### Changed — URL Inspector verdicts framed as signals, not judgements
+
+The URL Inspector's brand list and heuristics flag *patterns* — they can't
+authoritatively clear (or condemn) a URL the way a reputation service can.
+The verdict explanations previously read as final judgements ("Do not visit
+this link"). They now frame a flagged URL as a trip-wire: "this matched a
+pattern phishers use — verify the destination yourself (confirm the domain
+and scheme, or type the official address in)". `safe` likewise gains the
+caveat that the most convincing phishing links often trigger nothing.
+
 ### Changed — UI consistency pass
 
 Reviewed for cross-module UI consistency; no bugs found. Resolved four
