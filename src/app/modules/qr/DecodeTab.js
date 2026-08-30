@@ -145,7 +145,7 @@ function URLPreview({ detail }) {
           className="py-2"
         />
         {detail.trackingParams.length > 0 && (
-<KeyValueRow
+        <KeyValueRow
           label="Cleaned URL"
           value={detail.cleanUrl}
           mono

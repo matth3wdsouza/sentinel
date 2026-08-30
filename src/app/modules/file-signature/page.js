@@ -125,7 +125,7 @@ export default function FileSignaturePage() {
                   <div>
                     <span className="text-xs uppercase tracking-wide text-slate">Size</span>
                     <p className="font-mono text-xs text-ink">
-                      {(result.fileSize ?? 0).toLocaleString()} bytes
+                      {file.size.toLocaleString()} bytes
                     </p>
                   </div>
                   {result.detected.hex && (
@@ -197,7 +197,7 @@ export default function FileSignaturePage() {
                   <div>
                     <span className="text-xs uppercase tracking-wide text-slate">Size</span>
                     <p className="font-mono text-xs text-ink">
-                      {(result.fileSize ?? 0).toLocaleString()} bytes
+                      {file.size.toLocaleString()} bytes
                     </p>
                   </div>
                 </div>

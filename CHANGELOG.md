@@ -4,6 +4,33 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed — verdict presentation and file-signature verification
+
+- **Verdict banners: "Dangerous" now looks different from "Suspicious".** The
+  URL, Unicode, and Scam inspectors' top verdict banners all used
+  `ResultCard`'s `mismatch` treatment (red circle-X) for both severities, so
+  an active phishing subdomain and a single warning-level punycode flag
+  rendered identically. `ResultCard` gains a distinct `danger` config
+  (warmer red-orange rail/chip + `AlertTriangle` icon); the three
+  inspectors' `dangerous` entries now use it while `suspicious` keeps the
+  existing warning treatment.
+- **EXIF Inspector no longer reassures after a failed read.** When an image
+  failed to parse (or was over the size cap), the page showed a calm green
+  "No metadata found" card below the error — a contradiction for a privacy
+  tool. Results are now suppressed whenever an error is present; the error
+  alone renders.
+- **File Signature Verifier real file size.** Every file showed "0 bytes":
+  the page read `result.fileSize`, a field `analyzeFile()` never returns.
+  The page now reads `file.size` directly.
+- **OpenDocument and Apple iWork files no longer false-report a file-type
+  mismatch**, and the ZIP guess no longer mislabels them as EPUB. ODF is
+  detected from its `mimetype` entry's *content*
+  (`vnd.oasis.opendocument.<subtype>` → ods/odt/odp/…), iWork from its
+  `x-iwork-*` mimetype, and the EPUB check now requires the literal
+  `application/epub+zip` instead of a bare `mimetype` entry. The
+  ZIP-container allow-list extends to the whole ODF family plus
+  pages/numbers/key, so generic ZIPs of any of these families verify cleanly.
+
 ### Refactored — de-duplication sweep
 
 A cross-module DRY consolidation following the URL decomposition sharing; no

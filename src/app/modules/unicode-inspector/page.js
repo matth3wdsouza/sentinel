@@ -33,7 +33,7 @@ const VERDICT_CONFIG = {
       "This text contains one or more invisible or deceptive characters — zero-width spaces, soft hyphens, control characters, or look-alike homoglyphs. Check the breakdown below before trusting what you see.",
   },
   dangerous: {
-    verdict: "mismatch",
+    verdict: "danger",
     label: "Text direction override detected",
     explanation:
       "This text contains bidirectional control characters — the mechanism behind display-spoofing attacks. The text may not show the same order in which it was written. Do not trust what this text appears to say.",

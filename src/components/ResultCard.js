@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useId } from "react";
-import { CheckCircle2, XCircle, Info, Terminal } from "lucide-react";
+import { CheckCircle2, XCircle, Info, Terminal, AlertTriangle } from "lucide-react";
 import CopyButton from "@/components/CopyButton";
 
 const VERDICT_CONFIG = {
@@ -22,6 +22,16 @@ const VERDICT_CONFIG = {
     rail: "bg-mismatch",
     chipBg: "bg-mismatch-light",
     chipText: "text-mismatch-chip",
+  },
+  // Danger — a distinct treatment from mismatch so the top verdict banner
+  // distinguishes "active, high-signal threat" (danger) from "single
+  // warning-level flag" (suspicious/mismatch). Warned red-orange hue via the
+  // danger tokens; mismatches stay the cooler result-red.
+  danger: {
+    icon: AlertTriangle,
+    rail: "bg-danger",
+    chipBg: "bg-danger-light",
+    chipText: "text-danger",
   },
   neutral: {
     icon: Info,

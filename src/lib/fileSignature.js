@@ -9,7 +9,7 @@
 const MAGIC_SIGNATURES = [
   // ── Documents ─────────────────────────────────────────────────────────
   { bytes: [0x25, 0x50, 0x44, 0x46], ext: "pdf", type: "PDF document", description: "Portable Document Format" },
-  { bytes: [0x50, 0x4b, 0x03, 0x04], ext: "docx", type: "ZIP archive (Office/APK/JAR/EPUB)", description: "ZIP container — check contents for exact type" },
+  { bytes: [0x50, 0x4b, 0x03, 0x04], ext: "docx", type: "ZIP archive (Office/ODF/iWork/APK/JAR/EPUB)", description: "ZIP container — check contents for exact type" },
   { bytes: [0x50, 0x4b, 0x05, 0x06], ext: "zip", type: "Empty ZIP archive", description: "ZIP archive (empty)" },
   { bytes: [0x50, 0x4b, 0x07, 0x08], ext: "zip", type: "ZIP archive (spanned)", description: "ZIP archive (spanned)" },
   { bytes: [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1], ext: "doc", type: "Microsoft Compound Document (doc/xls/ppt)", description: "OLE2 compound document" },
@@ -140,6 +140,37 @@ export function matchSignature(header) {
   return null;
 }
 
+// OpenDocument (LibreOffice/OpenOffice) subtypes → file extension. ODF files
+// name their first, uncompressed ZIP entry literally "mimetype", so the
+// entry's *content* is what tells the exact format apart.
+const ODF_SUBTYPE_EXT = {
+  spreadsheet: "ods",
+  "spreadsheet-template": "ots",
+  text: "odt",
+  "text-template": "ott",
+  "text-master": "odm",
+  presentation: "odp",
+  "presentation-template": "otp",
+  graphics: "odg",
+  "graphics-template": "otg",
+  chart: "odc",
+  formula: "odf",
+  database: "odb",
+};
+
+// Declared extensions treated as compatible ZIP-based document containers:
+// the OOXML family plus OpenDocument (ODF) and Apple iWork, which are also
+// ZIP packages. A generic ZIP with no distinguishing entry matches any of
+// these; positively-identified formats (detectSpecificExtension) get called
+// out by their own extension.
+const GENERIC_ZIP_EXTS = [
+  "zip",
+  "docx", "xlsx", "pptx",
+  ...Object.values(ODF_SUBTYPE_EXT),
+  "apk", "jar", "epub",
+  "pages", "numbers", "key",
+];
+
 function detectSpecificExtension(header, baseExt) {
   if (baseExt === "docx") {
     // ZIP containers can't be told apart from their magic bytes alone, so
@@ -147,7 +178,17 @@ function detectSpecificExtension(header, baseExt) {
     // formats are checked first because their markers are more specific;
     // docx remains the fallback so plain/renamed Zips don't regress.
     const text = arrayBufferToText(header);
-    if (text.includes("application/epub+zip") || text.includes("mimetype")) return "epub";
+    // EPUB — the mimetype entry must literally be an EPUB mimetype. A bare
+    // "mimetype" entry is NOT specific to EPUB: ODF (and some iWork) files
+    // use the same ZIP convention.
+    if (text.includes("application/epub+zip")) return "epub";
+    // OpenDocument — the mimetype entry's content names the exact subtype.
+    const odf = text.match(/application\/vnd\.oasis\.opendocument\.([a-z-]+)/);
+    if (odf) return ODF_SUBTYPE_EXT[odf[1]] ?? "odf";
+    // Apple iWork — newer versions embed an x-iwork mimetype entry.
+    if (text.includes("application/x-iwork-pages-sffpages") || text.includes("application/x-iwork-pages")) return "pages";
+    if (text.includes("application/x-iwork-numbers-sffnumbers") || text.includes("application/x-iwork-numbers")) return "numbers";
+    if (text.includes("application/x-iwork-keynote-sffkey") || text.includes("application/x-iwork-keynote")) return "key";
     if (text.includes("AndroidManifest.xml") || text.includes("classes.dex")) return "apk";
     if (text.includes("META-INF/")) return "jar";
     if (text.includes("word/")) return "docx";
@@ -219,7 +260,7 @@ export async function analyzeFile(file) {
   };
 
   const extMatches = ext === match.detectedExtension;
-  const extIsGenericZip = ["zip", "docx", "xlsx", "pptx", "apk", "jar", "epub"].includes(ext);
+  const extIsGenericZip = GENERIC_ZIP_EXTS.includes(ext);
 
   let verdict;
   let message;
@@ -229,7 +270,7 @@ export async function analyzeFile(file) {
     message = `The file's magic bytes match the declared .${ext} extension.`;
   } else if (extIsGenericZip && match.detectedExtension === "docx") {
     verdict = "match";
-    message = `The file is a ZIP-based Office document. The declared .${ext} extension is compatible.`;
+    message = `The file is a ZIP-based document. The declared .${ext} extension is compatible.`;
   } else if (match.detectedExtension === "docx" && ["doc", "xls", "ppt"].includes(ext)) {
     verdict = "mismatch";
     message = `The file is a ZIP-based Office document, not a legacy .${ext} file. Legacy Office files use the OLE2 format, not ZIP.`;

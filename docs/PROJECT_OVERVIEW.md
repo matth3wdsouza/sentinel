@@ -706,6 +706,34 @@ elevated). All phases are complete and stable:
     button press like every other module is an open decision, parked.)
   - Net `-61` lines. No other UI or logging behavior changed.
 
+- **Phase 22 — verdict severity, EXIF failure state, and file-signature
+  verification** (a visual pass plus follow-up source checks on the
+  file-signature module; all findings addressed in one round):
+  - **Verdict banner severity distinction.** `ResultCard`'s `VERDICT_CONFIG`
+    gains a `danger` entry — warmer red-orange rail/chip via the existing
+    `--color-danger` tokens plus an `AlertTriangle` icon — so the top
+    verdict banner of every inspector now distinguishes an active,
+    high-signal "Dangerous" result from a single warning-level "Suspicious"
+    result. The URL, Unicode, and Scam inspectors' `dangerous` entries point
+    at it; `suspicious` stays on `mismatch` (result-red XCircle). Flag-level
+    chips were already correct (`SEVERITY_STYLE.danger` vs `.warning`).
+  - **EXIF failed-read contradiction.** The non-image/oversized paths set an
+    error but left `result` at its "inspected, nothing found" state, so the
+    page rendered a reassuring green "No metadata found" card under the
+    error. Results (including the preview) are now gated on `!error`.
+  - **File Signature "0 bytes".** `page.js` read `result.fileSize`, which
+    `analyzeFile()` never returned (`?? 0` fired every time). The page now
+    reads `file.size` directly.
+  - **ODF/iWork false mismatches (and EPUB mislabel).** `detectSpecificExtension`
+    now detects OpenDocument from its `mimetype` entry *content*
+    (`application/vnd.oasis.opendocument.<subtype>` → ods/odt/odp/…), Apple
+    iWork from its `application/x-iwork-*` mimetype (pages/numbers/key), and
+    the EPUB check requires the literal `application/epub+zip` — a bare
+    `mimetype` entry is a shared ZIP convention, not an EPUB marker.
+    `GENERIC_ZIP_EXTS` (extracted from the old inline list) adds the whole
+    ODF subtype family plus pages/numbers/key, so legitimate files of any
+    of these families verify cleanly. Regression tests added.
+
 ## Refactor — Rounds 1–3
 
 A systematic refactor was completed after the 10th module was built, to

@@ -243,3 +243,69 @@ describe("analyzeFile - ZIP sub-types (apk/jar/epub)", () => {
     expect(result.detected.detectedExtension).toBe("epub");
   });
 });
+
+describe("analyzeFile - OpenDocument (ODF) and Apple iWork", () => {
+  const zipEntry = (name) => [
+    0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x00, 0x00,
+    ...Array.from(name, (c) => c.charCodeAt(0)),
+  ];
+
+  it("detects a .ods file from its ODF spreadsheet mimetype", async () => {
+    const result = await analyzeFile(
+      createFile(zipEntry("mimetypeapplication/vnd.oasis.opendocument.spreadsheet"), "book.ods")
+    );
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("ods");
+  });
+
+  it("detects a .odt file from its ODF text mimetype", async () => {
+    const result = await analyzeFile(
+      createFile(zipEntry("mimetypeapplication/vnd.oasis.opendocument.text"), "report.odt")
+    );
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("odt");
+  });
+
+  it("detects a .odp file from its ODF presentation mimetype", async () => {
+    const result = await analyzeFile(
+      createFile(zipEntry("mimetypeapplication/vnd.oasis.opendocument.presentation"), "slides.odp")
+    );
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("odp");
+  });
+
+  it("no longer mislabels a bare mimetype entry as epub", async () => {
+    const result = await analyzeFile(createFile(zipEntry("mimetype"), "book.epub"));
+    expect(result.detected.detectedExtension).toBe("docx");
+  });
+
+  it("detects .pages from its iWork mimetype", async () => {
+    const result = await analyzeFile(
+      createFile(zipEntry("mimetypeapplication/x-iwork-pages-sffpages"), "report.pages")
+    );
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("pages");
+  });
+
+  it("detects .numbers from its iWork mimetype", async () => {
+    const result = await analyzeFile(
+      createFile(zipEntry("mimetypeapplication/x-iwork-numbers-sffnumbers"), "budget.numbers")
+    );
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("numbers");
+  });
+
+  it("detects .key from its iWork mimetype", async () => {
+    const result = await analyzeFile(
+      createFile(zipEntry("mimetypeapplication/x-iwork-keynote-sffkey"), "deck.key")
+    );
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("key");
+  });
+
+  it("accepts an iWork file without a mimetype entry (Index/ convention)", async () => {
+    const result = await analyzeFile(createFile(zipEntry("Index/Document.iwa"), "report.pages"));
+    expect(result.verdict).toBe("match");
+    expect(result.detected.detectedExtension).toBe("docx");
+  });
+});

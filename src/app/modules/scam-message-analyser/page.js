@@ -32,7 +32,7 @@ const VERDICT_CONFIG = {
       "This message shows warning-level signs such as urgency language, claiming to be a trusted company, or links. None on their own prove a scam, but combined they are worth treating as a red flag. Verify through official channels before acting.",
   },
   dangerous: {
-    verdict: "mismatch",
+    verdict: "danger",
     label: "Signs of a likely scam",
     explanation:
       "This message combines high-signal scam indicators — requests for codes or account details, money pressure, gift-card or wire payments, secrecy demands, or suspicious links. Do not tap links, send money, reuse credentials, or share codes. Verify through an official channel you found yourself.",

@@ -446,7 +446,7 @@ export default function ExifPage() {
         )}
 
         {/* Results */}
-        {hasResult && (
+        {!error && hasResult && (
           <>
             <ImagePreview file={file} />
 

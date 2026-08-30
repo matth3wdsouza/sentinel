@@ -31,7 +31,7 @@ const VERDICT_CONFIG = {
       "This URL triggered one or more warning-level patterns. They're common on phishing links, but they also appear on legitimate sites — so this is a signal to look closer, not a verdict. Verify the destination independently: confirm the domain and scheme, or check the official site yourself.",
   },
   dangerous: {
-    verdict: "mismatch",
+    verdict: "danger",
     label: "Dangerous",
     explanation:
       "This URL triggered one or more danger-level patterns — the same shapes phishers use to disguise where a link actually goes. Unless you're certain this is the site you intended, treat it as untrusted and verify the destination before clicking: confirm the domain and scheme, or type the official address in yourself.",
