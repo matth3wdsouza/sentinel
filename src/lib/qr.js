@@ -3,6 +3,8 @@
 // Generate: qrcode renders to a canvas element provided by the caller.
 // No network calls. All processing is local.
 
+import { TRACKING_PARAMS } from "@/lib/urlSignals";
+
 // ─── Decode ───────────────────────────────────────────────────────────────────
 
 export async function decodeQR(file) {
@@ -61,13 +63,8 @@ export async function generateQR(canvas, text, { darkColor = "#223142", lightCol
 }
 
 // ─── Content analysis ─────────────────────────────────────────────────────────
-// Same heuristics as clipboard.js — classify what the QR code contains
-// so the explain layer can be specific.
-
-const TRACKING_PARAMS = [
-  "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
-  "fbclid", "gclid", "msclkid", "mc_eid", "ref", "_hsenc", "igshid",
-];
+// Same heuristics as clipboard.js (shared TRACKING_PARAMS from urlSignals) —
+// classify what the QR code contains so the explain layer can be specific.
 
 // Domains commonly used in QR phishing / redirect chains
 const SUSPICIOUS_PATTERNS = [

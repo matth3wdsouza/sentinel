@@ -1,6 +1,8 @@
 // clipboard.js — Clipboard read/write helpers and content analysis.
 // All processing is local. The clipboard value is never stored or logged.
 
+import { TRACKING_PARAMS } from "@/lib/urlSignals";
+
 // ─── Read ─────────────────────────────────────────────────────────────────────
 
 export async function readClipboard() {
@@ -37,11 +39,6 @@ export async function writeClipboard(text) {
 // Heuristic classification of clipboard content. Returns a { type, detail }
 // object used to drive the explain layer. These are best-effort guesses, not
 // definitive detections — the UI makes that clear.
-
-const TRACKING_PARAMS = [
-  "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
-  "fbclid", "gclid", "msclkid", "mc_eid", "ref", "_hsenc", "igshid",
-];
 
 export function analyzeContent(text) {
   if (!text || text.trim().length === 0) {

@@ -6,9 +6,10 @@
 // combining marks and variation selectors (info). Everything runs locally
 // on the pasted string — no content is ever logged or transmitted.
 
-export const DANGER = "danger";
-export const WARNING = "warning";
-export const INFO = "info";
+import { DANGER, WARNING, INFO } from "@/lib/severity";
+
+// Re-exported so the existing tests/consumers keep importing from here.
+export { DANGER, WARNING, INFO };
 
 const BIDI_CODE_POINTS = new Set([
   0x202a, 0x202b, 0x202c, 0x202d, 0x202e, 0x2066, 0x2067, 0x2068, 0x2069,

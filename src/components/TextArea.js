@@ -11,9 +11,12 @@ export default function TextArea({
   ariaLabel = placeholder,
   rows = 5,
   mono = false,
+  resizable = true,
+  id,
 }) {
   return (
     <textarea
+      id={id}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
@@ -22,7 +25,7 @@ export default function TextArea({
       spellCheck={false}
       autoComplete="off"
       autoCorrect="off"
-      className={`w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition resize-y${mono ? " font-mono" : ""}`}
+      className={`w-full border border-slate/30 rounded-xl px-4 py-3 text-sm text-ink bg-surface focus:border-teal transition${mono ? " font-mono" : ""}${resizable ? " resize-y" : " resize-none"}`}
     />
   );
 }

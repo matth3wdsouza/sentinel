@@ -10,9 +10,11 @@
 // Everything runs locally on the pasted string — no content is ever logged
 // or transmitted, and no links are ever followed or resolved.
 
-export const DANGER = "danger";
-export const WARNING = "warning";
-export const INFO = "info";
+import { DANGER, WARNING, INFO, computeVerdict } from "@/lib/severity";
+import { SUSPICIOUS_TLDS } from "@/lib/urlSignals";
+
+// Re-exported so the existing tests/consumers keep importing from here.
+export { DANGER, WARNING, INFO };
 
 // The category order controls how flags render in the breakdown (dangerous
 // and high-signal categories first).
@@ -126,7 +128,7 @@ function domainName(host) {
   return parts.length >= 2 ? parts[parts.length - 2] : host;
 }
 
-// Flag a URL as suspicious if it's a known shortener or sits on an unusual
+// Flag a URL as suspicious if it's on a known shortener or sits on an unusual
 // TLD that's vanishingly rare for the entities commonly impersonated.
 function urlIsSuspicious(url) {
   const host = hostOf(url);
@@ -134,12 +136,8 @@ function urlIsSuspicious(url) {
   if (SHORTENER_DOMAINS.some((s) => host === s || host.endsWith("." + s))) {
     return true;
   }
-  const suspiciousTlds = [
-    "xyz", "top", "buzz", "club", "work", "info", "site", "online", "website",
-    "space", "fun", "icu", "monster", "cam", "bond", "cyou", "uno", "lol",
-  ];
   const tld = host.split(".").pop();
-  return suspiciousTlds.includes(tld);
+  return SUSPICIOUS_TLDS.has(tld);
 }
 
 // ── Flag detection ──────────────────────────────────────────────────────────
@@ -270,14 +268,6 @@ function detectFlags(text, lowerText) {
   return { flags, counts, urls, suspiciousUrls };
 }
 
-function computeVerdict(flags) {
-  const hasDanger = flags.some((f) => f.severity === DANGER);
-  const hasWarning = flags.some((f) => f.severity === WARNING);
-  if (hasDanger) return "dangerous";
-  if (hasWarning) return "suspicious";
-  return "clean";
-}
-
 // ── Public API ──────────────────────────────────────────────────────────────
 
 // Analysed result:
@@ -298,7 +288,7 @@ export function analyzeMessage(text) {
   const orderIndex = Object.fromEntries(CATEGORY_ORDER.map((c, i) => [c, i]));
   flags.sort((a, b) => orderIndex[a.category] - orderIndex[b.category]);
 
-  const verdict = computeVerdict(flags);
+  const verdict = computeVerdict(flags, { safeToken: "clean" });
 
   return {
     verdict,

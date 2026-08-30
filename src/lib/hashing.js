@@ -2,6 +2,14 @@ import { SUPPORTED_ALGORITHMS } from "@/lib/hashingCore";
 
 export { SUPPORTED_ALGORITHMS };
 
+// Pure toggle used by the algorithm chip pickers (algorithm selection is
+// independent of the streaming hashing path above).
+export function toggleAlgorithm(algo, selected) {
+  return selected.includes(algo)
+    ? selected.filter((a) => a !== algo)
+    : [...selected, algo];
+}
+
 // Above this size, hashing is safe (it streams) but can take several
 // seconds, so the file-integrity tabs also show the equivalent terminal
 // command as an optional, faster-for-big-files alternative. Purely

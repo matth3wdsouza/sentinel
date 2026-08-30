@@ -10,9 +10,10 @@
 // decide, it does not prove a PIN is compromised. Everything runs locally on
 // the pasted digits — the PIN itself is never logged or transmitted.
 
-export const DANGER = "danger";
-export const WARNING = "warning";
-export const INFO = "info";
+import { DANGER, WARNING, INFO } from "@/lib/severity";
+
+// Re-exported so the existing tests/consumers keep importing from here.
+export { DANGER, WARNING, INFO };
 
 export const MAX_PIN_LENGTH = 12;
 

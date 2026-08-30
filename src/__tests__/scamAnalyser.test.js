@@ -129,6 +129,13 @@ describe("links", () => {
     expect(result.suspiciousUrlCount).toBe(1);
   });
 
+  it("flags TLDs shared with the URL Inspector (union list)", () => {
+    // sbs was previously only in the URL Inspector's list; the shared
+    // SUSPICIOUS_TLDS set keeps both modules aligned.
+    const result = analyzeMessage("Confirm now: http://secure-bank.site.sbs/verify");
+    expect(result.suspiciousUrlCount).toBe(1);
+  });
+
   it("flags a normal-looking link as info only", () => {
     const result = analyzeMessage("More info: https://example.com/help");
     expect(result.urlCount).toBe(1);

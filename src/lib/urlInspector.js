@@ -1,17 +1,10 @@
 // Pure-logic URL analysis for the URL Inspector module.
 // No network calls, no side effects — just parsing and heuristic checks.
 
+import { DANGER, WARNING, INFO, computeVerdict } from "@/lib/severity";
+import { SUSPICIOUS_TLDS } from "@/lib/urlSignals";
+
 // ── Constants ────────────────────────────────────────────────────────────────
-
-const DANGER = "danger";
-const WARNING = "warning";
-const INFO = "info";
-
-const SUSPICIOUS_TLDS = new Set([
-  "xyz", "top", "buzz", "club", "work", "info", "site", "online", "website",
-  "space", "fun", "icu", "monster", "cam", "sbs", "cfd", "surf", "rest",
-  "bond", "cyou", "uno", "lol",
-]);
 
 const KNOWN_BRANDS = [
   "google", "gmail", "youtube", "facebook", "meta", "instagram", "whatsapp",
@@ -405,15 +398,7 @@ function decodedUsername(u) {
 }
 
 // ── Verdict ──────────────────────────────────────────────────────────────────
-
-function computeVerdict(flags) {
-  const hasDanger = flags.some((f) => f.severity === DANGER);
-  const hasWarning = flags.some((f) => f.severity === WARNING);
-
-  if (hasDanger) return "dangerous";
-  if (hasWarning) return "suspicious";
-  return "safe";
-}
+// Verdict derives from the shared computeVerdict in lib/severity.js.
 
 // ── Public API ───────────────────────────────────────────────────────────────
 
@@ -429,7 +414,7 @@ export function analyzeURL(raw) {
   }
 
   const flags = detectFlags(parsed, trimmed);
-  const verdict = computeVerdict(flags);
+  const verdict = computeVerdict(flags, { safeToken: "safe" });
 
   return { parsed, flags, verdict };
 }
