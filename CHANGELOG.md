@@ -4,6 +4,32 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed — UI consistency pass
+
+Reviewed for cross-module UI consistency; no bugs found. Resolved four
+drifts where individual modules fell out of step with the shared layer:
+
+- **Error display** — EXIF and Guessability rendered hand-rolled error
+  paragraphs instead of the shared `InlineError` component (losing its
+  `role="alert"` announcement). Both now use `InlineError`; guessability's
+  error text also adopts the standard `text-sm` size.
+- **URL Inspector "Try examples"** — this inspector module was the only one
+  without the prebuilt `TryExamples` shortcuts (Unicode Inspector, PIN
+  Analyser, and the Scam Message Analyser all have them). Added a
+  misleading-subdomain, homograph/punycode, and clean-URL example, plus the
+  shared try-examples gating preference.
+- **Fingerprint passive-exposure loading** — the Passive tab swapped the whole
+  view for a "Collecting browser data…" paragraph while running, unlike every
+  other module's inline `Button` loading state. The intake card now stays on
+  screen with the button in a `loading` state, and the collected results
+  render underneath (extracted into a `PassiveResults` component); the
+  Geolocation and Media tabs keep their full-tab treatment.
+- **Companion links** — two missing cross-module connections added: the QR
+  Decoder now links a decoded URL to the URL Inspector (inside the result
+  card), and File Signature gains a "verify this file's hash" link to File
+  Integrity (which in turn already links back to Text Hash, with a new link
+  to File Signature).
+
 ### Fixed — WiFi QR decode escaping & browser version detection
 
 - **WiFi QR round-trip corruption** — the QR generator correctly escapes

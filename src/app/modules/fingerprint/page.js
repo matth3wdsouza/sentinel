@@ -142,14 +142,6 @@ function PassiveTab({ moduleId }) {
     }
   }
 
-  if (state === "loading") {
-    return (
-      <p className="text-sm text-slate py-8 text-center">
-        Collecting browser data…
-      </p>
-    );
-  }
-
   if (state === "error") {
     return (
       <ResultCard
@@ -167,8 +159,8 @@ function PassiveTab({ moduleId }) {
     );
   }
 
-  if (state === "idle") {
-    return (
+  return (
+    <div className="space-y-5">
       <GuidedCard
         icon={Fingerprint}
         heading="Passive exposure"
@@ -179,11 +171,28 @@ function PassiveTab({ moduleId }) {
           "Nothing is sent anywhere."
         }
       >
-        <Button onClick={handleCollect}>Collect browser data</Button>
+        <Button
+          onClick={handleCollect}
+          disabled={state === "loading"}
+          loading={state === "loading"}
+          loadingLabel="Collecting…"
+        >
+          Collect browser data
+        </Button>
       </GuidedCard>
-    );
-  }
 
+      {state === "done" && <PassiveResults data={data} />}
+    </div>
+  );
+}
+
+// ─── PassiveResults ──────────────────────────────────────────────────────────
+
+// Renders the collected fingerprint tables. Kept as its own component so the
+// intake card above stays on screen (and lets the user re-collect) while the
+// results render underneath — matching the inline Button loading pattern used
+// in the other modules.
+function PassiveResults({ data }) {
   const { identity, locale, display, hardware, tracking, graphics } = data;
 
   // Count non-null values for the summary banner (same source as the log)

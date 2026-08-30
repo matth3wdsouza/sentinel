@@ -7,6 +7,7 @@ import ModulePage from "@/components/ModulePage";
 import { Button } from "@/components/Button";
 import Disclosure from "@/components/Disclosure";
 import CompanionLinks from "@/components/CompanionLinks";
+import InlineError from "@/components/InlineError";
 import { Gauge } from "lucide-react";
 
 const SCORE_LABELS = ["Very weak", "Weak", "Fair", "Good", "Strong"];
@@ -259,7 +260,7 @@ export default function GuessabilityPage() {
 
         {workerError && (
           <div className="mb-4 rounded-xl bg-mismatch-light border border-mismatch/30 px-4 py-3">
-            <p className="text-xs text-mismatch-chip">{workerError}</p>
+            <InlineError>{workerError}</InlineError>
           </div>
         )}
 

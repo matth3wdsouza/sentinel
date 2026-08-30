@@ -5,6 +5,7 @@ import { FileSearch2 } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
 import FileInput from "@/components/FileInput";
+import CompanionLinks from "@/components/CompanionLinks";
 import { Button } from "@/components/Button";
 import InlineError from "@/components/InlineError";
 import { saveActivity } from "@/lib/api";
@@ -215,6 +216,15 @@ export default function FileSignaturePage() {
             )}
           </>
         )}
+
+        <CompanionLinks
+          links={[
+            {
+              href: "/modules/file-integrity",
+              label: "Verify this file's hash?",
+            },
+          ]}
+        />
       </div>
     </ModulePage>
   );

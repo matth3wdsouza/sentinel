@@ -10,6 +10,7 @@ import AnalyseActions from "@/components/AnalyseActions";
 import VerdictCard from "@/components/VerdictCard";
 import FindingsList from "@/components/FindingsList";
 import InfoCallout from "@/components/InfoCallout";
+import TryExamples from "@/components/TryExamples";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
 import { analyzeURL } from "@/lib/urlInspector";
@@ -48,6 +49,26 @@ const URL_PARTS = [
   { key: "hash", label: "Fragment" },
 ];
 
+const EXAMPLES = [
+  {
+    label: "Misleading subdomain",
+    text: "https://paypal.refund-center.com/login",
+    caption:
+      "A trusted brand used as a subdomain of another domain — the classic phishing shape.",
+  },
+  {
+    label: "Homograph trick",
+    text: "https://www.\u0430pple.com",
+    caption:
+      "A non-ASCII \u2018a\u2019 that looks identical to a Latin \u2018a\u2019 — browsers encode such hostnames as punycode.",
+  },
+  {
+    label: "Clean URL",
+    text: "https://example.com/blog/post-1",
+    caption: "A straightforward URL that should trigger none of the heuristics.",
+  },
+];
+
 export default function URLInspectorPage() {
   const moduleId = useModuleId();
 
@@ -60,6 +81,7 @@ export default function URLInspectorPage() {
     expanded,
     handleChange,
     handleAnalyse,
+    loadExample,
     reset,
     toggle,
     clearExpanded,
@@ -109,6 +131,7 @@ export default function URLInspectorPage() {
             rows={3}
             mono
           />
+          <TryExamples examples={EXAMPLES} onLoad={loadExample} />
         </div>
 
         <AnalyseActions

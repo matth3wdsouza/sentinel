@@ -616,6 +616,27 @@ elevated). All phases are complete and stable:
     totp, base64, guessability, passwordGen, wordlist, hashingCore, exif,
     clipboard, and the non-WiFi parts of qr).
 
+- **Phase 17 — UI consistency pass** (changes from the uncommitted
+  `docs/internal/CLAUDE_REVIEW_06-consistency.md` review; no bugs, four
+  page-level drifts reconciled with the shared layer):
+  - **Error display** — EXIF and Guessability swapped their hand-rolled
+    error `<p>` for the shared `InlineError` component (restoring
+    `role="alert"`). Guessability's error text adopts the standard `text-sm`.
+  - **URL Inspector TryExamples** — added the prebuilt sample shortcuts the
+    other inspector modules had, with examples exercising dangerous
+    (misleading subdomain), suspicious (punycode/homograph), and safe
+    verdicts. Falls under the shared `ui.tryExamples` preference.
+  - **Fingerprint Passive tab loading** — no longer swaps the whole tab for
+    a static "Collecting…" paragraph; the intake card stays on screen with
+    the shared `Button` `loading` state and the tables render under it when
+    done (extracted into `PassiveResults`). Geolocation/Media tabs keep the
+    full-tab treatment. Privacy logging unchanged (booleans/counts only).
+  - **Companion links** — QR Decoder → URL Inspector inside the result card
+    for decoded URLs; File Signature ↔ File Integrity cross-link added in
+    both directions (both outcome-independent standalone rows, matching the
+    Text Hash ↔ File Integrity precedent).
+  - No lib logic or tests changed anywhere on this pass.
+
 ## Refactor — Rounds 1–3
 
 A systematic refactor was completed after the 10th module was built, to

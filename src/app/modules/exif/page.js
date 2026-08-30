@@ -23,6 +23,7 @@ import FileInput from "@/components/FileInput";
 import CodeBlock from "@/components/CodeBlock";
 import CopyButton from "@/components/CopyButton";
 import Disclosure from "@/components/Disclosure";
+import InlineError from "@/components/InlineError";
 import { Button } from "@/components/Button";
 import { parseExif, privacySummary } from "@/lib/exif";
 import { saveActivity } from "@/lib/api";
@@ -451,7 +452,7 @@ export default function ExifPage() {
         {error && (
           <div className="flex gap-2.5 rounded-xl bg-mismatch-light px-4 py-3.5 mb-6">
             <AlertTriangle size={15} className="text-mismatch-chip shrink-0 mt-0.5" />
-            <p className="text-sm text-mismatch-chip">{error}</p>
+            <InlineError>{error}</InlineError>
           </div>
         )}
 

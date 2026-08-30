@@ -163,6 +163,10 @@ export default function GenerateHashTab({ moduleId }) {
         className="mt-6"
         links={[
           { href: "/modules/text-hash", label: "Need to hash text instead?" },
+          {
+            href: "/modules/file-signature",
+            label: "Check what this file really is?",
+          },
         ]}
       />
     </>

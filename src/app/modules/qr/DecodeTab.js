@@ -5,6 +5,7 @@ import { ExternalLink, ShieldCheck, QrCode } from "lucide-react";
 import FileInput from "@/components/FileInput";
 import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
+import CompanionLinks from "@/components/CompanionLinks";
 import { Button } from "@/components/Button";
 import { decodeQR, analyzeQRContent } from "@/lib/qr";
 import { saveActivity } from "@/lib/api";
@@ -361,7 +362,17 @@ export default function DecodeTab({ moduleId }) {
             explanation={resultProps.explanation}
           >
             {analysis.type === "url" && analysis.detail && (
-              <URLPreview detail={analysis.detail} />
+              <>
+                <URLPreview detail={analysis.detail} />
+                <CompanionLinks
+                  links={[
+                    {
+                      href: "/modules/url-inspector",
+                      label: "Inspect this URL for phishing",
+                    },
+                  ]}
+                />
+              </>
             )}
             {analysis.type === "wifi" && analysis.detail && (
               <WiFiPreview detail={analysis.detail} />
