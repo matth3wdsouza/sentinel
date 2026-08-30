@@ -269,9 +269,10 @@ function detectFlags(parsed, raw) {
         } else {
           // Fuzzy match — edit distance 1-2 against any brand name
           const closeMatch = KNOWN_BRANDS.find((b) => {
-            if (b.length <= 3) return false; // skip short brands (x, irs, ups) — too many false positives
+            if (b.length <= 3) return false; // skip very short brands (x, irs, ups) — too many false positives
+            const maxDist = b.length <= 4 ? 1 : 2; // 4-letter brands: only 1-edit lookalikes
             const dist = levenshtein(normalized, b);
-            return dist >= 1 && dist <= 2 && normalized.length >= b.length - 1 && normalized.length <= b.length + 2;
+            return dist >= 1 && dist <= maxDist && normalized.length >= b.length - 1 && normalized.length <= b.length + 2;
           });
           if (closeMatch) {
             flags.push({

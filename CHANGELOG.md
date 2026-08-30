@@ -14,8 +14,11 @@ Resolved issues surfaced in review, each with regression tests:
 - **Short-brand typosquat false positives** — the fuzzy-match guard
   (`b.length < 3`) let 3-char brands such as `irs` and `ups` through, so
   lookalikes like `irk.com` / `irr.com` / `ires.com` / `ors.com` were flagged.
-  Guard raised to `b.length <= 3`; exact leet-substitution detection of
-  3-char brands (`up5.com` → `ups`) is unaffected.
+  Guard raised to `b.length <= 3`, and 4-letter brands (`meta`, `live`, `usps`,
+  `hmrc`) are now capped at edit distance 1 (so `urs.com`→`usps` no longer
+  flags, while genuine 1-edit lookalikes like `usbs.com` still do). Exact
+  leet-substitution detection of short brands (`up5.com` → `ups`) is
+  unaffected.
 - **TAR archives never detected** — the TAR signature used `extOffset: 257`
   but the matcher reads `sig.offset`, so files verified against `.tar` always
   returned `unknown`. Dropped in favour of the real `offset` field.

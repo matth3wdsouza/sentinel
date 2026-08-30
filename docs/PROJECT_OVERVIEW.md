@@ -570,9 +570,12 @@ elevated). All phases are complete and stable:
     space (`" hmrc"`), so HMRC impersonation was never detected; fixed. The
     fuzzy typosquat guard was `b.length < 3`, which let 3-char brands
     (`irs`, `ups`, …) match short lookalikes (`irk.com`, `orx.com`) as
-    typosquats; raised to `b.length <= 3`. Exact leet-substitution matches of
-    3-char brands (`up5.com` → `ups`) are unaffected. Garbage entries in
-    `SUSPICIOUS_TLDS` removed.
+    typosquats; raised to `b.length <= 3`. 4-letter brands (`meta`, `live`,
+    `usps`, `hmrc`) are additionally capped at edit distance 1 in the fuzzy
+    matcher, closing the same class for names like `urs.com`→`usps` while
+    keeping genuine 1-edit catches (`usbs.com`). Exact leet-substitution
+    matches of short brands (`up5.com` → `ups`) are unaffected. Garbage
+    entries in `SUSPICIOUS_TLDS` removed.
   - **File Signature Verifier** — three silent detection bugs fixed: TAR used
     a never-read `extOffset: 257` field (matcher reads `sig.offset`), so TAR
     files verified as `unknown`; the generic RIFF entry shadowed WAV/AVI so

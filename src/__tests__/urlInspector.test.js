@@ -232,6 +232,17 @@ describe("flags: typosquatting", () => {
     expect(result.flags.some((f) => f.type === "typosquatting")).toBe(false);
   });
 
+  it("does not flag edit-distance-2 lookalikes of 4-char brands", () => {
+    // "urs" is distance 2 from usps — a false positive, not a plausible typo
+    const result = analyzeURL("https://urs.com");
+    expect(result.flags.some((f) => f.type === "typosquatting")).toBe(false);
+  });
+
+  it("still flags edit-distance-1 lookalikes of 4-char brands", () => {
+    const result = analyzeURL("https://usbs.com");
+    expect(result.flags.some((f) => f.type === "typosquatting")).toBe(true);
+  });
+
   it("leaves the real irs.gov unflagged", () => {
     const result = analyzeURL("https://irs.gov");
     expect(result.flags.some((f) => f.type === "typosquatting")).toBe(false);
