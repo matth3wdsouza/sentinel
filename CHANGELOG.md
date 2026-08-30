@@ -4,6 +4,27 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed — WiFi QR decode escaping & browser version detection
+
+- **WiFi QR round-trip corruption** — the QR generator correctly escapes
+  `\` `;` `,` `:` `"` per the WiFi-QR spec, but the decoder extracted
+  `S:`/`P:`/`T:` fields with a `[^;]+` regex and never un-escaped them. An
+  SSID or password containing any of those characters was silently truncated
+  at the first (even escaped) semicolon with a stray trailing backslash — a
+  real corruption bug for a tool whose job is showing someone their WiFi
+  password. `analyzeQRContent` now walks the payload with an escape-aware
+  tokenizer (stops only at an *unescaped* `;`, unescapes `\;` `\,` `\:` `\"`
+  `\\`), which round-trips the app's own generator output exactly.
+- **Fingerprint browser versions** — `parseUserAgent` extracted the version
+  with one shared leftmost-match regex, so Chromium-based browsers reported
+  the *engine* version: Opera showed "124" instead of its real "109", and
+  Edge could show a stale number mid-release-cycle. Samsung Internet and
+  Safari were hit too (engine/build number instead of product version).
+  Version extraction now matches the token belonging to the already-detected
+  browser (`OPR/`, `Edg/`, `SamsungBrowser/`, `Version/`, …). `parseUserAgent`
+  is now exported and unit-tested (new `fingerprint.test.js`) — it previously
+  had zero coverage.
+
 ### Fixed — URL Inspector & File Signature detector bugs
 
 Resolved issues surfaced in review, each with regression tests:

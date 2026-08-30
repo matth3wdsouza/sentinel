@@ -83,6 +83,34 @@ describe("analyzeQRContent — WiFi", () => {
     expect(result.detail.ssid).toBe("OpenNet");
     expect(result.detail.password).toBe(null);
   });
+
+  it("round-trips escaped semicolons in ssid and password", () => {
+    // This is the exact payload the app's own WiFi QR generator produces
+    // for SSID "Café;Wifi" / password "p@ss;word".
+    const result = analyzeQRContent("WIFI:T:WPA;S:Café\\;Wifi;P:p@ss\\;word;;");
+    expect(result.detail).toEqual({
+      ssid: "Café;Wifi",
+      password: "p@ss;word",
+      securityType: "WPA",
+    });
+  });
+
+  it("unescapes commas, colons, quotes, and backslashes", () => {
+    // Generator output for SSID `My,Net:"R1"\`, password `pa"ss;`.
+    const result = analyzeQRContent('WIFI:T:WPA;S:My\\,Net\\:\\"R1\\"\\\\;P:pa\\"ss\\;;;');
+    expect(result.detail).toEqual({
+      ssid: 'My,Net:"R1"\\',
+      password: 'pa"ss;',
+      securityType: "WPA",
+    });
+  });
+
+  it("parses a non-WPA payload (open network)", () => {
+    const result = analyzeQRContent("WIFI:T:nopass;S:OpenNet;;");
+    expect(result.detail.ssid).toBe("OpenNet");
+    expect(result.detail.password).toBe(null);
+    expect(result.detail.securityType).toBe("nopass");
+  });
 });
 
 describe("analyzeQRContent — vCard / mailto / SMS", () => {

@@ -105,7 +105,9 @@ function connectionInfo() {
   };
 }
 
-function parseUserAgent(ua) {
+// Exported for unit tests — it's pure, and the rest of the module needs a
+// full browser environment (canvas, navigator, permission prompts).
+export function parseUserAgent(ua) {
   // Minimal UA parse — enough for a human-readable "Chrome 124 on macOS" line
   // without pulling in a library. Order matters: Edge must come before Chrome.
   let browser = "Unknown browser";
@@ -118,10 +120,21 @@ function parseUserAgent(ua) {
   else if (/Chrome\//.test(ua)) browser = "Chrome";
   else if (/Safari\//.test(ua) && /Version\//.test(ua)) browser = "Safari";
 
-  // Version extraction
-  const verMatch =
-    ua.match(/(?:Chrome|Firefox|Safari|Edg|OPR|SamsungBrowser)\/(\d+)/) ||
-    ua.match(/Version\/(\d+)/);
+  // Version extraction — match the token specific to the detected browser.
+  // A single leftmost-match alternation would grab the embedded Chromium
+  // engine version (Chrome/* sits *earlier* in the UA string) for
+  // Opera/Edge/Samsung Internet, and Safari's WebKit build (Safari/*)
+  // instead of its real product version (Version/*).
+  const versionPatterns = {
+    "Microsoft Edge": [/Edg\/(\d+)/],
+    Opera: [/OPR\/(\d+)/, /Version\/(\d+)/], // Version/ covers legacy Presto Opera
+    Firefox: [/Firefox\/(\d+)/],
+    "Samsung Internet": [/SamsungBrowser\/(\d+)/],
+    Chrome: [/Chrome\/(\d+)/],
+    Safari: [/Version\/(\d+)/],
+  };
+  const patterns = versionPatterns[browser] ?? [];
+  const verMatch = patterns.reduce((found, re) => found ?? ua.match(re), null);
   if (verMatch) browser += ` ${verMatch[1]}`;
 
   if (/Windows NT/.test(ua)) {

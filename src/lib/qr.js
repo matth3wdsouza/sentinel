@@ -75,6 +75,56 @@ const SUSPICIOUS_PATTERNS = [
   /cutt\.ly/i, /short\.io/i, /tiny\.cc/i, /is\.gd/i, /rebrand\.ly/i,
 ];
 
+// Parse a WIFI: payload into its fields, respecting backslash escapes. The
+// app's generator escapes `\`, `;`, `,`, `:` and `"` per the WiFi-QR
+// convention, so a naive `S:([^;]+)` regex would stop at the first semicolon —
+// including an escaped one — and silently truncate the SSID/password. The
+// tokenizer walks the string, recording a value up to the first *unescaped*
+// `;` and unescaping the result.
+function parseWifiPayload(text) {
+  const detail = { ssid: null, password: null, securityType: null };
+  // Points just past the "WIFI:" prefix (5 chars; safe for case-insensitive
+  // input because "wifi:" is the same length).
+  let i = 5;
+
+  while (i < text.length) {
+    // Tolerate stray separators — the generator emits one trailing ";" per
+    // field, so the payload ends with a dangling ";".
+    while (text[i] === ";") i += 1;
+    if (i >= text.length) break;
+
+    const key = text[i];
+    // Field keys are single letters followed by ":". Stop when the structure
+    // breaks down rather than guessing at the rest of a malformed payload.
+    if (text[i + 1] !== ":") break;
+    i += 2;
+
+    let value = "";
+    while (i < text.length) {
+      const c = text[i];
+      if (c === "\\") {
+        // Backslash escapes the next character — keep it literally.
+        value += text[i + 1] ?? "";
+        i += 2;
+      } else if (c === ";") {
+        i += 1;
+        break;
+      } else {
+        value += c;
+        i += 1;
+      }
+    }
+
+    const k = key.toLowerCase();
+    const v = value === "" ? null : value;
+    if (k === "s") detail.ssid = v;
+    else if (k === "p") detail.password = v;
+    else if (k === "t") detail.securityType = v;
+    // H (hidden) is intentionally not captured, matching the previous regex.
+  }
+  return detail;
+}
+
 export function analyzeQRContent(text) {
   if (!text || text.trim().length === 0) {
     return { type: "empty", detail: null };
@@ -86,10 +136,7 @@ export function analyzeQRContent(text) {
   // URLs (they're valid schemes), so they must be classified before the
   // generic URL branch or these branches would never fire.
   if (/^WIFI:/i.test(trimmed)) {
-    const ssid = trimmed.match(/S:([^;]+)/i)?.[1] ?? null;
-    const password = trimmed.match(/P:([^;]+)/i)?.[1] ?? null;
-    const type = trimmed.match(/T:([^;]+)/i)?.[1] ?? null;
-    return { type: "wifi", detail: { ssid, password, securityType: type } };
+    return { type: "wifi", detail: parseWifiPayload(trimmed) };
   }
 
   if (/^BEGIN:VCARD/i.test(trimmed)) {

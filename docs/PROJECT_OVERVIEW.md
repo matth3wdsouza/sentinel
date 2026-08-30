@@ -593,6 +593,28 @@ elevated). All phases are complete and stable:
     dedicated `SPECIFIC_EXPLANATIONS` entry renders an accurate description).
     Re-bucketing it would churn UI, tests, and severity semantics for a
     single codepoint, so it stays; noted here for future cleanup.
+- **Phase 16 — WiFi QR decode escaping & browser version detection** (changes
+  from the uncommitted `docs/internal/CLAUDE_REVIEW_05.md` review, second pass
+  covering QR/clipboard/fingerprint/EXIF/HIBP/JWT/TOTP/base64/guessability/
+  passwordGen/wordlist/hashingCore):
+  - **WiFi QR round-trip corruption (`qr.js`)** — the QR generator escapes
+    `\` `;` `,` `:` `"` per the WiFi-QR convention, but `analyzeQRContent`
+    extracted `S:`/`P:`/`T:` with a `[^;]+` regex and didn't un-escape, so an
+    SSID or password containing any of those characters decoded as truncated
+    with a stray trailing backslash. `parseWifiPayload` now tokenizes the
+    payload, stopping at the first *unescaped* `;` and unescaping the
+    result — the app's own generator output round-trips exactly. Regression
+    tests added to `contentAnalysis.test.js`.
+  - **Fingerprint browser versions (`fingerprint.js`)** — the shared
+    leftmost-match version regex grabbed the Chromium engine version for
+    Opera/Edge/Samsung Internet (`Chrome/*` sits earlier in the UA string)
+    and Safari's WebKit build instead of its real `Version/*` number. Version
+    extraction now uses the token matching the already-detected browser.
+    `parseUserAgent` is exported for the first time and has a dedicated
+    `fingerprint.test.js` (it previously had zero coverage).
+  - Everything else in the second pass reviewed clean (encrypt, hibp, jwt,
+    totp, base64, guessability, passwordGen, wordlist, hashingCore, exif,
+    clipboard, and the non-WiFi parts of qr).
 
 ## Refactor — Rounds 1–3
 
