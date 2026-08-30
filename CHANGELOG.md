@@ -4,6 +4,18 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Refactored — shared URL decomposition (QR ↔ URL Inspector)
+
+The QR Decoder's URL preview rendered its own Domain/Protocol rows with no
+way to copy anything, while the URL Inspector decomposed the same URL into
+per-component copy buttons. The decomposition now ships once in a shared
+`URLPartsTable` component used by **both**: the Inspector's "Decomposed URL"
+card and the QR decoder's URL preview render the identical label/value/copy
+rows. The QR preview keeps its URL-safe extras — the tracking-parameter
+warning, a cleaned-URL row (no tracking params), and explicit Open buttons —
+and both the Full URL and Cleaned URL now copy too. `analyzeQRContent`'s URL
+detail gains a `parts` object so the QR module doesn't re-parse the URL.
+
 ### Fixed — gitlab/bitbucket typosquat false positive
 
 `gitlab` and `bitbucket` are major legitimate code-hosting brands, but only

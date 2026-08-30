@@ -3,7 +3,7 @@
 import { Link } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
-import CopyButton from "@/components/CopyButton";
+import URLPartsTable from "@/components/URLPartsTable";
 import InlineError from "@/components/InlineError";
 import TextArea from "@/components/TextArea";
 import AnalyseActions from "@/components/AnalyseActions";
@@ -37,17 +37,6 @@ const VERDICT_CONFIG = {
       "This URL triggered one or more danger-level patterns — the same shapes phishers use to disguise where a link actually goes. Unless you're certain this is the site you intended, treat it as untrusted and verify the destination before clicking: confirm the domain and scheme, or type the official address in yourself.",
   },
 };
-
-const URL_PARTS = [
-  { key: "protocol", label: "Scheme" },
-  { key: "username", label: "Username" },
-  { key: "password", label: "Password" },
-  { key: "hostname", label: "Hostname" },
-  { key: "port", label: "Port" },
-  { key: "pathname", label: "Path" },
-  { key: "search", label: "Query" },
-  { key: "hash", label: "Fragment" },
-];
 
 const EXAMPLES = [
   {
@@ -153,32 +142,7 @@ export default function URLInspectorPage() {
                 <h3 className="font-display font-semibold text-ink mb-3">
                   Decomposed URL
                 </h3>
-                <div className="space-y-1.5">
-                  {URL_PARTS.map(({ key, label }) => {
-                    const value = result.parsed[key];
-                    if (!value) return null;
-                    return (
-                      <div
-                        key={key}
-                        className="flex items-start justify-between gap-3 py-1"
-                      >
-                        <div className="min-w-0">
-                          <p className="text-xs uppercase tracking-wide text-slate">
-                            {label}
-                          </p>
-                          <p className="text-sm text-ink font-mono break-all">
-                            {value}
-                          </p>
-                        </div>
-                        <CopyButton
-                          value={value}
-                          label={label}
-                          className="mt-2 p-2"
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
+                <URLPartsTable parts={result.parsed} />
               </div>
             </ResultCard>
 

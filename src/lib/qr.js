@@ -183,6 +183,18 @@ export function analyzeQRContent(text) {
         isShortener,
         isHttps,
         isHttp,
+        // Individual URL components, keyed to the URL object's own
+        // properties so the shared URLPartsTable can render/copy them.
+        parts: {
+          protocol: url.protocol,
+          username: url.username,
+          password: url.password,
+          hostname: url.hostname,
+          port: url.port,
+          pathname: url.pathname,
+          search: url.search,
+          hash: url.hash,
+        },
         // Strip tracking params for the "safe" version to show user
         cleanUrl: (() => {
           const u = new URL(trimmed);

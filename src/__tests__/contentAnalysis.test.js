@@ -44,6 +44,20 @@ describe("analyzeQRContent — URLs", () => {
     expect(result.detail.cleanUrl).toBe("https://example.com/?q=keep");
   });
 
+  it("decomposes the URL into copyable parts", () => {
+    const result = analyzeQRContent("https://user:pass@example.com:8080/path?q=1#frag");
+    expect(result.detail.parts).toEqual({
+      protocol: "https:",
+      username: "user",
+      password: "pass",
+      hostname: "example.com",
+      port: "8080",
+      pathname: "/path",
+      search: "?q=1",
+      hash: "#frag",
+    });
+  });
+
   it("flags URL shorteners and http URLs", () => {
     const result = analyzeQRContent("http://bit.ly/abc123");
     expect(result.type).toBe("url");

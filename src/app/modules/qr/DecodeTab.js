@@ -6,6 +6,8 @@ import FileInput from "@/components/FileInput";
 import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import CompanionLinks from "@/components/CompanionLinks";
+import URLPartsTable from "@/components/URLPartsTable";
+import CopyButton from "@/components/CopyButton";
 import { Button } from "@/components/Button";
 import { decodeQR, analyzeQRContent } from "@/lib/qr";
 import { saveActivity } from "@/lib/api";
@@ -115,23 +117,16 @@ function analysisResult(analysis) {
 }
 
 // ─── URLPreview ───────────────────────────────────────────────────────────────
-// Safe preview for URL-type QR codes — shows domain, full URL, cleaned URL,
-// and an explicit open button rather than auto-navigating.
+// Safe preview for URL-type QR codes — decomposes the link into the same
+// copyable parts table the URL Inspector uses, highlights any tracking
+// parameters, and shows an explicit open button rather than auto-navigating.
 
 function URLPreview({ detail }) {
   return (
     <div className="mt-1 mb-2 space-y-2">
+      <URLPartsTable parts={detail.parts} />
+
       <div className="divide-y divide-slate/10">
-        <div className="py-2 flex items-start justify-between gap-4">
-          <span className="text-xs text-slate shrink-0 w-28">Domain</span>
-          <span className="text-xs text-ink font-mono text-right break-all">{detail.domain}</span>
-        </div>
-        <div className="py-2 flex items-start justify-between gap-4">
-          <span className="text-xs text-slate shrink-0 w-28">Protocol</span>
-          <span className={`text-xs font-mono text-right ${detail.isHttps ? "text-match" : "text-mismatch"}`}>
-            {detail.protocol}
-          </span>
-        </div>
         {detail.trackingParams.length > 0 && (
           <div className="py-2 flex items-start justify-between gap-4">
             <span className="text-xs text-slate shrink-0 w-28">Tracking params</span>
@@ -140,14 +135,20 @@ function URLPreview({ detail }) {
             </span>
           </div>
         )}
-        <div className="py-2 flex items-start gap-4">
+        <div className="py-2 flex items-start justify-between gap-4">
           <span className="text-xs text-slate shrink-0 w-28">Full URL</span>
-          <span className="text-xs text-ink font-mono break-all">{detail.href}</span>
+          <span className="flex-1 min-w-0 flex items-start justify-end gap-2">
+            <span className="text-xs text-ink font-mono break-all text-right">{detail.href}</span>
+            <CopyButton value={detail.href} label="full URL" className="p-1.5 -m-1.5" />
+          </span>
         </div>
         {detail.trackingParams.length > 0 && (
-          <div className="py-2 flex items-start gap-4">
+          <div className="py-2 flex items-start justify-between gap-4">
             <span className="text-xs text-slate shrink-0 w-28">Cleaned URL</span>
-            <span className="text-xs text-match font-mono break-all">{detail.cleanUrl}</span>
+            <span className="flex-1 min-w-0 flex items-start justify-end gap-2">
+              <span className="text-xs text-match font-mono break-all text-right">{detail.cleanUrl}</span>
+              <CopyButton value={detail.cleanUrl} label="cleaned URL" className="p-1.5 -m-1.5" />
+            </span>
           </div>
         )}
       </div>

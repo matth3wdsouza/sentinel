@@ -662,6 +662,16 @@ elevated). All phases are complete and stable:
   can't authoritatively clear one. Also the systematic mitigation for the
   Phase 18 residual false-positive class.
 
+- **Phase 20 — shared URL decomposition (QR ↔ URL Inspector)**: the QR
+  decoder's URL preview and the URL Inspector's "Decomposed URL" card both
+  render the identical label/value/copy rows via a new shared
+  `URLPartsTable` component (the Inspector page's local `URL_PARTS` + row
+  markup deleted). `analyzeQRContent`'s URL detail gains a `parts` object
+  keyed to the URL object's own properties (pure lib, unit-tested), so QR
+  never re-parses. The QR preview keeps its URL-safe extras — the
+  tracking-parameter warning and cleaned-URL row (both now copyable) and the
+  explicit Open buttons.
+
 ## Refactor — Rounds 1–3
 
 A systematic refactor was completed after the 10th module was built, to
