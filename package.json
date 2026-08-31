@@ -14,7 +14,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "deploy": "npx vercel --prod"
+    "deploy": "npx wrangler pages deploy out --project-name cs-sentinel"
   },
   "dependencies": {
     "@zxcvbn-ts/core": "^4.1.2",
@@ -38,6 +38,7 @@
     "eslint-config-next": "16.2.10",
     "happy-dom": "^20.11.1",
     "tailwindcss": "^4",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "wrangler": "^4.127.1"
   }
 }
