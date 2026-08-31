@@ -15,7 +15,9 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   captured when it opens (covering both the search-icon button and the Cmd/Ctrl
   +K shortcut) and refocused when the palette closes — via Escape, the
   backdrop, or selecting a result — instead of dropping to the top of the
-  document.
+  document. The Cmd/Ctrl+K shortcut is routed through the same open/close
+  functions rather than toggling state directly, so closing with the shortcut
+  restores focus too (previously it silently fell back to the document body).
 
 ### Fixed — verdict presentation and file-signature verification
 

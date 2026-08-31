@@ -128,7 +128,7 @@ export default function CommandPalette() {
     setSelectedIndex(0);
   }, []);
 
-  function close() {
+  const close = useCallback(() => {
     const trigger = triggerRef.current;
     triggerRef.current = null;
     setIsOpen(false);
@@ -141,24 +141,27 @@ export default function CommandPalette() {
         if (trigger.isConnected) trigger.focus();
       });
     }
-  }
+  }, []);
 
   function navigate(href) {
     close();
     router.push(href);
   }
 
-  // Global keyboard shortcut: Cmd+K / Ctrl+K
+  // Global keyboard shortcut: Cmd+K / Ctrl+K. Route through open()/close() so
+  // the side effects (capturing the trigger, restoring focus) run on every
+  // open AND close — toggling off with Cmd+K is a natural way to close.
   useEffect(() => {
     function handleKeyDown(e) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setIsOpen((prev) => !prev);
+        if (isOpen) close();
+        else open();
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [isOpen, open, close]);
 
   // Custom event from TopBar search icon
   useEffect(() => {
@@ -168,12 +171,6 @@ export default function CommandPalette() {
     window.addEventListener("command-palette:open", handleOpen);
     return () => window.removeEventListener("command-palette:open", handleOpen);
   }, [open]);
-
-  // Cmd+K toggles isOpen directly (bypassing open()/close()), so remember the
-  // trigger on the way in too — this effect fires on every open/close flip.
-  useEffect(() => {
-    if (isOpen && document.activeElement) triggerRef.current = document.activeElement;
-  }, [isOpen]);
 
   // Focus input when opened
   useEffect(() => {
