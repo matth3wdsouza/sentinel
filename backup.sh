@@ -14,6 +14,8 @@ mkdir -p "$HOME/Documents/sentinel-backups"
 zip -r "$OUTPUT" . \
   -x "node_modules/*" \
   -x ".next/*" \
-  -x ".git/*"
+  -x ".git/*" \
+  -x "out/*" \
+  -x ".wrangler/*"
 
 echo "Backup created at $OUTPUT"
