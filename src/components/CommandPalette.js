@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Home, History, Settings, CornerDownLeft, Clock } from "lucide-react";
 import { ALL_MODULES } from "@/lib/modules";
@@ -56,6 +56,7 @@ export default function CommandPalette() {
   const [recentModules, setRecentModules] = useState([]);
   const inputRef = useRef(null);
   const listRef = useRef(null);
+  const triggerRef = useRef(null);
 
   // Fetch recent modules when palette opens (only needed when query is empty)
   useEffect(() => {
@@ -117,16 +118,29 @@ export default function CommandPalette() {
     setSelectedIndex(0);
   }
 
-  function open() {
+  const open = useCallback(() => {
+    // Remember what had focus so we can put it back when the palette closes.
+    // Pinning at open time (not close) is important because Cmd+K toggles open
+    // and close, and by the time we close the page may have re-rendered.
+    if (document.activeElement) triggerRef.current = document.activeElement;
     setIsOpen(true);
     setQuery("");
     setSelectedIndex(0);
-  }
+  }, []);
 
   function close() {
+    const trigger = triggerRef.current;
+    triggerRef.current = null;
     setIsOpen(false);
     setQuery("");
     setSelectedIndex(0);
+    // Return focus to whatever opened the palette (called via Escape/backdrop/
+    // result selection). rAF defers until the "No results" branch updates.
+    if (trigger?.isConnected) {
+      requestAnimationFrame(() => {
+        if (trigger.isConnected) trigger.focus();
+      });
+    }
   }
 
   function navigate(href) {
@@ -153,7 +167,13 @@ export default function CommandPalette() {
     }
     window.addEventListener("command-palette:open", handleOpen);
     return () => window.removeEventListener("command-palette:open", handleOpen);
-  }, []);
+  }, [open]);
+
+  // Cmd+K toggles isOpen directly (bypassing open()/close()), so remember the
+  // trigger on the way in too — this effect fires on every open/close flip.
+  useEffect(() => {
+    if (isOpen && document.activeElement) triggerRef.current = document.activeElement;
+  }, [isOpen]);
 
   // Focus input when opened
   useEffect(() => {
@@ -171,7 +191,14 @@ export default function CommandPalette() {
   }, [selectedIndex]);
 
   function handleItemKeyDown(e) {
-    if (e.key === "ArrowDown") {
+    if (e.key === "Tab") {
+      // Result items are arrow-key navigated, not individually tabbable, so
+      // pin focus to the search input for the dialog's lifetime rather than
+      // building a multi-element trap. This stops Tab escaping to the page
+      // behind the modal overlay.
+      e.preventDefault();
+      inputRef.current?.focus();
+    } else if (e.key === "ArrowDown") {
       e.preventDefault();
       setSelectedIndex((i) => (i + 1) % selectableItems.length);
     } else if (e.key === "ArrowUp") {

@@ -4,6 +4,19 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed — Command Palette keyboard focus
+
+- **Focus is now trapped** while the palette is open. The palette declares
+  `role="dialog" aria-modal="true"` but Tab could escape the search input and
+  land on the page behind the overlay. Result items are arrow-key navigated
+  (not independently tabbable), so Tab now redirects focus back to the search
+  input for the dialog's lifetime.
+- **Focus is restored on close.** The element that opened the palette is
+  captured when it opens (covering both the search-icon button and the Cmd/Ctrl
+  +K shortcut) and refocused when the palette closes — via Escape, the
+  backdrop, or selecting a result — instead of dropping to the top of the
+  document.
+
 ### Fixed — verdict presentation and file-signature verification
 
 - **Verdict banners: "Dangerous" now looks different from "Suspicious".** The
