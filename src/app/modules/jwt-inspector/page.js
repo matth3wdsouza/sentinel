@@ -9,9 +9,11 @@ import KeyValueRow from "@/components/KeyValueRow";
 import TextArea from "@/components/TextArea";
 import { Button } from "@/components/Button";
 import CodeBlock from "@/components/CodeBlock";
+import CompanionLinks from "@/components/CompanionLinks";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
 import { parseJWT, formatTimestamp, relativeTime } from "@/lib/jwt";
+import { companionLinksFor } from "@/lib/companionLinks";
 
 // Known dangerous algorithms worth flagging explicitly.
 const DANGEROUS_ALGS = ["none", "None", "NONE"];
@@ -285,6 +287,10 @@ export default function JWTInspectorPage() {
           payload={result.payload}
           signature={result.signature}
         />
+      )}
+
+      {result && (
+        <CompanionLinks links={companionLinksFor("/modules/jwt-inspector")} />
       )}
     </ModulePage>
   );

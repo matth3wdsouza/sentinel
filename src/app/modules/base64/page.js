@@ -12,9 +12,11 @@ import InlineError from "@/components/InlineError";
 import OptionRow from "@/components/OptionRow";
 import { Button } from "@/components/Button";
 import Tabs from "@/components/Tabs";
+import CompanionLinks from "@/components/CompanionLinks";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
 import { toBase64, fromBase64 } from "@/lib/base64";
+import { companionLinksFor } from "@/lib/companionLinks";
 
 const TABS = [
   { id: "encode", label: "Encode" },
@@ -235,6 +237,10 @@ function DecodeTab({ moduleId }) {
         >
           <TextOutput label="Decoded text" text={result} mono />
         </ResultCard>
+      )}
+
+      {showReset && (
+        <CompanionLinks links={companionLinksFor("/modules/base64")} />
       )}
     </div>
   );
