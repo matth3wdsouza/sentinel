@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CompanionLinks from "@/components/CompanionLinks";
+import { companionLinksFor } from "@/lib/companionLinks";
 import { FileCheck } from "lucide-react";
 import { computeHashes, toggleAlgorithm, BIG_FILE_SUGGESTION_BYTES } from "@/lib/hashing";
 import { saveActivity } from "@/lib/api";
@@ -159,13 +160,7 @@ export default function GenerateHashTab({ moduleId }) {
 
       <CompanionLinks
         className="mt-6"
-        links={[
-          { href: "/modules/text-hash", label: "Need to hash text instead?" },
-          {
-            href: "/modules/file-signature",
-            label: "Check what this file really is?",
-          },
-        ]}
+        links={companionLinksFor("/modules/file-integrity")}
       />
     </>
   );

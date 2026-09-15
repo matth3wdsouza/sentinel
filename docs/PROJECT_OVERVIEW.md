@@ -429,6 +429,10 @@ elevated). All phases are complete and stable:
     auditable registry (`src/lib/companionLinks.js`) keyed by source module
     path, and pages render them via `companionLinksFor(path)`; only
     outcome-gated links stay inline in the page next to the result state.
+    The pre-existing standalone sites (Text Encryptor, File Integrity
+    GenerateHash, Text Hash, File Signature, plus the cross-module pairs
+    added in the 2026-09 expansion) all render through the registry — the
+    hashing/file cluster forms a small mutual-link loop.
     The registry mirrors earlier data-file decisions like `moduleAccents.js`,
     and a data-integrity test (`src/__tests__/companionLinks.test.js`)
     verifies every key and `href` resolves to a real `ALL_MODULES` path.

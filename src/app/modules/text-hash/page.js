@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import CompanionLinks from "@/components/CompanionLinks";
+import { companionLinksFor } from "@/lib/companionLinks";
 import { Hash, Info } from "lucide-react";
 import { Button } from "@/components/Button";
 import { computeHashes, toggleAlgorithm } from "@/lib/hashing";
@@ -219,9 +220,7 @@ export default function TextHashPage() {
 
       <CompanionLinks
         className="mt-6"
-        links={[
-          { href: "/modules/file-integrity", label: "Need to hash a file instead?" },
-        ]}
+        links={companionLinksFor("/modules/text-hash")}
       />
     </ModulePage>
   );

@@ -26,6 +26,16 @@ export const COMPANION_LINKS = {
       label: "Analyse a suspicious message instead",
     },
   ],
+  "/modules/file-integrity": [
+    {
+      href: "/modules/text-hash",
+      label: "Need to hash text instead?",
+    },
+    {
+      href: "/modules/file-signature",
+      label: "Check what this file really is?",
+    },
+  ],
 
   // Passwords & Passphrases
   "/modules/password-generator": [
@@ -54,6 +64,12 @@ export const COMPANION_LINKS = {
       label: "Have a QR code instead? Decode it first",
     },
   ],
+  "/modules/encryptor": [
+    {
+      href: "/modules/passphrase-generator",
+      label: "Generate a strong passphrase",
+    },
+  ],
 
   // Developer Tools
   "/modules/jwt-inspector": [
@@ -66,6 +82,18 @@ export const COMPANION_LINKS = {
     {
       href: "/modules/jwt-inspector",
       label: "Pasted a JWT? Decode its parts instead",
+    },
+  ],
+  "/modules/text-hash": [
+    {
+      href: "/modules/file-integrity",
+      label: "Need to hash a file instead?",
+    },
+  ],
+  "/modules/file-signature": [
+    {
+      href: "/modules/file-integrity",
+      label: "Verify this file's hash?",
     },
   ],
 };

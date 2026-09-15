@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CompanionLinks from "@/components/CompanionLinks";
+import { companionLinksFor } from "@/lib/companionLinks";
 import { LockKeyhole } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import PasswordField from "@/components/PasswordField";
@@ -172,12 +173,7 @@ function EncryptTab({ moduleId }) {
 
       <CompanionLinks
         className="mt-6"
-        links={[
-          {
-            href: "/modules/passphrase-generator",
-            label: "Generate a strong passphrase",
-          },
-        ]}
+        links={companionLinksFor("/modules/encryptor")}
       />
     </div>
   );

@@ -6,6 +6,7 @@ import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
 import FileInput from "@/components/FileInput";
 import CompanionLinks from "@/components/CompanionLinks";
+import { companionLinksFor } from "@/lib/companionLinks";
 import { Button } from "@/components/Button";
 import InlineError from "@/components/InlineError";
 import { saveActivity } from "@/lib/api";
@@ -218,12 +219,7 @@ export default function FileSignaturePage() {
         )}
 
         <CompanionLinks
-          links={[
-            {
-              href: "/modules/file-integrity",
-              label: "Verify this file's hash?",
-            },
-          ]}
+          links={companionLinksFor("/modules/file-signature")}
         />
       </div>
     </ModulePage>

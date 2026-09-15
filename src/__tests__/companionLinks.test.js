@@ -61,3 +61,18 @@ describe("companionLinksFor", () => {
     expect(companionLinksFor("/modules/not-a-module")).toEqual([]);
   });
 });
+
+describe("file-inspection cluster reciprocity", () => {
+  const hrefs = (source) => COMPANION_LINKS[source].map((l) => l.href);
+
+  it("file-integrity links to both file analysis peers", () => {
+    expect(hrefs("/modules/file-integrity")).toEqual(
+      expect.arrayContaining(["/modules/text-hash", "/modules/file-signature"])
+    );
+  });
+
+  it("text-hash and file-signature link back to file-integrity", () => {
+    expect(hrefs("/modules/text-hash")).toContain("/modules/file-integrity");
+    expect(hrefs("/modules/file-signature")).toContain("/modules/file-integrity");
+  });
+});

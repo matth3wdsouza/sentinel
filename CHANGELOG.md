@@ -23,6 +23,16 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   `src/app/modules/url-inspector/page.js`, `password-generator/page.js`,
   `passphrase-generator/page.js`, `fingerprint/page.js`, `totp/page.js`,
   `jwt-inspector/page.js`, `base64/page.js`, `qr/DecodeTab.js`)
+- **The four pre-existing standalone call sites migrated into the registry**:
+  Text Encryptor → Passphrase Generator, File Integrity → Text Hash and File
+  Signature, File Signature → File Integrity, and Text Hash → File Integrity.
+  Placement, labels, and toggling behaviour are unchanged — the link
+  definitions just moved out of the pages. Outcome-gated links (Common
+  Password, HIBP, Guessability, PIN Analyser, EXIF, Scam Analyser, QR Decode)
+  intentionally stay inline next to the result state.
+  (`src/lib/companionLinks.js`, `encryptor/page.js`,
+  `file-integrity/GenerateHashTab.js`, `file-signature/page.js`,
+  `text-hash/page.js`)
 - **QR Decode now recognises `otpauth://` 2FA setup codes.** Previously they
   fell through to generic "plain text"; now a decoded TOTP QR shows the
   issuer/account/digits/period (never the shared secret) with a companion
