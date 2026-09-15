@@ -7,12 +7,14 @@ import { generateQR } from "@/lib/qr";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import ModulePage from "@/components/ModulePage";
 import TextArea from "@/components/TextArea";
+import CompanionLinks from "@/components/CompanionLinks";
 import { downloadCanvas } from "@/lib/download";
 import { Button } from "@/components/Button";
 import InlineError from "@/components/InlineError";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
 import { parseTOTP, generateRandomSecret } from "@/lib/totp";
+import { companionLinksFor } from "@/lib/companionLinks";
 
 function formatCode(code) {
   return code.slice(0, 3) + " " + code.slice(3);
@@ -293,6 +295,8 @@ export default function TOTPPage() {
       {error && <InlineError className="mt-4">{error}</InlineError>}
 
       {totp && <TOTPDisplay totp={totp} onCopy={handleCopy} />}
+
+      {totp && <CompanionLinks links={companionLinksFor("/modules/totp")} />}
     </ModulePage>
   );
 }

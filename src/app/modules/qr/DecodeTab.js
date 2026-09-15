@@ -96,6 +96,19 @@ function analysisResult(analysis) {
         },
       };
 
+    case "otpauth":
+      return {
+        verdict: "neutral",
+        heading: "Two-factor (TOTP) setup code",
+        explanation: {
+          means: `This QR code contains a time-based one-time-password (TOTP) setup URI — the kind authenticator apps scan when you enable 2FA.${detail.issuer ? ` It was issued by ${detail.issuer}` : ""}, for the account "${detail.account ?? "unknown"}". It generates a new ${detail.digits}-digit code every ${detail.period} seconds.`,
+          doesntMean:
+            "Scanning this in an authenticator app would link it to your account — but this tool doesn't scan it. The shared secret is not displayed here, and nothing is stored or sent anywhere.",
+          action:
+            "Use an authenticator app to scan the same QR code, or paste the original code into the TOTP module to see the codes it produces.",
+        },
+      };
+
     case "text":
       return {
         verdict: "neutral",
@@ -214,6 +227,35 @@ function WiFiPreview({ detail }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── OtpAuthPreview ──────────────────────────────────────────────────────────
+// Coarse preview for otpauth TOTP QR codes — shows account and configuration
+// fields. The shared secret is never displayed here.
+
+function OtpAuthPreview({ detail }) {
+  return (
+    <div className="mt-1 mb-2 divide-y divide-slate/10">
+      {detail.issuer && (
+        <div className="py-2 flex items-start justify-between gap-4">
+          <span className="text-xs text-slate shrink-0 w-28">Issuer</span>
+          <span className="text-xs text-ink font-mono text-right">{detail.issuer}</span>
+        </div>
+      )}
+      <div className="py-2 flex items-start justify-between gap-4">
+        <span className="text-xs text-slate shrink-0 w-28">Account</span>
+        <span className="text-xs text-ink font-mono text-right">{detail.account ?? "—"}</span>
+      </div>
+      <div className="py-2 flex items-start justify-between gap-4">
+        <span className="text-xs text-slate shrink-0 w-28">Digits</span>
+        <span className="text-xs text-ink font-mono text-right">{detail.digits}</span>
+      </div>
+      <div className="py-2 flex items-start justify-between gap-4">
+        <span className="text-xs text-slate shrink-0 w-28">Period</span>
+        <span className="text-xs text-ink font-mono text-right">{detail.period}s</span>
+      </div>
     </div>
   );
 }
@@ -382,7 +424,20 @@ export default function DecodeTab({ moduleId }) {
             {analysis.type === "wifi" && analysis.detail && (
               <WiFiPreview detail={analysis.detail} />
             )}
-            {analysis.type !== "url" && analysis.type !== "wifi" && decoded && (
+            {analysis.type === "otpauth" && analysis.detail && (
+              <>
+                <OtpAuthPreview detail={analysis.detail} />
+                <CompanionLinks
+                  links={[
+                    {
+                      href: "/modules/totp",
+                      label: "Set up two-factor using this code",
+                    },
+                  ]}
+                />
+              </>
+            )}
+            {analysis.type !== "url" && analysis.type !== "wifi" && analysis.type !== "otpauth" && decoded && (
               <GenericPreview text={decoded} />
             )}
           </ResultCard>

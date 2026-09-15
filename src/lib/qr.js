@@ -4,6 +4,7 @@
 // No network calls. All processing is local.
 
 import { TRACKING_PARAMS } from "@/lib/urlSignals";
+import { parseTOTP } from "@/lib/totp";
 
 // ─── Decode ───────────────────────────────────────────────────────────────────
 
@@ -149,6 +150,29 @@ export function analyzeQRContent(text) {
   // not a real scheme and must not match)
   if (/^(sms|smsto):/i.test(trimmed)) {
     return { type: "sms", detail: null };
+  }
+
+  // TOTP setup (2FA) URIs — otpauth://totp/... parse as URLs with a non-web
+  // scheme, so the URL branch below would silently drop them to plain text.
+  // Recognised here so the Decode tab can point at the TOTP module. Only the
+  // coarse account/configuration fields are surfaced — the shared secret is
+  // never included.
+  if (/^otpauth:/i.test(trimmed)) {
+    try {
+      const totp = parseTOTP(trimmed);
+      return {
+        type: "otpauth",
+        detail: {
+          issuer: totp.issuer || null,
+          account: totp.label || null,
+          period: totp.period,
+          digits: totp.digits,
+        },
+      };
+    } catch (_) {
+      // Not a parseable TOTP URI (e.g. otpauth://hotp or a malformed URI) —
+      // fall through to the URL/text branches.
+    }
   }
 
   // URL

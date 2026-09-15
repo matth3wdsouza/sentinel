@@ -154,6 +154,30 @@ describe("analyzeQRContent — vCard / mailto / SMS", () => {
   });
 });
 
+describe("analyzeQRContent — otpauth (2FA setup)", () => {
+  it("classifies an otpauth://totp URI with coarse fields only", () => {
+    const uri = "otpauth://totp/Example:alice@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Example&digits=8";
+    const result = analyzeQRContent(uri);
+    expect(result.type).toBe("otpauth");
+    expect(result.detail).toEqual({
+      issuer: "Example",
+      account: "alice@example.com",
+      period: 30,
+      digits: 8,
+    });
+  });
+
+  it("never surfaces the secret in the detail", () => {
+    const uri = "otpauth://totp/Example:alice@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Example";
+    const result = analyzeQRContent(uri);
+    expect(JSON.stringify(result)).not.toContain("JBSWY3DPEHPK3PXP");
+  });
+
+  it("falls through to text for a non-TOTP otpauth scheme", () => {
+    expect(analyzeQRContent("otpauth://hotp/Example?secret=JBSWY3DPEHPK3PXP&counter=0").type).toBe("text");
+  });
+});
+
 describe("analyzeQRContent — text", () => {
   it("falls through to plain text", () => {
     expect(analyzeQRContent("just some text")).toEqual({
