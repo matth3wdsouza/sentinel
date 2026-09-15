@@ -11,11 +11,13 @@ import VerdictCard from "@/components/VerdictCard";
 import FindingsList from "@/components/FindingsList";
 import InfoCallout from "@/components/InfoCallout";
 import TryExamples from "@/components/TryExamples";
+import CompanionLinks from "@/components/CompanionLinks";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
 import { analyzeURL } from "@/lib/urlInspector";
 import useInspector from "@/lib/useInspector";
 import { SEVERITY_STYLE } from "@/lib/severity";
+import { companionLinksFor } from "@/lib/companionLinks";
 
 const VERDICT_CONFIG = {
   safe: {
@@ -172,6 +174,8 @@ export default function URLInspectorPage() {
                 )}
               </FindingsList>
             )}
+
+            <CompanionLinks links={companionLinksFor("/modules/url-inspector")} />
 
             {/* Query Parameters */}
             {result.parsed.searchParams && [...result.parsed.searchParams].length > 0 && (
