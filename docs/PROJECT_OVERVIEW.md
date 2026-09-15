@@ -421,7 +421,17 @@ elevated). All phases are complete and stable:
     Password Checker (→ Password Generator when common, or Guessability +
     HIBP when not). Links sit at the end of their flow (inside the result
     card or below the results) so a secondary suggestion never interrupts
-    a form mid-way; no `next/link` imports remain in module pages.
+    a form mid-way; no `next/link` imports remain in module pages. All
+    companion links are gated on the global `ui.companionLinks` preference
+    (Settings → Modules → "Show companion links", default on) inside the
+    component itself, mirroring how `TryExamples` gates on `ui.tryExamples`.
+    Standalone, outcome-independent links are declared once in a single
+    auditable registry (`src/lib/companionLinks.js`) keyed by source module
+    path, and pages render them via `companionLinksFor(path)`; only
+    outcome-gated links stay inline in the page next to the result state.
+    The registry mirrors earlier data-file decisions like `moduleAccents.js`,
+    and a data-integrity test (`src/__tests__/companionLinks.test.js`)
+    verifies every key and `href` resolves to a real `ALL_MODULES` path.
   - **Guided empty state cards** — added to Base64, JWT Inspector, File
     Integrity (all three tabs), and QR Decode. Icon card with heading,
     2-sentence explanation, and privacy note. Matches the Clipboard/
@@ -1196,6 +1206,11 @@ Location: `src/lib/qr.js` + `src/app/modules/qr/page.js`
   any other scheme (`javascript:`, `data:`, `file:`, …) is classified as plain
   text, so the Decode tab never renders a clickable "Open" link for a
   non-navigable scheme. (`src/lib/qr.js`)
+- Also recognises `otpauth://` TOTP setup URIs (authenticator-app 2FA codes)
+  via `parseTOTP` (`src/lib/totp.js`); the detail carries the coarse
+  issuer/account/digits/period fields only — never the shared secret — and the
+  Decode tab links into the TOTP Generator. Malformed / `hotp` URIs fall
+  through to plain text.
 - Generate: produces a QR code from user-supplied text or URL, entirely
   client-side.
 - Accent: `amber`.

@@ -4,6 +4,39 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added — cross-module links expansion
+
+- **Five previously-isolated modules now suggest companion tools**, and the
+  standalone link graph lives in a single auditable registry
+  (`src/lib/companionLinks.js`, keyed by source module path) instead of
+  inline page arrays. New links:
+  - URL Inspector → "Inspect the hostname for hidden characters" (Unicode
+    Inspector) and "Analyse a suspicious message instead" (Scam Analyser)
+  - Password Generator, Passphrase Generator, and Browser Fingerprint →
+    "See what your clipboard reveals" (Clipboard Inspector)
+  - TOTP Generator → "Have a QR code instead? Decode it first" (QR Decode)
+  - JWT Inspector → "Inspect the raw base64url encoding" and Base64 → "Pasted
+    a JWT? Decode its parts instead"
+  Outcome-gated links (e.g. QR Decode → TOTP for 2FA codes) stay inline in
+  the page next to the result state, matching the existing QR → URL pattern.
+  (`src/lib/companionLinks.js`,
+  `src/app/modules/url-inspector/page.js`, `password-generator/page.js`,
+  `passphrase-generator/page.js`, `fingerprint/page.js`, `totp/page.js`,
+  `jwt-inspector/page.js`, `base64/page.js`, `qr/DecodeTab.js`)
+- **QR Decode now recognises `otpauth://` 2FA setup codes.** Previously they
+  fell through to generic "plain text"; now a decoded TOTP QR shows the
+  issuer/account/digits/period (never the shared secret) with a companion
+  link into the TOTP Generator. `analyzeQRContent` reuses `parseTOTP`
+  (`src/lib/totp.js`) and only surfaces coarse fields. (`src/lib/qr.js`,
+  `src/app/modules/qr/DecodeTab.js`)
+- **"Show companion links" is now a Settings → Modules toggle.** The
+  `ui.companionLinks` preference (default on, persisted via IndexedDB like
+  `ui.tryExamples`) hides every cross-module "next step" link app-wide —
+  including the existing 11 sites — because `CompanionLinks` gates rendering
+  in one place rather than at each call site.
+  (`src/components/CompanionLinks.js`,
+  `src/app/(shell)/settings/page.js`)
+
 ### Fixed — Command Palette keyboard focus
 
 - **Focus is now trapped** while the palette is open. The palette declares
