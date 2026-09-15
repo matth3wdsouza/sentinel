@@ -28,6 +28,8 @@ import FileInput from "@/components/FileInput";
 import GeneratorResultCard from "@/components/GeneratorResultCard";
 import ModulePage from "@/components/ModulePage";
 import InlineError from "@/components/InlineError";
+import CompanionLinks from "@/components/CompanionLinks";
+import { companionLinksFor } from "@/lib/companionLinks";
 import { Button } from "@/components/Button";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import {
@@ -425,6 +427,8 @@ export default function PassphraseGeneratorPage() {
             </div>
           </div>
         </div>
+
+        <CompanionLinks links={companionLinksFor("/modules/passphrase-generator")} />
 
         {!isDefaults && (
           <Button variant="ghost" resetIcon onClick={resetForm} className="mt-3">

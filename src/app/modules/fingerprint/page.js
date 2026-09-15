@@ -16,10 +16,12 @@ import CopyButton from "@/components/CopyButton";
 import KeyValueRow from "@/components/KeyValueRow";
 import { Button } from "@/components/Button";
 import Tabs from "@/components/Tabs";
+import CompanionLinks from "@/components/CompanionLinks";
 import { collectPassive, collectGeo, collectMedia } from "@/lib/fingerprint";
 import { osmLink } from "@/lib/geo";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
+import { companionLinksFor } from "@/lib/companionLinks";
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
 
@@ -639,6 +641,8 @@ export default function FingerprintPage() {
         <div id="panel-gated" role="tabpanel" aria-labelledby="tab-gated" tabIndex={-1} className={activeTab === "gated" ? "" : "hidden"}>
           <GatedTab moduleId={moduleId} />
         </div>
+
+        <CompanionLinks links={companionLinksFor("/modules/fingerprint")} />
     </ModulePage>
   );
 }

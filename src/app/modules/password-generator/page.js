@@ -11,8 +11,10 @@ import OptionRow from "@/components/OptionRow";
 import GeneratorResultCard from "@/components/GeneratorResultCard";
 import ModulePage from "@/components/ModulePage";
 import Disclosure from "@/components/Disclosure";
+import CompanionLinks from "@/components/CompanionLinks";
 import { Button } from "@/components/Button";
 import { KeyRound } from "lucide-react";
+import { companionLinksFor } from "@/lib/companionLinks";
 
 const CLASS_LABELS = {
   lowercase: "Lowercase",
@@ -242,6 +244,8 @@ export default function PasswordGeneratorPage() {
             </Disclosure>
           </div>
         </div>
+
+        <CompanionLinks links={companionLinksFor("/modules/password-generator")} />
 
         {(!isDefaultOptions(options) || error) && (
           <Button variant="ghost" resetIcon onClick={resetForm} className="mt-3">
