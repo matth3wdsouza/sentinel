@@ -106,7 +106,7 @@ export default function SettingsPage() {
         icon={Settings}
         accent="blue"
         title="Settings"
-        description="Appearance and tool preferences. Everything is stored locally on your device."
+        description="Appearance and tool preferences. Everything is stored locally."
       />
 
       {resetSuccess && (
@@ -150,7 +150,7 @@ export default function SettingsPage() {
       <SettingsSection title="Modules">
         <SettingsRow
           label="Show examples"
-          description="Load sample inputs into module pages so a tool's effect can be seen in one click. Turn this off to hide them everywhere."
+          description="Load sample inputs into modules"
         >
           <Switch
             checked={tryExamples}
@@ -160,7 +160,7 @@ export default function SettingsPage() {
         </SettingsRow>
         <SettingsRow
           label="Show companion links"
-          description="Show 'next step' links at the end of module results. Turn this off to hide them everywhere."
+          description="Show next-step links on results"
         >
           <Switch
             checked={companionLinks}
@@ -189,7 +189,7 @@ export default function SettingsPage() {
       <SettingsSection title="Reset" danger>
         <SettingsRow
           label="Reset all preferences to defaults"
-          description="Resets all tool settings to defaults. Theme is not affected."
+          description="Resets tool settings. Theme is not affected."
         >
           {!resetConfirming ? (
             <button
@@ -219,7 +219,7 @@ export default function SettingsPage() {
         </SettingsRow>
         <SettingsRow
           label="Clear activity log"
-          description="Permanently deletes your local activity history. This cannot be undone."
+          description="Deletes activity history. Cannot be undone."
         >
           {!clearActivityConfirming ? (
             <button
@@ -249,7 +249,7 @@ export default function SettingsPage() {
         </SettingsRow>
         <SettingsRow
           label="Reset everything"
-          description="Clears all preferences and your entire activity log in one go. The app will reload. This cannot be undone."
+          description="Clears preferences and activity, then reloads. Cannot be undone."
         >
           {!resetAllConfirming ? (
             <button
