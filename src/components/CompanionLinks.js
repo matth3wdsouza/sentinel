@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ALL_MODULES } from "@/lib/modules";
+import { usePreference } from "@/lib/usePreference";
+
+const COMPANION_LINKS_PREFERENCE = "ui.companionLinks";
 
 // Target modules resolved once by path so each link can pick up the
 // destination module's own icon from the registry without callers having
@@ -28,7 +31,8 @@ const MODULES_BY_PATH = new Map(ALL_MODULES.map((m) => [m.path, m]));
 //     ResultCard, so there's nowhere to nest it (Guessability's score≤1 link).
 // Links always sit at the end of their flow, never interrupting a form.
 export default function CompanionLinks({ links = [], className = "" }) {
-  if (links.length === 0) return null;
+  const [showLinks] = usePreference(COMPANION_LINKS_PREFERENCE, true);
+  if (!showLinks || links.length === 0) return null;
   return (
     <div
       role="group"

@@ -52,6 +52,7 @@ function SettingsRow({ label, description, children }) {
 
 export default function SettingsPage() {
   const [tryExamples, setTryExamples] = usePreference("ui.tryExamples", true);
+  const [companionLinks, setCompanionLinks] = usePreference("ui.companionLinks", true);
   const [resetConfirming, setResetConfirming] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
   const [resetType, setResetType] = useState(null);
@@ -155,6 +156,16 @@ export default function SettingsPage() {
             checked={tryExamples}
             onChange={setTryExamples}
             ariaLabel="Show examples"
+          />
+        </SettingsRow>
+        <SettingsRow
+          label="Show companion links"
+          description="Show 'next step' links at the end of module results. Turn this off to hide them everywhere."
+        >
+          <Switch
+            checked={companionLinks}
+            onChange={setCompanionLinks}
+            ariaLabel="Show companion links"
           />
         </SettingsRow>
         <Link
