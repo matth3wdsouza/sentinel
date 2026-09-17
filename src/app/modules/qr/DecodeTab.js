@@ -57,9 +57,9 @@ function analysisResult(analysis) {
         explanation: {
           means: `This QR code contains Wi-Fi login details for the network "${detail.ssid ?? "unknown"}" (${detail.securityType ?? "unknown"} security)${detail.password ? " including the password" : ""}.`,
           doesntMean:
-            "This is a common and legitimate use of QR codes — cafés and hotels often share Wi-Fi this way. The risk is scanning a QR code from an unknown source that connects you to a network you didn't intend to join.",
+            "This is common and legitimate — cafés and hotels often share Wi-Fi this way. The risk is an unknown-source QR code connecting you to a network you didn't intend to join.",
           action:
-            "Only scan Wi-Fi QR codes from sources you trust. Connecting to an unknown network could expose your traffic to the network operator.",
+            "Only scan Wi-Fi QR codes from sources you trust — an unknown network could expose your traffic to its operator.",
         },
       };
 
@@ -101,7 +101,7 @@ function analysisResult(analysis) {
         verdict: "neutral",
         heading: "Two-factor (TOTP) setup code",
         explanation: {
-          means: `This QR code contains a time-based one-time-password (TOTP) setup URI — the kind authenticator apps scan when you enable 2FA.${detail.issuer ? ` It was issued by ${detail.issuer}` : ""}, for the account "${detail.account ?? "unknown"}". It generates a new ${detail.digits}-digit code every ${detail.period} seconds.`,
+          means: `This QR code is a time-based one-time-password (TOTP) setup URI — the kind authenticator apps scan for 2FA.${detail.issuer ? ` Issued by ${detail.issuer},` : ""} for account "${detail.account ?? "unknown"}". Generates a new ${detail.digits}-digit code every ${detail.period}s.`,
           doesntMean:
             "Scanning this in an authenticator app would link it to your account — but this tool doesn't scan it. The shared secret is not displayed here, and nothing is stored or sent anywhere.",
           action:

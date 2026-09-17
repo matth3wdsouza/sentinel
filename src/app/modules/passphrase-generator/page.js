@@ -84,15 +84,15 @@ function WordlistWarningBanner({ validation }) {
 function getExplanation(result) {
   const { label } = strengthLabel(result.entropyBits);
   return {
-    means: `This passphrase has exactly ${result.entropyBits.toFixed(
+    means: `This passphrase has ${result.entropyBits.toFixed(
       1
-    )} bits of entropy — each of its ${result.wordCount} words was chosen independently at random from a list of ${result.listSize.toLocaleString()} words (${result.entropyPerWord.toFixed(
+    )} bits of entropy — each of its ${result.wordCount} words was chosen independently from a list of ${result.listSize.toLocaleString()} (${result.entropyPerWord.toFixed(
       2
-    )} bits per word). Overall strength: ${label.toLowerCase()}. Word case doesn't factor in here — it's applied the same way to every word, so it adds no extra entropy.`,
+    )} bits/word). Overall strength: ${label.toLowerCase()}.`,
     doesntMean:
-      "This number describes how randomly the passphrase was generated — it doesn't tell you whether this exact passphrase (or the words in it) has ever appeared in a breach, or how memorable it is for you personally. Those are different questions, answered by other tools.",
+      "This measures how randomly the passphrase was generated — it doesn't tell you whether it's ever appeared in a breach, or how memorable it is for you. Those are different questions, answered by other tools.",
     action:
-      "Copy it now and store it in a password manager — it isn't saved anywhere by this tool, and it won't be shown again.",
+      "Copy it now and store it in a password manager — it isn't saved anywhere by this tool, and won't be shown again.",
   };
 }
 

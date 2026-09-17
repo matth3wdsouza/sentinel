@@ -155,11 +155,11 @@ function EncryptTab({ moduleId }) {
           heading="Text encrypted"
           explanation={{
             means:
-              "Your text has been encrypted using AES-256-GCM — the current industry standard for authenticated encryption. The output below bundles everything needed to decrypt it: the encrypted data, a random salt, and a random IV.",
+              "Your text was encrypted using AES-256-GCM — the current industry standard for authenticated encryption. The output below bundles everything needed to decrypt it: the encrypted data, a random salt, and a random IV.",
             doesntMean:
-              "This does not protect you if someone obtains your passphrase. The security of the encrypted output depends entirely on keeping your passphrase secret.",
+              "This won't protect you if someone obtains your passphrase — security depends entirely on keeping it secret.",
             action:
-              "Copy the encrypted output and share it freely. To decrypt it, the recipient will need this app and your passphrase — share those through a separate, secure channel.",
+              "Copy the encrypted output and share it freely. To decrypt it, the recipient needs this app and your passphrase — share those through a separate, secure channel.",
           }}
         >
           <div className="mt-1 mb-3">

@@ -50,6 +50,24 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   (`src/components/CompanionLinks.js`,
   `src/app/(shell)/settings/page.js`)
 
+### Changed — tightened module copy
+
+- **Result-card explanations, guided empty states, and disclaimers were
+  thinned out across the modules** — the biggest reductions in Browser
+  Fingerprint and Clipboard Inspector, which between them carried the
+  densest prose. Long `means`/`doesntMean`/`action` paragraphs were
+  compressed to the point that says something, cutting throat-clearing and
+  repeated phrase structure while keeping every named tool and setting
+  (Firefox `resistFingerprinting`, Brave canvas randomisation, Tor Browser,
+  uBlock Origin) and all privacy reassurances ("nothing is sent
+  anywhere"). The permission-prompt guided cards (Camera & Microphone,
+  Geolocation) and the destructive-action Settings copy were deliberately
+  left at full length — that text does trust/reassurance work that a trim
+  would undercut. (`src/app/modules/fingerprint/page.js`,
+  `clipboard/page.js`, `common-password/page.js`, `hibp/page.js`,
+  `passphrase-generator/page.js`, `encryptor/page.js`, `pin-analyser/page.js`,
+  `scam-message-analyser/page.js`, `qr/DecodeTab.js`)
+
 ### Fixed — Command Palette keyboard focus
 
 - **Focus is now trapped** while the palette is open. The palette declares

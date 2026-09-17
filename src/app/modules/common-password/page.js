@@ -16,9 +16,9 @@ import { ShieldX, Info } from "lucide-react";
 function getExplanation(analysis) {
   if (analysis.found) {
     return {
-      means: `This password is #${analysis.rank.toLocaleString()} on the NCSC's list of the 100,000 most common breached passwords. These are the exact strings attackers try first — being on the list means an automated attack has a real chance of guessing it on one of its earliest attempts.`,
+      means: `This password is #${analysis.rank.toLocaleString()} on the NCSC's list of the 100,000 most common breached passwords — one of the exact strings attackers try first.`,
       doesntMean:
-        "The ranking comes from how often this exact string has appeared in breach data — it's a measure of how common a password is, not a judgement about you. It also doesn't cover every weak password ever used, just the most frequent ones.",
+        "This ranking measures how often the exact string has appeared in breach data, not a judgement about you — and it only covers the most frequent passwords, not every weak one.",
       action:
         "Stop using this password anywhere it currently appears, and replace it with a freshly generated one.",
     };
@@ -27,9 +27,9 @@ function getExplanation(analysis) {
     means:
       "This password doesn't appear among the 100,000 most common breached passwords.",
     doesntMean:
-      "That's a low bar. Lists measure how often a password has been seen, not how hard it is to guess: a name-plus-birthday, a keyboard pattern, or a password that leaked in an unusual breach could all still be weak without making the list.",
+      "That's a low bar — lists measure how often a password has been seen, not how hard it is to guess. A name-plus-birthday or a keyboard pattern could still be weak without making the list.",
     action:
-      "No change needed on commonness grounds — but verify real strength with the Guessability module, and check for prior breaches with HIBP.",
+      "No change needed on commonness grounds — but verify real strength with Guessability, and check for prior breaches with HIBP.",
   };
 }
 

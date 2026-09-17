@@ -19,7 +19,7 @@ function getExplanation(result) {
         result.count === 1 ? "" : "s"
       }. Attackers routinely test leaked passwords like this one against other accounts.`,
       doesntMean:
-        "This doesn't mean any specific site you use leaked it — the breach could be from any service where this exact password was ever used, including ones you don't have an account with.",
+        "This doesn't mean a site you use leaked it specifically — the breach could be from any service that ever used this exact password, including ones you've never had an account with.",
       action:
         "Stop using this password anywhere it currently appears, and replace it with a freshly generated one.",
     };
@@ -28,7 +28,7 @@ function getExplanation(result) {
     means:
       "This exact password hasn't appeared in any of the breach datasets HIBP tracks.",
     doesntMean:
-      "That's a good sign, but it isn't a guarantee no one has ever used it, and it says nothing about how easily it could be guessed — a common word with a birthday attached could still be weak even if it's never leaked.",
+      "That's a good sign, but not a guarantee — and it says nothing about how easily it could be guessed. A common word with a birthday attached could still be weak even if it's never leaked.",
     action:
       "No action required. If you'd like extra peace of mind, you can still generate a new one.",
   };

@@ -31,36 +31,36 @@ function analysisExplanation(analysis, text) {
         return {
           heading: "URL with tracking parameters",
           verdict: "mismatch",
-          means: `This URL contains ${detail.trackingParams.length} tracking parameter${detail.trackingParams.length > 1 ? "s" : ""} (${detail.trackingParams.join(", ")}). These tell the destination site where you came from, which campaign sent you, and sometimes who you are. Any site that read your clipboard while this was copied would have that information too.`,
-          doesntMean: "This doesn't mean you've been tracked yet — these parameters only activate when you follow the link.",
+          means: `This URL contains ${detail.trackingParams.length} tracking parameter${detail.trackingParams.length > 1 ? "s" : ""} (${detail.trackingParams.join(", ")}) — telling the destination site where you came from, which campaign sent you, and sometimes who you are. A site reading your clipboard would get that too.`,
+          doesntMean: "You haven't been tracked yet — these parameters only activate when you follow the link.",
           action: "Use a URL cleaner to strip tracking parameters before sharing links, or paste them into a private window.",
         };
       }
       return {
         heading: "URL",
         verdict: "neutral",
-        means: `Your clipboard contains a link to ${detail.domain}. Any website that requested clipboard access while this was copied could have read this URL — including where you were browsing.`,
+        means: `Your clipboard contains a link to ${detail.domain}. Any site that requested clipboard access while this was copied could have read it — including where you were browsing.`,
         doesntMean: detail.isHttps
-          ? "HTTPS means the connection to that site is encrypted — it doesn't say anything about that site's privacy practices."
+          ? "HTTPS encrypts the connection to that site — it says nothing about that site's privacy practices."
           : null,
-        action: "Be cautious about which sites you grant clipboard access to, especially if you copy sensitive URLs (internal tools, private shares, session links).",
+        action: "Be cautious which sites you grant clipboard access to, especially for sensitive URLs (internal tools, private shares, session links).",
       };
 
     case "card":
       return {
         heading: "Possible payment card number",
         verdict: "mismatch",
-        means: `Your clipboard appears to contain a ${detail.digits}-digit number that looks like a payment card number. Any website you visited while this was on your clipboard could have read it silently if it had clipboard access.`,
-        doesntMean: "Sentinel hasn't verified this is a real card number — it matches the length pattern. It could be any long number.",
-        action: "Avoid copying card numbers to your clipboard when possible. If you did, clear your clipboard now (copy something harmless).",
+        means: `Your clipboard appears to contain a ${detail.digits}-digit number matching a payment card format. Any site with clipboard access while it's copied could silently read it.`,
+        doesntMean: "Sentinel hasn't verified this is a real card number — it just matches the length pattern. Could be any long number.",
+        action: "Avoid copying card numbers when possible. If you did, clear your clipboard now (copy something harmless).",
       };
 
     case "token":
       return {
         heading: "Possible API key or token",
         verdict: "mismatch",
-        means: `Your clipboard contains a long string of characters (${detail.length} chars) that looks like an API key, access token, or cryptographic value. These are high-value targets — a site that read your clipboard while this was copied could potentially use it to impersonate you.`,
-        doesntMean: "This might also be a base64-encoded file or other innocent data — Sentinel can't tell for certain.",
+        means: `Your clipboard contains a long string (${detail.length} chars) that looks like an API key, access token, or cryptographic value — a high-value target a site could use to impersonate you.`,
+        doesntMean: "This might just be a base64-encoded file or other innocent data — Sentinel can't tell for certain.",
         action: "If this is a real credential, treat it as potentially exposed and rotate it. Clear your clipboard by copying something else.",
       };
 
@@ -68,9 +68,9 @@ function analysisExplanation(analysis, text) {
       return {
         heading: "Possible password",
         verdict: "mismatch",
-        means: `Your clipboard contains something that looks like a password — mixed uppercase, lowercase, and symbols, with no spaces. Any site you visited while this was copied could have silently read it if it had clipboard access.`,
-        doesntMean: "Sentinel hasn't confirmed this is a password — it matches the pattern. It could be any short mixed-character string.",
-        action: "Password managers that autofill directly avoid putting passwords on the clipboard at all. If you copied this manually, clear your clipboard now.",
+        means: `Your clipboard contains something that looks like a password — mixed case and symbols, no spaces. Any site with clipboard access while this was copied could have silently read it.`,
+        doesntMean: "Sentinel hasn't confirmed this is a password — it just matches the pattern. Could be any short mixed-character string.",
+        action: "Password managers that autofill directly avoid the clipboard entirely. If you copied this manually, clear it now.",
       };
 
     case "email":
@@ -170,7 +170,7 @@ function ReadSection({ moduleId }) {
   const errorMessages = {
     DENIED: {
       heading: "Permission denied",
-      means: "You declined the clipboard permission — which is a perfectly reasonable choice. The point is that the prompt appeared: any website can trigger it, and if you click Allow on a site you don't fully trust, that site can read everything on your clipboard silently from that point on.",
+      means: "You declined the clipboard permission — a reasonable choice. But note that any website can trigger this prompt, and clicking Allow on one you don't fully trust lets it read your clipboard silently from then on.",
       action: "You can manage clipboard permissions per-site in your browser settings under Privacy → Site Permissions → Clipboard.",
     },
     NOT_SUPPORTED: {
@@ -284,11 +284,11 @@ function WriteSection({ moduleId }) {
         icon={ClipboardX}
         heading="Sites can also overwrite your clipboard"
         description={
-          "The clipboard write API requires no permission prompt in most " +
-          "browsers — a site can silently replace whatever you have copied " +
-          "the moment you interact with the page. This is a real attack " +
-          "vector: a malicious site can swap a safe address for a " +
-          "scammer\u2019s wallet address the instant you click \u201cCopy\u201d."
+          "The clipboard write API needs no permission prompt in most " +
+          "browsers — a site can silently replace what you've copied the " +
+          "moment you interact with the page. A malicious site could swap " +
+          "a safe address for a scammer\u2019s wallet address the instant you " +
+          "click \u201cCopy\u201d."
         }
       >
         {state === "idle" && (
@@ -310,11 +310,11 @@ function WriteSection({ moduleId }) {
           heading="Clipboard overwritten"
           explanation={{
             means:
-              "Your clipboard was just silently replaced — no prompt, no warning. This page did it on purpose to demonstrate the attack. A real malicious site would do the same thing invisibly: you copy a cryptocurrency address, the site swaps it for theirs, and you paste the wrong address into your wallet.",
+              "Your clipboard was just silently replaced — no prompt, no warning. This page did it to demonstrate the attack; a malicious site would do it invisibly, swapping a copied cryptocurrency address for its own.",
             doesntMean:
               "Not every site that writes to your clipboard is malicious — legitimate 'copy' buttons do the same thing. The difference is intent and timing.",
             action:
-              "Always verify what you've pasted before confirming a transaction, especially for wallet addresses, bank details, or any value where a swap would cause financial loss.",
+              "Always verify what you've pasted before confirming a transaction — especially wallet addresses, bank details, or anything where a swap costs you money.",
           }}
         >
           <div className="mt-1 mb-2">

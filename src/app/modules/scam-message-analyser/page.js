@@ -207,12 +207,12 @@ export default function ScamMessageAnalyserPage() {
             )}
 
             <InfoCallout>
-              This tool reports indicators, not proof. A clever scam can slip
+              This tool reports indicators, not proof — a clever scam can slip
               past keyword checks, and a normal message can contain a stray
               keyword. When in doubt, verify through an official channel you
-              reached yourself — never the number or link in the message.
-              Nothing you paste here leaves your device, and only coarse
-              counts are saved to your activity log.
+              reached yourself, never the number or link in the message.
+              Nothing you paste here leaves your device; only coarse counts
+              are logged.
             </InfoCallout>
 
             {result.suspiciousUrlCount > 0 && (

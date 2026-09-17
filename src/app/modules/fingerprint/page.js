@@ -88,10 +88,9 @@ function SummaryBanner({ count }) {
         {count} data points exposed — no permission required
       </p>
       <p className="text-xs text-slate leading-relaxed">
-        Every website you visit receives this information automatically, just
-        by loading a page. No pop-up, no permission prompt, no opt-in. The
-        items below are what any site — including this one — can read right
-        now.
+        Every website receives this automatically just by loading the page —
+        no pop-up, no prompt, no opt-in. Below is what any site, including
+        this one, can read right now.
       </p>
     </div>
   );
@@ -170,10 +169,9 @@ function PassiveTab({ moduleId }) {
         icon={Fingerprint}
         heading="Passive exposure"
         description={
-          "Every website you visit receives dozens of browser details with " +
-          "no permission prompt — no pop-up, no opt-in. Clicking below " +
-          "collects yours and reveals what any site can read about you. " +
-          "Nothing is sent anywhere."
+          "Every website receives dozens of browser details automatically — " +
+          "no permission prompt required. Clicking below collects yours so " +
+          "you can see what any site already reads. Nothing is sent anywhere."
         }
       >
         <Button
@@ -212,11 +210,11 @@ function PassiveResults({ data }) {
         heading="Identity"
         explanation={{
           means:
-            "Your browser sends a User-Agent string with every single HTTP request — it identifies your browser name, version, and operating system to every server you connect to. This is not a cookie and cannot be blocked without changing browser settings.",
+            "Your browser sends a User-Agent string — browser, version, and OS — with every HTTP request. It's not a cookie, and can't be blocked without changing browser settings.",
           doesntMean:
-            "This alone doesn't uniquely identify you as an individual, but combined with other signals on this page it contributes to a fingerprint that can.",
+            "Alone, it doesn't identify you as an individual — but combined with the other signals on this page, it contributes to a fingerprint that can.",
           action:
-            "If you want to reduce this, some browsers (like Firefox or Brave) let you spoof or genericise the User-Agent string.",
+            "Firefox and Brave let you spoof or genericise the User-Agent string.",
         }}
         rows={[
           { label: "Browser", value: identity.browser },
@@ -232,11 +230,11 @@ function PassiveResults({ data }) {
         heading="Location & Locale"
         explanation={{
           means:
-            "Your timezone reveals your geographic region with surprising precision — often to within a single city. Combined with your locale and language settings, it's enough to narrow down where in the world you are without GPS or any location permission.",
+            "Your timezone narrows down your region — often to a single city. Combined with locale and language, it can place you geographically without GPS or a location permission.",
           doesntMean:
-            "This is not the same as your IP-address location — it comes from your device's clock and system settings, not your network.",
+            "Unlike IP-based location, this comes from your device's clock and system settings, not your network.",
           action:
-            "VPNs don't hide your timezone. To change it, you'd need to alter your OS clock settings or use a browser that spoofs the Intl API.",
+            "VPNs don't hide your timezone — changing it means altering your OS clock or using a browser that spoofs the Intl API.",
         }}
         rows={[
           { label: "Timezone", value: locale.timezone },
@@ -251,11 +249,11 @@ function PassiveResults({ data }) {
         heading="Display"
         explanation={{
           means:
-            "Your screen resolution and pixel ratio narrow down the physical display you're using — helpful for distinguishing a MacBook Pro (2× pixel ratio, common resolutions) from a Windows laptop or Android phone. The 'available' resolution excludes taskbars and docks, which hints at your OS.",
+            "Screen resolution and pixel ratio narrow down your physical display — a MacBook Pro's 2× pixel ratio looks different from a Windows laptop or Android phone. 'Available' resolution excludes taskbars and docks, which hints at your OS.",
           doesntMean:
-            "Resolution alone doesn't identify you, but it's one of the most stable signals in a fingerprint — your screen size rarely changes.",
+            "Resolution alone doesn't identify you, but it's one of the most stable fingerprint signals — screen size rarely changes.",
           action:
-            "Some browsers (like Tor Browser) report a uniform, generic resolution to all sites instead of your real one.",
+            "Tor Browser reports a uniform, generic resolution to all sites instead of your real one.",
         }}
         rows={[
           { label: "Screen resolution", value: display.screenResolution },
@@ -270,9 +268,9 @@ function PassiveResults({ data }) {
         heading="Hardware"
         explanation={{
           means:
-            "CPU core count and device memory are coarse values (browsers deliberately round them), but they still meaningfully distinguish a high-end desktop from a mid-range phone. Connection type reveals whether you're on Wi-Fi, 4G, or a slow connection — useful for advertisers targeting by purchase intent.",
+            "CPU core count and device memory are coarse, rounded values — but still distinguish a high-end desktop from a mid-range phone. Connection type reveals Wi-Fi vs. 4G vs. a slow connection, useful for ad targeting by purchase intent.",
           doesntMean:
-            "These values are intentionally imprecise — browsers report memory in power-of-two buckets (0.25, 0.5, 1, 2, 4, 8 GB) rather than the exact figure to limit their fingerprinting usefulness.",
+            "These are intentionally imprecise — browsers report memory in power-of-two buckets (0.25, 0.5, 1, 2, 4, 8 GB) rather than the exact figure, to limit fingerprinting.",
           action:
             "Firefox with resistFingerprinting enabled reports generic values for these fields.",
         }}
@@ -296,9 +294,9 @@ function PassiveResults({ data }) {
         heading="Tracking Signals"
         explanation={{
           means:
-            "Do Not Track was a browser setting that was supposed to tell websites you didn't want to be tracked. It was never legally binding, and the vast majority of websites simply ignored it — so most browsers have now removed or deprecated it. Seeing it here as 'Not set' or 'Disabled' is completely normal.",
+            "Do Not Track was meant to tell websites you didn't want to be tracked. It was never legally binding, most sites ignored it, and most browsers have since deprecated it — 'Not set' or 'Disabled' here is normal.",
           doesntMean:
-            "Having DNT enabled does not actually prevent tracking. It is a request, not a control.",
+            "Having DNT enabled doesn't actually prevent tracking. It's a request, not a control.",
           action:
             "Rather than relying on DNT, use a content blocker (uBlock Origin) or a privacy-focused browser to actually limit tracking.",
         }}
@@ -315,11 +313,11 @@ function PassiveResults({ data }) {
         heading="Graphics & Canvas Fingerprint"
         explanation={{
           means:
-            "Your GPU vendor and model are exposed to every website via the WebGL API — no permission required. The canvas fingerprint is more subtle: a hidden drawing is rendered using your GPU and system fonts, then hashed. Because every GPU, driver version, and OS renders text and shapes slightly differently at the pixel level, this hash is often unique to your specific machine.",
+            "Your GPU vendor and model are exposed via the WebGL API — no permission required. The canvas fingerprint is subtler: a hidden drawing is rendered using your GPU and fonts, then hashed. Because GPUs, drivers, and OSes render pixels slightly differently, this hash is often unique to your machine.",
           doesntMean:
-            "A canvas fingerprint alone isn't enough to track you across the entire internet — but combined with the other values on this page, it forms a stable identifier that persists even after clearing cookies.",
+            "A canvas fingerprint alone isn't enough to track you site-to-site — but combined with the rest of this page, it forms a stable ID that survives clearing cookies.",
           action:
-            "Brave Browser randomises the canvas output per site to defeat this. Firefox with privacy.resistFingerprinting also blocks it. The WebGL vendor/renderer strings can be hidden via that same Firefox setting.",
+            "Brave randomises canvas output per site to defeat this. Firefox's privacy.resistFingerprinting blocks it too, and can also hide the WebGL vendor/renderer strings.",
         }}
       >
         <DataTable
@@ -371,7 +369,7 @@ function GeoSection({ moduleId }) {
 
   const errorMessages = {
     DENIED:
-      "You denied the permission — which is the right call for most sites. The point is that sites can ask, and if you've previously granted it to any site, that site has your location.",
+      "You denied the permission — a reasonable default. Sites can still ask, and if you've granted it elsewhere before, that site already has your location.",
     UNAVAILABLE:
       "Your device couldn't determine a location. This can happen on desktops without GPS that are on VPNs or networks with ambiguous IP geolocation.",
     TIMEOUT:
@@ -444,12 +442,12 @@ function GeoSection({ moduleId }) {
           explanation={{
             means:
               highAccuracy
-                ? "Any website you grant this permission to receives these exact coordinates. GPS-level accuracy on a phone can place you within a few metres — enough to identify your street or building."
-                : "Any website you grant this permission to receives these coordinates. Standard accuracy uses Wi-Fi or network location, typically within 20–300 metres — enough to place you in a neighbourhood.",
+                ? "Any site you grant this to receives these exact coordinates. GPS-level accuracy on a phone can place you within a few metres — enough to identify your street or building."
+                : "Any site you grant this to receives these coordinates. Standard accuracy uses Wi-Fi or network location, typically within 20–300 metres — enough to place you in a neighbourhood.",
             doesntMean:
-              "Granting location permission here doesn't persist — this is a one-time request. But if you've granted location to other sites in the past, those permissions may still be active.",
+              "This grant doesn't persist — it's a one-time request. But permissions you've granted to other sites in the past may still be active.",
             action:
-              "Review which sites have location access in your browser settings (usually under Privacy → Site Permissions → Location).",
+              "Review which sites have location access under Privacy → Site Permissions → Location in your browser settings.",
           }}
         >
           <DataTable
@@ -519,7 +517,7 @@ function MediaSection({ moduleId }) {
 
   const errorMessages = {
     DENIED:
-      "You denied the permission. The important thing this demonstrates is that device labels — which include manufacturer and model strings — are hidden until permission is granted. Once a site has camera/mic access, it can read those labels.",
+      "You denied the permission. This demonstrates that device labels — manufacturer and model strings — stay hidden until camera/mic access is granted; once granted, a site can read them.",
     NOT_FOUND:
       "No camera or microphone was found on this device.",
     NOT_SUPPORTED:
@@ -559,11 +557,11 @@ function MediaSection({ moduleId }) {
           heading="Device list exposed"
           explanation={{
             means:
-              "With permission granted, websites can enumerate every camera, microphone, and speaker connected to your device — including the manufacturer and model string. This is another fingerprinting vector: a specific combination of 'Logitech C920', 'MacBook Pro Microphone', and 'AirPods Pro' is fairly unique.",
+              "With permission granted, sites can enumerate every camera, microphone, and speaker on your device — including manufacturer and model. This is another fingerprinting vector: 'Logitech C920' + 'MacBook Pro Microphone' + 'AirPods Pro' is fairly unique.",
             doesntMean:
-              "This doesn't mean any site can silently record you — the stream was stopped immediately. But it does mean any site with camera/mic permission can read these labels.",
+              "This doesn't mean a site can silently record you — the stream was stopped immediately. But any site with camera/mic permission can read these labels.",
             action:
-              "Review which sites have camera and microphone access in your browser settings under Privacy → Site Permissions.",
+              "Review which sites have camera and microphone access under Privacy → Site Permissions in your browser settings.",
           }}
         >
           <DataTable
@@ -605,10 +603,9 @@ function GatedTab({ moduleId }) {
         <div className="flex items-start gap-2.5">
           <AlertCircle size={15} className="text-accent-indigo shrink-0 mt-0.5" />
           <p className="text-xs text-slate leading-relaxed">
-            The items below require an explicit browser permission prompt
-            before any data is revealed. Each button triggers the real
-            browser prompt — the same one any website would show. You can
-            click or dismiss it; either outcome is informative. Nothing
+            Each item below needs an explicit browser permission before it
+            reveals anything — the same real prompt any website would
+            trigger. Click or dismiss it; either way is informative. Nothing
             is sent anywhere.
           </p>
         </div>

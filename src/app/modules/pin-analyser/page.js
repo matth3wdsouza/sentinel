@@ -201,12 +201,11 @@ export default function PinAnalyserPage() {
             )}
 
             <InfoCallout>
-              This tool reports patterns, not proof. A PIN with no obvious
-              pattern can still be guessed or observed, and a &apos;pattern&apos;
-              like a sequence or a date is a likelihood signal, not a
-              certainty. Nothing you type here ever leaves your device,
-              and only coarse counts are saved to your activity log — the
-              PIN itself is never logged.
+              This tool reports patterns, not proof — a PIN with no obvious
+              pattern can still be guessed or observed, and a flagged
+              &apos;pattern&apos; is a likelihood signal, not a certainty.
+              Nothing you type here leaves your device; only coarse counts
+              are logged, never the PIN itself.
             </InfoCallout>
 
             {result.verdict !== "strong" && (
