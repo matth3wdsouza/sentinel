@@ -23,7 +23,7 @@ import CodeBlock from "@/components/CodeBlock";
 import KeyValueRow from "@/components/KeyValueRow";
 import Disclosure from "@/components/Disclosure";
 import InlineError from "@/components/InlineError";
-import { Button } from "@/components/Button";
+import AnalyseActions from "@/components/AnalyseActions";
 import { parseExif, privacySummary } from "@/lib/exif";
 import { formatBytes } from "@/lib/format";
 import { osmLink } from "@/lib/geo";
@@ -414,22 +414,16 @@ export default function ExifPage() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button
-            onClick={handleInspect}
-            disabled={!file || isInspecting}
-            loading={isInspecting}
-            loadingLabel="Inspecting…"
-          >
-            Inspect image
-          </Button>
-
-          {(file || hasResult || error) && (
-            <Button variant="ghost" resetIcon onClick={handleReset}>
-              Reset
-            </Button>
-          )}
-        </div>
+        <AnalyseActions
+          onAnalyse={handleInspect}
+          canAnalyse={file && !isInspecting}
+          actionLabel="Inspect image"
+          loading={isInspecting}
+          loadingLabel="Inspecting…"
+          onReset={handleReset}
+          showReset={file || hasResult || error}
+          className="mb-8"
+        />
 
         {/* Error */}
         {error && (

@@ -7,7 +7,7 @@ import ResultCard from "@/components/ResultCard";
 import FileInput from "@/components/FileInput";
 import CompanionLinks from "@/components/CompanionLinks";
 import { companionLinksFor } from "@/lib/companionLinks";
-import { Button } from "@/components/Button";
+import AnalyseActions from "@/components/AnalyseActions";
 import InlineError from "@/components/InlineError";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
@@ -77,16 +77,15 @@ export default function FileSignaturePage() {
         />
 
         {file && (
-          <div className="flex items-center gap-4">
-            <Button onClick={handleAnalyze} disabled={isAnalyzing} loading={isAnalyzing} loadingLabel="Reading file…">
-              Verify
-            </Button>
-            {showReset && (
-              <Button variant="ghost" resetIcon onClick={reset}>
-                Reset
-              </Button>
-            )}
-          </div>
+          <AnalyseActions
+              onAnalyse={handleAnalyze}
+              canAnalyse={!isAnalyzing}
+              actionLabel="Verify"
+              loading={isAnalyzing}
+              loadingLabel="Reading file…"
+              onReset={reset}
+              showReset={showReset}
+            />
         )}
 
         {error && (

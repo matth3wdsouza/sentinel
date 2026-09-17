@@ -9,6 +9,7 @@ import CompanionLinks from "@/components/CompanionLinks";
 import URLPartsTable from "@/components/URLPartsTable";
 import KeyValueRow from "@/components/KeyValueRow";
 import { Button } from "@/components/Button";
+import AnalyseActions from "@/components/AnalyseActions";
 import { decodeQR, analyzeQRContent } from "@/lib/qr";
 import { saveActivity } from "@/lib/api";
 
@@ -386,19 +387,15 @@ export default function DecodeTab({ moduleId }) {
       )}
 
       {file && state !== "done" && (
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={handleDecode}
-            disabled={state === "loading"}
-            loading={state === "loading"}
-            loadingLabel="Decoding…"
-          >
-            Decode QR code
-          </Button>
-          <Button variant="ghost" resetIcon onClick={handleReset}>
-            Reset
-          </Button>
-        </div>
+        <AnalyseActions
+          onAnalyse={handleDecode}
+          canAnalyse={state !== "loading"}
+          actionLabel="Decode QR code"
+          loading={state === "loading"}
+          loadingLabel="Decoding…"
+          onReset={handleReset}
+          showReset
+        />
       )}
 
       {state === "done" && resultProps && (

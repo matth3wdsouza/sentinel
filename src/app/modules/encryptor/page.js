@@ -11,7 +11,7 @@ import CodeBlock from "@/components/CodeBlock";
 import TextOutput from "@/components/TextOutput";
 import TextArea from "@/components/TextArea";
 import InlineError from "@/components/InlineError";
-import { Button } from "@/components/Button";
+import AnalyseActions from "@/components/AnalyseActions";
 import Tabs, { TabPanel } from "@/components/Tabs";
 import { encryptText, decryptText } from "@/lib/encrypt";
 import { saveActivity } from "@/lib/api";
@@ -126,21 +126,15 @@ function EncryptTab({ moduleId }) {
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-4">
-        <Button
-          onClick={handleEncrypt}
-          disabled={!canEncrypt}
-          loading={isWorking}
-          loadingLabel="Encrypting…"
-        >
-          Encrypt
-        </Button>
-        {(plaintext || passphrase || confirm || result || error) && (
-          <Button variant="ghost" resetIcon onClick={reset}>
-            Reset
-          </Button>
-        )}
-      </div>
+      <AnalyseActions
+        onAnalyse={handleEncrypt}
+        canAnalyse={canEncrypt}
+        actionLabel="Encrypt"
+        loading={isWorking}
+        loadingLabel="Encrypting…"
+        onReset={reset}
+        showReset={plaintext || passphrase || confirm || result || error}
+      />
 
       {/* Error */}
       {error && (
@@ -285,21 +279,15 @@ function DecryptTab({ moduleId }) {
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-4">
-        <Button
-          onClick={handleDecrypt}
-          disabled={!canDecrypt}
-          loading={isWorking}
-          loadingLabel="Decrypting…"
-        >
-          Decrypt
-        </Button>
-        {(ciphertext || passphrase || result || error) && (
-          <Button variant="ghost" resetIcon onClick={reset}>
-            Reset
-          </Button>
-        )}
-      </div>
+      <AnalyseActions
+        onAnalyse={handleDecrypt}
+        canAnalyse={canDecrypt}
+        actionLabel="Decrypt"
+        loading={isWorking}
+        loadingLabel="Decrypting…"
+        onReset={reset}
+        showReset={ciphertext || passphrase || result || error}
+      />
 
       {/* Error result */}
       {error && (

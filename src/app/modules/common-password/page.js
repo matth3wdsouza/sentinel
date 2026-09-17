@@ -10,7 +10,7 @@ import ModulePage from "@/components/ModulePage";
 import InlineError from "@/components/InlineError";
 import TryExamples from "@/components/TryExamples";
 import CompanionLinks from "@/components/CompanionLinks";
-import { Button } from "@/components/Button";
+import AnalyseActions from "@/components/AnalyseActions";
 import { Info } from "lucide-react";
 
 function getExplanation(analysis) {
@@ -170,22 +170,15 @@ export default function CommonPasswordPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={handleCheck}
-            disabled={!password || isChecking}
-            loading={isChecking}
-            loadingLabel={listReady ? "Checking…" : "Loading list…"}
-          >
-            Check password
-          </Button>
-
-          {(password || result || error) && (
-            <Button variant="ghost" resetIcon onClick={resetForm}>
-              Reset
-            </Button>
-          )}
-        </div>
+        <AnalyseActions
+          onAnalyse={handleCheck}
+          canAnalyse={password && !isChecking}
+          actionLabel="Check password"
+          loading={isChecking}
+          loadingLabel={listReady ? "Checking…" : "Loading list…"}
+          onReset={resetForm}
+          showReset={password || result || error}
+        />
 
         {error && (
           <div>

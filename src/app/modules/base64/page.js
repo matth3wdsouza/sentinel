@@ -10,7 +10,7 @@ import TextOutput from "@/components/TextOutput";
 import TextArea from "@/components/TextArea";
 import InlineError from "@/components/InlineError";
 import OptionRow from "@/components/OptionRow";
-import { Button } from "@/components/Button";
+import AnalyseActions from "@/components/AnalyseActions";
 import Tabs, { TabPanel } from "@/components/Tabs";
 import CompanionLinks from "@/components/CompanionLinks";
 import { saveActivity } from "@/lib/api";
@@ -92,16 +92,13 @@ function EncodeTab({ moduleId }) {
         <code className="font-mono text-xs">+/</code>, no padding)
       </OptionRow>
 
-      <div className="flex items-center gap-4">
-        <Button onClick={handleEncode} disabled={!canEncode}>
-          Encode
-        </Button>
-        {showReset && (
-          <Button variant="ghost" resetIcon onClick={reset}>
-            Reset
-          </Button>
-        )}
-      </div>
+      <AnalyseActions
+        onAnalyse={handleEncode}
+        canAnalyse={canEncode}
+        actionLabel="Encode"
+        onReset={reset}
+        showReset={showReset}
+      />
 
       {error && <InlineError>{error}</InlineError>}
 
@@ -199,16 +196,13 @@ function DecodeTab({ moduleId }) {
         <code className="font-mono text-xs">+/</code>, no padding)
       </OptionRow>
 
-      <div className="flex items-center gap-4">
-        <Button onClick={handleDecode} disabled={!canDecode}>
-          Decode
-        </Button>
-        {showReset && (
-          <Button variant="ghost" resetIcon onClick={reset}>
-            Reset
-          </Button>
-        )}
-      </div>
+      <AnalyseActions
+        onAnalyse={handleDecode}
+        canAnalyse={canDecode}
+        actionLabel="Decode"
+        onReset={reset}
+        showReset={showReset}
+      />
 
       {error === "INVALID_BASE64" && (
         <ResultCard

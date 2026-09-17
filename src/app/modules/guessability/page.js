@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { MAX_PASSWORD_LENGTH } from "@/lib/guessability";
 import PasswordField from "@/components/PasswordField";
 import ModulePage from "@/components/ModulePage";
-import { Button } from "@/components/Button";
+import AnalyseActions from "@/components/AnalyseActions";
 import Disclosure from "@/components/Disclosure";
 import CompanionLinks from "@/components/CompanionLinks";
 import InlineError from "@/components/InlineError";
@@ -237,21 +237,16 @@ export default function GuessabilityPage() {
           browser, and nothing about it is saved.
         </p>
 
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            onClick={handleAnalyze}
-            disabled={!password || isAnalyzing}
-            loading={isAnalyzing}
-            loadingLabel="Analyzing..."
-          >
-            Analyze password
-          </Button>
-          {(password || result) && (
-            <Button variant="ghost" resetIcon onClick={handleReset}>
-              Reset
-            </Button>
-          )}
-        </div>
+        <AnalyseActions
+          onAnalyse={handleAnalyze}
+          canAnalyse={password && !isAnalyzing}
+          actionLabel="Analyze password"
+          loading={isAnalyzing}
+          loadingLabel="Analyzing..."
+          onReset={handleReset}
+          showReset={password || result}
+          className="mb-6"
+        />
 
         {workerError && (
           <div className="mb-4 rounded-xl bg-mismatch-light border border-mismatch/30 px-4 py-3">

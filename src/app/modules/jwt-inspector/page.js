@@ -7,7 +7,7 @@ import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import KeyValueRow from "@/components/KeyValueRow";
 import TextArea from "@/components/TextArea";
-import { Button } from "@/components/Button";
+import AnalyseActions from "@/components/AnalyseActions";
 import CodeBlock from "@/components/CodeBlock";
 import CompanionLinks from "@/components/CompanionLinks";
 import { saveActivity } from "@/lib/api";
@@ -253,16 +253,14 @@ export default function JWTInspectorPage() {
         />
       </div>
 
-      <div className="flex items-center gap-4 mt-4">
-        <Button onClick={handleInspect} disabled={!canInspect}>
-          Inspect
-        </Button>
-        {showReset && (
-          <Button variant="ghost" resetIcon onClick={reset}>
-            Reset
-          </Button>
-        )}
-      </div>
+      <AnalyseActions
+        onAnalyse={handleInspect}
+        canAnalyse={canInspect}
+        actionLabel="Inspect"
+        onReset={reset}
+        showReset={showReset}
+        className="mt-4"
+      />
 
       {error && (
         <div className="mt-6">

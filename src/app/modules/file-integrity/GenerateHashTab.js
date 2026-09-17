@@ -13,7 +13,7 @@ import ResultCard from "@/components/ResultCard";
 import FileInput from "@/components/FileInput";
 import AlgorithmPicker from "@/components/AlgorithmPicker";
 import InlineError from "@/components/InlineError";
-import { Button } from "@/components/Button";
+import AnalyseActions from "@/components/AnalyseActions";
 
 export default function GenerateHashTab({ moduleId }) {
   const [file, setFile] = useState(null);
@@ -103,22 +103,15 @@ export default function GenerateHashTab({ moduleId }) {
         />
       </div>
 
-      <div className="flex items-center gap-4">
-        <Button
-          onClick={handleCompute}
-          disabled={!file || isComputing}
-          loading={isComputing}
-          loadingLabel="Computing..."
-        >
-          Compute Hash
-        </Button>
-
-        {(file || results || error) && (
-          <Button variant="ghost" resetIcon onClick={resetForm}>
-            Reset
-          </Button>
-        )}
-      </div>
+      <AnalyseActions
+        onAnalyse={handleCompute}
+        canAnalyse={file && !isComputing}
+        actionLabel="Compute Hash"
+        loading={isComputing}
+        loadingLabel="Computing..."
+        onReset={resetForm}
+        showReset={file || results || error}
+      />
 
       {error && <InlineError className="mt-4">{error}</InlineError>}
 

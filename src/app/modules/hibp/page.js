@@ -9,7 +9,7 @@ import ResultCard from "@/components/ResultCard";
 import PasswordField from "@/components/PasswordField";
 import ModulePage from "@/components/ModulePage";
 import InlineError from "@/components/InlineError";
-import { Button } from "@/components/Button";
+import AnalyseActions from "@/components/AnalyseActions";
 import { Info } from "lucide-react";
 
 function getExplanation(result) {
@@ -178,22 +178,15 @@ export default function HibpPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={handleCheck}
-            disabled={!password || isChecking}
-            loading={isChecking}
-            loadingLabel="Checking..."
-          >
-            Check password
-          </Button>
-
-          {(password || result || error) && (
-            <Button variant="ghost" resetIcon onClick={resetForm}>
-              Reset
-            </Button>
-          )}
-        </div>
+        <AnalyseActions
+          onAnalyse={handleCheck}
+          canAnalyse={password && !isChecking}
+          actionLabel="Check password"
+          loading={isChecking}
+          loadingLabel="Checking..."
+          onReset={resetForm}
+          showReset={password || result || error}
+        />
 
         {error && (
           <div className="mt-4">

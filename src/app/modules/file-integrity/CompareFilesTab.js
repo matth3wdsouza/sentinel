@@ -12,7 +12,7 @@ import ResultCard from "@/components/ResultCard";
 import FileInput from "@/components/FileInput";
 import InlineError from "@/components/InlineError";
 import OptionRow from "@/components/OptionRow";
-import { Button } from "@/components/Button";
+import AnalyseActions from "@/components/AnalyseActions";
 
 const ALGORITHMS = ["SHA-256", "SHA-384", "SHA-512", "SHA-1", "MD5"];
 
@@ -233,22 +233,15 @@ export default function CompareFilesTab({ moduleId }) {
         )}
       </div>
 
-      <div className="flex items-center gap-4">
-        <Button
-          onClick={handleCompare}
-          disabled={!fileA || !fileB || isComparing}
-          loading={isComparing}
-          loadingLabel="Comparing..."
-        >
-          Compare
-        </Button>
-
-        {(fileA || fileB || result || error) && (
-          <Button variant="ghost" resetIcon onClick={resetForm}>
-            Reset
-          </Button>
-        )}
-      </div>
+      <AnalyseActions
+        onAnalyse={handleCompare}
+        canAnalyse={fileA && fileB && !isComparing}
+        actionLabel="Compare"
+        loading={isComparing}
+        loadingLabel="Comparing..."
+        onReset={resetForm}
+        showReset={fileA || fileB || result || error}
+      />
 
       {error && <InlineError className="mt-4">{error}</InlineError>}
 

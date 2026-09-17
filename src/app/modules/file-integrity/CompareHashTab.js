@@ -10,7 +10,7 @@ import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
 import FileInput from "@/components/FileInput";
 import InlineError from "@/components/InlineError";
-import { Button } from "@/components/Button";
+import AnalyseActions from "@/components/AnalyseActions";
 
 const LENGTH_TO_ALGORITHM = {
   32: "MD5",
@@ -167,22 +167,15 @@ export default function CompareHashTab({ moduleId }) {
         )}
       </div>
 
-      <div className="flex items-center gap-4">
-        <Button
-          onClick={handleCompare}
-          disabled={!file || isComparing}
-          loading={isComparing}
-          loadingLabel="Comparing..."
-        >
-          Compare
-        </Button>
-
-        {(file || pastedHash || result || error) && (
-          <Button variant="ghost" resetIcon onClick={resetForm}>
-            Reset
-          </Button>
-        )}
-      </div>
+      <AnalyseActions
+        onAnalyse={handleCompare}
+        canAnalyse={file && !isComparing}
+        actionLabel="Compare"
+        loading={isComparing}
+        loadingLabel="Comparing..."
+        onReset={resetForm}
+        showReset={file || pastedHash || result || error}
+      />
 
       {error && <InlineError className="mt-4">{error}</InlineError>}
 
