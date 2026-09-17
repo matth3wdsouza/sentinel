@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useId } from "react";
+import { useState, useEffect, useRef, useId } from "react";
+import Link from "next/link";
 import InlineError from "@/components/InlineError";
 import { usePreference } from "@/lib/usePreference";
 import {
@@ -98,7 +99,7 @@ function DetailsBlock({ details }) {
   );
 }
 
-function ActivityRow({ entry, expanded, onToggleExpand, onDelete, now }) {
+function ActivityRow({ entry, expanded, confirming, onToggleExpand, onDelete, now }) {
   const { label, icon: Icon } = metaFor(entry.module_type);
   const detailsId = useId();
 
@@ -138,10 +139,17 @@ function ActivityRow({ entry, expanded, onToggleExpand, onDelete, now }) {
         </button>
         <button
           onClick={() => onDelete(entry.id)}
-          aria-label="Delete this entry"
-          className="shrink-0 rounded-full border border-slate/30 size-7 flex items-center justify-center text-slate hover:text-mismatch hover:border-mismatch transition"
+          aria-label={
+            confirming ? "Click again to confirm deleting this entry" : "Delete this entry"
+          }
+          title={confirming ? "Click again to confirm" : "Delete this entry"}
+          className={`shrink-0 rounded-full border size-7 flex items-center justify-center transition ${
+            confirming
+              ? "border-mismatch bg-mismatch-light text-mismatch-chip"
+              : "border-slate/30 text-slate hover:text-mismatch hover:border-mismatch"
+          }`}
         >
-          <Trash2 size={14} />
+          {confirming ? <AlertTriangle size={14} /> : <Trash2 size={14} />}
         </button>
       </div>
       {expanded && (
@@ -163,6 +171,15 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
   // the JWT inspector's expiry clock.
   const [now, setNow] = useState(() => Date.now());
 
+  // Accidental-delete guard: the first click arms the row's trash button,
+  // the second confirms. Auto-cancels after 3s, when another row is armed,
+  // or when the row is expanded — mirroring the confirm-before-act pattern
+  // Settings uses for its destructive actions.
+  const [confirmingId, setConfirmingId] = useState(null);
+  const confirmTimerRef = useRef(null);
+
+  useEffect(() => () => clearTimeout(confirmTimerRef.current), []);
+
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 30000);
     return () => clearInterval(id);
@@ -178,7 +195,20 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
     setPage(0);
   }
 
+  function armDelete(id) {
+    if (confirmingId !== id) {
+      setConfirmingId(id);
+      clearTimeout(confirmTimerRef.current);
+      confirmTimerRef.current = setTimeout(() => setConfirmingId(null), 3000);
+      return;
+    }
+    clearTimeout(confirmTimerRef.current);
+    setConfirmingId(null);
+    onDelete(id);
+  }
+
   function toggleExpanded(id) {
+    setConfirmingId(null);
     setExpandedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
@@ -284,6 +314,9 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
               No activity yet — actions you take across Sentinel&apos;s
               tools will show up here.
             </p>
+            <Link href="/" className="text-sm text-teal font-medium hover:underline">
+              Explore modules →
+            </Link>
           </div>
         ) : filtered.length === 0 ? (
           <p className="text-sm text-slate py-6">
@@ -295,8 +328,9 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
               key={entry.id}
               entry={entry}
               expanded={expandedIds.has(entry.id)}
+              confirming={confirmingId === entry.id}
               onToggleExpand={toggleExpanded}
-              onDelete={onDelete}
+              onDelete={armDelete}
               now={now}
             />
           ))

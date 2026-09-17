@@ -28,8 +28,8 @@ function ComingSoonRow({ module }) {
   );
 }
 
-// First-use welcome banner — shown when the activity log is empty and the
-// user hasn't dismissed it. Suggests four approachable starting modules.
+// Welcome banner — shown until the user dismisses it (persisted in the
+// "welcome-dismissed" preference). Suggests four approachable starting modules.
 const WELCOME_SUGGESTED = ["password-generator", "hibp", "exif", "qr"];
 
 function WelcomeBanner({ onDismiss }) {

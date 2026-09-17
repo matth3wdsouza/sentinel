@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import InlineError from "@/components/InlineError";
 import { ACCENTS } from "@/lib/moduleAccents";
 import { ALL_MODULES } from "@/lib/modules";
@@ -214,6 +215,9 @@ export default function SummaryTab({ activity, loadError, onRetry }) {
           No activity yet — actions you take across Sentinel&apos;s tools will
           show up here.
         </p>
+        <Link href="/" className="text-sm text-teal font-medium hover:underline">
+          Explore modules →
+        </Link>
       </div>
     );
   }

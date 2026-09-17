@@ -14,7 +14,7 @@ function ModuleRow({ module, disabled, onToggle }) {
   const { chipBg, chipText } = ACCENTS[module.accent];
 
   return (
-    <div className="flex items-center gap-4 px-5 py-3.5">
+    <div className="flex items-center gap-4 px-5 py-4">
       <span className={`inline-flex p-2 rounded-full shrink-0 ${chipBg} ${chipText}`}>
         <Icon size={16} />
       </span>
@@ -101,7 +101,7 @@ export default function ModulesSettingsPage() {
       <div className="space-y-6">
         {CATEGORIES.map((cat) => (
           <section key={cat.id}>
-            <h2 className="text-xs uppercase tracking-widest font-semibold text-slate mb-2 px-1">
+            <h2 className="text-xs uppercase tracking-widest font-semibold text-slate mb-3">
               {cat.label}
             </h2>
             <div className="bg-surface rounded-2xl divide-y divide-slate/10 shadow-card">
