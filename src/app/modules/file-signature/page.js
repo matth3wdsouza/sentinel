@@ -78,14 +78,14 @@ export default function FileSignaturePage() {
 
         {file && (
           <AnalyseActions
-              onAnalyse={handleAnalyze}
-              canAnalyse={!isAnalyzing}
-              actionLabel="Verify"
-              loading={isAnalyzing}
-              loadingLabel="Reading file…"
-              onReset={reset}
-              showReset={showReset}
-            />
+            onAnalyse={handleAnalyze}
+            canAnalyse={!isAnalyzing}
+            actionLabel="Verify"
+            loading={isAnalyzing}
+            loadingLabel="Reading file…"
+            onReset={reset}
+            showReset={showReset}
+          />
         )}
 
         {error && (
