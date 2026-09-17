@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { QrCode } from "lucide-react";
+
 import ModulePage from "@/components/ModulePage";
-import Tabs from "@/components/Tabs";
+import Tabs, { TabPanel } from "@/components/Tabs";
 import { useModuleId } from "@/lib/useModuleId";
 import DecodeTab from "./DecodeTab";
 import GenerateTab from "./GenerateTab";
@@ -20,22 +20,18 @@ export default function QRPage() {
   const [activeTab, setActiveTab] = useState("decode");
 
   return (
-    <ModulePage
-      icon={QrCode}
-      title="QR Code"
-      description="Decode a QR code and see exactly where it leads before you open it — or generate your own."
-    >
+    <ModulePage>
       <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} ariaLabel="QR mode" />
 
-      <div id="panel-decode" role="tabpanel" aria-labelledby="tab-decode" tabIndex={-1} className={activeTab === "decode" ? "" : "hidden"}>
+      <TabPanel id="decode" activeTab={activeTab}>
         <DecodeTab moduleId={moduleId} />
-      </div>
-      <div id="panel-generate" role="tabpanel" aria-labelledby="tab-generate" tabIndex={-1} className={activeTab === "generate" ? "" : "hidden"}>
+      </TabPanel>
+      <TabPanel id="generate" activeTab={activeTab}>
         <GenerateTab moduleId={moduleId} />
-      </div>
-      <div id="panel-wifi" role="tabpanel" aria-labelledby="tab-wifi" tabIndex={-1} className={activeTab === "wifi" ? "" : "hidden"}>
+      </TabPanel>
+      <TabPanel id="wifi" activeTab={activeTab}>
         <WiFiTab moduleId={moduleId} />
-      </div>
+      </TabPanel>
     </ModulePage>
   );
 }

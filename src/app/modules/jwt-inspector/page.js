@@ -227,11 +227,7 @@ export default function JWTInspectorPage() {
   const errorContent = ERROR_CONTENT[error] ?? ERROR_CONTENT.MALFORMED;
 
   return (
-    <ModulePage
-      icon={KeySquare}
-      title="JWT Inspector"
-      description="Paste a JSON Web Token to decode its header and payload, read timestamps in plain English, and spot dangerous algorithm settings."
-    >
+    <ModulePage>
       <GuidedCard
         icon={KeySquare}
         heading="What is a JWT?"

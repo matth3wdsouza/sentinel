@@ -13,15 +13,19 @@ import PageShell from "@/components/PageShell";
 // route transitions when the path doesn't yet match a registered module.
 export default function ModulePage({ icon, title, description, children }) {
   const pathname = usePathname();
-  const accent = ALL_MODULES.find((m) => m.path === pathname)?.accent ?? "teal";
+  const entry = ALL_MODULES.find((m) => m.path === pathname);
+  const accent = entry?.accent ?? "teal";
+  const resolvedIcon = entry?.icon ?? icon;
+  const resolvedTitle = entry?.title ?? title;
+  const resolvedDescription = entry?.description ?? description;
 
   return (
     <PageShell>
       <PageHeader
-        icon={icon}
+        icon={resolvedIcon}
         accent={accent}
-        title={title}
-        description={description}
+        title={resolvedTitle}
+        description={resolvedDescription}
       />
       {children}
     </PageShell>

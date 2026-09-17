@@ -11,7 +11,7 @@ import InlineError from "@/components/InlineError";
 import TryExamples from "@/components/TryExamples";
 import CompanionLinks from "@/components/CompanionLinks";
 import { Button } from "@/components/Button";
-import { ShieldX, Info } from "lucide-react";
+import { Info } from "lucide-react";
 
 function getExplanation(analysis) {
   if (analysis.found) {
@@ -141,11 +141,7 @@ export default function CommonPasswordPage() {
     : [];
 
   return (
-    <ModulePage
-      icon={ShieldX}
-      title="Common Password Checker"
-      description="Check whether a password is among the 100,000 most common breached passwords."
-    >
+    <ModulePage>
       <div className="space-y-5">
         <div>
           <label className="block text-sm font-medium text-ink mb-1.5">

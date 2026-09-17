@@ -3,7 +3,6 @@
 import { useState, useEffect, useId } from "react";
 import CompanionLinks from "@/components/CompanionLinks";
 import {
-  ScanEye,
   MapPin,
   Smartphone,
   Clock,
@@ -44,7 +43,6 @@ const SEVERITY = {
   low:    { label: "Low privacy risk",    dot: "bg-teal",      text: "text-teal-chip",  chipBg: "bg-teal-light"     },
   info:   { label: "Technical info",      dot: "bg-slate",     text: "text-slate",     chipBg: "bg-slate-light"    },
 };
-
 
 // ─── FieldRow ─────────────────────────────────────────────────────────────────
 
@@ -400,11 +398,7 @@ export default function ExifPage() {
   const hasResult = result !== undefined;
 
   return (
-    <ModulePage
-      icon={ScanEye}
-      title="EXIF Metadata Inspection"
-      description="Photos taken on a phone or camera embed hidden data — your location, device model, and more. Inspect what's inside before you share."
-    >
+    <ModulePage>
 
         {/* File picker */}
         <div className="mb-4">

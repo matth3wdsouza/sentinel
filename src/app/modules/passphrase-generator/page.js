@@ -35,7 +35,6 @@ import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import {
   OctagonAlert,
   AlertTriangle,
-  Dice5,
 } from "lucide-react";
 
 const BANNER_CONFIG = {
@@ -269,11 +268,7 @@ export default function PassphraseGeneratorPage() {
   const selectedBuiltIn = BUILT_IN_WORDLISTS.find((w) => w.id === selectedListId);
 
   return (
-    <ModulePage
-      icon={Dice5}
-      title="Passphrase Generator"
-      description="Generate diceware-style passphrases from a wordlist, with full entropy transparency."
-    >
+    <ModulePage>
 
         <div className="rounded-xl bg-surface shadow-card p-5 mb-5">
           <p className="text-sm font-medium mb-2">Wordlist</p>

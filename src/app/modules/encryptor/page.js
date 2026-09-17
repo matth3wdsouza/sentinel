@@ -3,7 +3,7 @@
 import { useState } from "react";
 import CompanionLinks from "@/components/CompanionLinks";
 import { companionLinksFor } from "@/lib/companionLinks";
-import { LockKeyhole } from "lucide-react";
+
 import ModulePage from "@/components/ModulePage";
 import PasswordField from "@/components/PasswordField";
 import ResultCard from "@/components/ResultCard";
@@ -12,7 +12,7 @@ import TextOutput from "@/components/TextOutput";
 import TextArea from "@/components/TextArea";
 import InlineError from "@/components/InlineError";
 import { Button } from "@/components/Button";
-import Tabs from "@/components/Tabs";
+import Tabs, { TabPanel } from "@/components/Tabs";
 import { encryptText, decryptText } from "@/lib/encrypt";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
@@ -338,22 +338,17 @@ export default function EncryptorPage() {
   const moduleId = useModuleId();
   const [activeTab, setActiveTab] = useState("encrypt");
 
-
   return (
-    <ModulePage
-      icon={LockKeyhole}
-      title="Text Encryptor"
-      description="Encrypt text with a passphrase using AES-256-GCM."
-    >
+    <ModulePage>
 
         <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} ariaLabel="Encryptor mode" />
 
-        <div id="panel-encrypt" role="tabpanel" aria-labelledby="tab-encrypt" tabIndex={-1} className={activeTab === "encrypt" ? "" : "hidden"}>
+        <TabPanel id="encrypt" activeTab={activeTab}>
           <EncryptTab moduleId={moduleId} />
-        </div>
-        <div id="panel-decrypt" role="tabpanel" aria-labelledby="tab-decrypt" tabIndex={-1} className={activeTab === "decrypt" ? "" : "hidden"}>
+        </TabPanel>
+        <TabPanel id="decrypt" activeTab={activeTab}>
           <DecryptTab moduleId={moduleId} />
-        </div>
+        </TabPanel>
     </ModulePage>
   );
 }

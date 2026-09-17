@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import CompanionLinks from "@/components/CompanionLinks";
 import { companionLinksFor } from "@/lib/companionLinks";
-import { Hash, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { Button } from "@/components/Button";
 import { computeHashes, toggleAlgorithm } from "@/lib/hashing";
 import { usePreference } from "@/lib/usePreference";
@@ -163,11 +163,7 @@ export default function TextHashPage() {
   const showReset = text || results || error;
 
   return (
-    <ModulePage
-      icon={Hash}
-      title="Text Hash Generator"
-      description="Type or paste any string and instantly see its cryptographic hash across multiple algorithms."
-    >
+    <ModulePage>
       {/* Input */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-ink mb-1.5" htmlFor="text-input">

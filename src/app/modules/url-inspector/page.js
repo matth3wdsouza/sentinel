@@ -1,6 +1,5 @@
 "use client";
 
-import { Link } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
 import URLPartsTable from "@/components/URLPartsTable";
@@ -114,11 +113,7 @@ export default function URLInspectorPage() {
   }
 
   return (
-    <ModulePage
-      icon={Link}
-      title="URL Inspector"
-      description="Decompose a URL and flag phishing indicators — homograph tricks, suspicious TLDs, and encoded characters."
-    >
+    <ModulePage>
       <div className="space-y-5">
         <div>
           <label className="block text-sm font-medium text-ink mb-1.5">

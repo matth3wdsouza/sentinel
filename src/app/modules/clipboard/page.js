@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Clipboard, ClipboardCheck, ClipboardX, AlertTriangle } from "lucide-react";
+import { Clipboard, ClipboardX, AlertTriangle } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import GuidedCard from "@/components/GuidedCard";
 import ResultCard from "@/components/ResultCard";
@@ -351,11 +351,7 @@ function WriteSection({ moduleId }) {
 export default function ClipboardPage() {
   const moduleId = useModuleId();
   return (
-    <ModulePage
-      icon={ClipboardCheck}
-      title="Clipboard Inspector"
-      description="See what your browser exposes via the clipboard — and what sites can do with it without you noticing."
-    >
+    <ModulePage>
 
         <div className="space-y-10">
           <section>

@@ -10,7 +10,7 @@ import PasswordField from "@/components/PasswordField";
 import ModulePage from "@/components/ModulePage";
 import InlineError from "@/components/InlineError";
 import { Button } from "@/components/Button";
-import { ShieldAlert, Info } from "lucide-react";
+import { Info } from "lucide-react";
 
 function getExplanation(result) {
   if (result.breached) {
@@ -125,11 +125,7 @@ export default function HibpPage() {
   }
 
   return (
-    <ModulePage
-      icon={ShieldAlert}
-      title="HIBP Breach Check"
-      description="Check whether a password has appeared in a known data breach."
-    >
+    <ModulePage>
 
         <label className="block text-sm font-medium text-ink mb-1">
           Password to check

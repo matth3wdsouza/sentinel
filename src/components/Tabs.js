@@ -4,7 +4,10 @@ import { useRef } from "react";
 
 // Tab bar used by Encryptor, File Integrity, Fingerprint, QR, and Activity.
 //
-// Props:
+// Also exports TabPanel — the standard panel wrapper matching the tab/wrapper
+// convention described below, so pages don't re-type the association markup.
+//
+// Props for Tabs:
 //   tabs       — array of { id, label }
 //   activeTab  — the currently active tab id
 //   onChange   — called with the new tab id when a tab is selected
@@ -70,6 +73,22 @@ export default function Tabs({ tabs, activeTab, onChange, ariaLabel }) {
           {tab.label}
         </button>
       ))}
+    </div>
+  );
+}
+
+// TabPanel — renders a panel for `id`, hidden unless it's the activeTab. Handles
+// the id/role/aria/tabIndex association from the WAI-ARIA convention above.
+export function TabPanel({ id, activeTab, children }) {
+  return (
+    <div
+      id={`panel-${id}`}
+      role="tabpanel"
+      aria-labelledby={`tab-${id}`}
+      tabIndex={-1}
+      className={activeTab === id ? "" : "hidden"}
+    >
+      {children}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Strikethrough } from "lucide-react";
+
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
 import Disclosure from "@/components/Disclosure";
@@ -138,11 +138,7 @@ export default function UnicodeInspectorPage() {
     : [];
 
   return (
-    <ModulePage
-      icon={Strikethrough}
-      title="Hidden Unicode Inspector"
-      description="Paste text and reveal invisible or deceptive characters — zero-width spaces, bidi overrides, and look-alike homoglyphs."
-    >
+    <ModulePage>
       <div className="space-y-5">
         <div>
           <label className="block text-sm font-medium text-ink mb-1.5">

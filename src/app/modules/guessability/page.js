@@ -8,7 +8,6 @@ import { Button } from "@/components/Button";
 import Disclosure from "@/components/Disclosure";
 import CompanionLinks from "@/components/CompanionLinks";
 import InlineError from "@/components/InlineError";
-import { Gauge } from "lucide-react";
 
 const SCORE_LABELS = ["Very weak", "Weak", "Fair", "Good", "Strong"];
 
@@ -208,11 +207,7 @@ export default function GuessabilityPage() {
   // actual characteristics than this module should persist.
 
   return (
-    <ModulePage
-      icon={Gauge}
-      title="Guessability"
-      description="Estimate how easily a password could be guessed, with pattern-based feedback."
-    >
+    <ModulePage>
 
         <label className="flex items-center justify-between text-sm font-medium mb-1">
           <span>Password to analyze</span>

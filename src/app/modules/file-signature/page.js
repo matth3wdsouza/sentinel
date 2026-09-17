@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FileSearch2 } from "lucide-react";
+
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
 import FileInput from "@/components/FileInput";
@@ -64,11 +64,7 @@ export default function FileSignaturePage() {
   const showReset = file || result || error;
 
   return (
-    <ModulePage
-      icon={FileSearch2}
-      title="File Signature Verifier"
-      description="Check the magic bytes of a file against its declared extension to detect spoofed file types."
-    >
+    <ModulePage>
       <div className="space-y-5">
         <FileInput
           label="File to verify"

@@ -6,8 +6,7 @@ import GenerateHashTab from "./GenerateHashTab";
 import CompareHashTab from "./CompareHashTab";
 import CompareFilesTab from "./CompareFilesTab";
 import ModulePage from "@/components/ModulePage";
-import Tabs from "@/components/Tabs";
-import { FileCheck2 } from "lucide-react";
+import Tabs, { TabPanel } from "@/components/Tabs";
 
 const TABS = [
   { id: "generate", label: "Generate Hash" },
@@ -20,22 +19,18 @@ export default function FileIntegrityPage() {
   const [activeTab, setActiveTab] = useState("generate");
 
   return (
-    <ModulePage
-      icon={FileCheck2}
-      title="File Integrity Verification"
-      description="Generate and compare file hashes to verify downloads and detect tampering."
-    >
+    <ModulePage>
       <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} ariaLabel="File integrity tools" />
 
-      <div id="panel-generate" role="tabpanel" aria-labelledby="tab-generate" tabIndex={-1} className={activeTab === "generate" ? "" : "hidden"}>
+      <TabPanel id="generate" activeTab={activeTab}>
         <GenerateHashTab moduleId={moduleId} />
-      </div>
-      <div id="panel-compare-hash" role="tabpanel" aria-labelledby="tab-compare-hash" tabIndex={-1} className={activeTab === "compare-hash" ? "" : "hidden"}>
+      </TabPanel>
+      <TabPanel id="compare-hash" activeTab={activeTab}>
         <CompareHashTab moduleId={moduleId} />
-      </div>
-      <div id="panel-compare-files" role="tabpanel" aria-labelledby="tab-compare-files" tabIndex={-1} className={activeTab === "compare-files" ? "" : "hidden"}>
+      </TabPanel>
+      <TabPanel id="compare-files" activeTab={activeTab}>
         <CompareFilesTab moduleId={moduleId} />
-      </div>
+      </TabPanel>
     </ModulePage>
   );
 }

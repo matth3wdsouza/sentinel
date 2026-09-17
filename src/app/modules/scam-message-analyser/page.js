@@ -1,6 +1,5 @@
 "use client";
 
-import { MessageSquareWarning } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
 import TryExamples from "@/components/TryExamples";
@@ -129,11 +128,7 @@ export default function ScamMessageAnalyserPage() {
     : [];
 
   return (
-    <ModulePage
-      icon={MessageSquareWarning}
-      title="Scam Message Analyser"
-      description="Paste a suspicious SMS, email, or message and see which common scam indicators it hits — urgency, money pressure, OTP requests, impersonation, and suspicious links."
-    >
+    <ModulePage>
       <div className="space-y-5">
         <div>
           <label className="block text-sm font-medium text-ink mb-1.5">

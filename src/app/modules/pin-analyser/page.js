@@ -1,6 +1,5 @@
 "use client";
 
-import { Square } from "lucide-react";
 import ModulePage from "@/components/ModulePage";
 import TryExamples from "@/components/TryExamples";
 import CompanionLinks from "@/components/CompanionLinks";
@@ -130,11 +129,7 @@ export default function PinAnalyserPage() {
   const verdictConfig = result?.verdict ? VERDICT_CONFIG[result.verdict] : null;
 
   return (
-    <ModulePage
-      icon={Square}
-      title="PIN & Pattern Analyser"
-      description="Paste a numeric PIN or passcode and see whether it follows the common, guessable patterns — sequences, repeats, dates, keypad walks, and the most leaked codes."
-    >
+    <ModulePage>
       <div className="space-y-5">
         <div>
           <label className="block text-sm font-medium text-ink mb-1.5">

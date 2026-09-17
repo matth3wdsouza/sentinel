@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useId } from "react";
-import { Timer, RefreshCw, Download } from "lucide-react";
+import { RefreshCw, Download } from "lucide-react";
 import * as OTPAuth from "otpauth";
 import { generateQR } from "@/lib/qr";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
@@ -254,11 +254,7 @@ export default function TOTPPage() {
   const showReset = input || totp || error;
 
   return (
-    <ModulePage
-      icon={Timer}
-      title="TOTP Generator"
-      description="Enter a TOTP secret or an otpauth:// URI to see a live 6-digit code with a 30-second countdown."
-    >
+    <ModulePage>
       <div>
         <label className="block text-sm font-medium text-ink mb-1.5">
           Secret or otpauth:// URI

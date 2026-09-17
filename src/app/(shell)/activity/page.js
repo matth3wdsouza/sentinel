@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { fetchActivity, removeActivity } from "@/lib/api";
 import PageHeader from "@/components/PageHeader";
-import Tabs from "@/components/Tabs";
+import Tabs, { TabPanel } from "@/components/Tabs";
 import { Activity as ActivityIcon } from "lucide-react";
 import LogTab from "./LogTab";
 import SummaryTab from "./SummaryTab";
@@ -70,10 +70,10 @@ export default function ActivityPage() {
 
       <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} ariaLabel="Activity view" />
 
-      <div id="panel-summary" role="tabpanel" aria-labelledby="tab-summary" tabIndex={-1} className={activeTab === "summary" ? "" : "hidden"}>
+      <TabPanel id="summary" activeTab={activeTab}>
         <SummaryTab activity={activity} loadError={loadError} onRetry={retryLoad} />
-      </div>
-      <div id="panel-log" role="tabpanel" aria-labelledby="tab-log" tabIndex={-1} className={activeTab === "log" ? "" : "hidden"}>
+      </TabPanel>
+      <TabPanel id="log" activeTab={activeTab}>
         <LogTab
           activity={activity}
           loadError={loadError}
@@ -81,7 +81,7 @@ export default function ActivityPage() {
           onRetry={retryLoad}
           onDelete={handleDelete}
         />
-      </div>
+      </TabPanel>
     </>
   );
 }

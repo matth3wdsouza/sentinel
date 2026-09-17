@@ -11,7 +11,7 @@ import TextArea from "@/components/TextArea";
 import InlineError from "@/components/InlineError";
 import OptionRow from "@/components/OptionRow";
 import { Button } from "@/components/Button";
-import Tabs from "@/components/Tabs";
+import Tabs, { TabPanel } from "@/components/Tabs";
 import CompanionLinks from "@/components/CompanionLinks";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
@@ -253,11 +253,7 @@ export default function Base64Page() {
   const [activeTab, setActiveTab] = useState("encode");
 
   return (
-    <ModulePage
-      icon={Binary}
-      title="Base64 Encoder / Decoder"
-      description="Encode text to Base64 or decode Base64 back to text. Supports the Base64url variant used in JWTs and URLs."
-    >
+    <ModulePage>
       <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} ariaLabel="Base64 operation" />
 
       <GuidedCard
@@ -270,12 +266,12 @@ export default function Base64Page() {
         }
       />
 
-      <div id="panel-encode" role="tabpanel" aria-labelledby="tab-encode" tabIndex={-1} className={activeTab === "encode" ? "" : "hidden"}>
+      <TabPanel id="encode" activeTab={activeTab}>
         <EncodeTab moduleId={moduleId} />
-      </div>
-      <div id="panel-decode" role="tabpanel" aria-labelledby="tab-decode" tabIndex={-1} className={activeTab === "decode" ? "" : "hidden"}>
+      </TabPanel>
+      <TabPanel id="decode" activeTab={activeTab}>
         <DecodeTab moduleId={moduleId} />
-      </div>
+      </TabPanel>
     </ModulePage>
   );
 }

@@ -15,7 +15,7 @@ import ResultCard from "@/components/ResultCard";
 import CopyButton from "@/components/CopyButton";
 import KeyValueRow from "@/components/KeyValueRow";
 import { Button } from "@/components/Button";
-import Tabs from "@/components/Tabs";
+import Tabs, { TabPanel } from "@/components/Tabs";
 import CompanionLinks from "@/components/CompanionLinks";
 import { collectPassive, collectGeo, collectMedia } from "@/lib/fingerprint";
 import { osmLink } from "@/lib/geo";
@@ -95,7 +95,6 @@ function SummaryBanner({ count }) {
     </div>
   );
 }
-
 
 // ─── PassiveTab ──────────────────────────────────────────────────────────────
 
@@ -624,20 +623,16 @@ export default function FingerprintPage() {
   const [activeTab, setActiveTab] = useState("passive");
 
   return (
-    <ModulePage
-      icon={Fingerprint}
-      title="Browser Fingerprint"
-      description="See what your browser silently reveals to every website you visit — no permissions needed for most of it."
-    >
+    <ModulePage>
 
         <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} ariaLabel="Fingerprint data category" />
 
-        <div id="panel-passive" role="tabpanel" aria-labelledby="tab-passive" tabIndex={-1} className={activeTab === "passive" ? "" : "hidden"}>
+        <TabPanel id="passive" activeTab={activeTab}>
           <PassiveTab moduleId={moduleId} />
-        </div>
-        <div id="panel-gated" role="tabpanel" aria-labelledby="tab-gated" tabIndex={-1} className={activeTab === "gated" ? "" : "hidden"}>
+        </TabPanel>
+        <TabPanel id="gated" activeTab={activeTab}>
           <GatedTab moduleId={moduleId} />
-        </div>
+        </TabPanel>
 
         <CompanionLinks links={companionLinksFor("/modules/fingerprint")} />
     </ModulePage>

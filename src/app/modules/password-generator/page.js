@@ -141,11 +141,7 @@ export default function PasswordGeneratorPage() {
   }
 
   return (
-    <ModulePage
-      icon={KeyRound}
-      title="Password Generator"
-      description="Generate strong, random passwords with exact entropy calculations."
-    >
+    <ModulePage>
 
         <div className="rounded-xl bg-surface shadow-card overflow-hidden">
           <GeneratorResultCard
