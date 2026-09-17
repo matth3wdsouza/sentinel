@@ -300,10 +300,12 @@ export default function LogTab({ activity, loadError, actionError, onRetry, onDe
       <div className="rounded-xl bg-surface shadow-card overflow-hidden px-5">
         {loadError ? (
           <div className="py-6">
-            <InlineError className="mb-2">{loadError}</InlineError>
-            <button onClick={onRetry} className="text-sm text-teal">
-              Try again
-            </button>
+            <InlineError
+              className="mb-2"
+              action={{ label: "Try again", onClick: onRetry }}
+            >
+              {loadError}
+            </InlineError>
           </div>
         ) : activity === null ? (
           <p className="text-sm text-slate py-6">Loading your activity…</p>

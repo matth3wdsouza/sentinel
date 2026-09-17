@@ -292,12 +292,12 @@ export default function PassphraseGeneratorPage() {
           )}
 
           {!usingCustom && builtInError && (
-            <div className="mt-2">
-              <InlineError>{builtInError}</InlineError>
-              <button onClick={retryBuiltInLoad} className="text-sm text-teal mt-1">
-                Try again
-              </button>
-            </div>
+            <InlineError
+              className="mt-2"
+              action={{ label: "Try again", onClick: retryBuiltInLoad }}
+            >
+              {builtInError}
+            </InlineError>
           )}
 
           {usingCustom && (

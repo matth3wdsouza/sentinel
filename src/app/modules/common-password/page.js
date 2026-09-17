@@ -181,15 +181,9 @@ export default function CommonPasswordPage() {
         />
 
         {error && (
-          <div>
-            <InlineError>{error}</InlineError>
-            <button
-              onClick={handleCheck}
-              className="text-sm text-teal mt-2"
-            >
-              Try again
-            </button>
-          </div>
+          <InlineError action={{ label: "Try again", onClick: handleCheck }}>
+            {error}
+          </InlineError>
         )}
 
         {result && (

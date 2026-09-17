@@ -190,19 +190,15 @@ export default function HibpPage() {
 
         {error && (
           <div className="mt-4">
-            <InlineError>{error}</InlineError>
+            <InlineError action={{ label: "Try again", onClick: handleCheck }}>
+              {error}
+            </InlineError>
             <p className="text-xs text-slate mt-1">
               Only a small, anonymized fragment of your password&apos;s hash is
               ever sent — this failure didn&apos;t expose anything more than
               that, whether it happened before or after the request went
               out.
             </p>
-            <button
-              onClick={handleCheck}
-              className="text-sm text-teal mt-2"
-            >
-              Try again
-            </button>
           </div>
         )}
 

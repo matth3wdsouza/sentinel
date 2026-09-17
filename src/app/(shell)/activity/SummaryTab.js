@@ -195,10 +195,12 @@ export default function SummaryTab({ activity, loadError, onRetry }) {
   if (loadError) {
     return (
       <div className="py-6">
-        <InlineError className="mb-2">{loadError}</InlineError>
-        <button onClick={onRetry} className="text-sm text-teal">
-          Try again
-        </button>
+        <InlineError
+          className="mb-2"
+          action={{ label: "Try again", onClick: onRetry }}
+        >
+          {loadError}
+        </InlineError>
       </div>
     );
   }
