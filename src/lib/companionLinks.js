@@ -16,11 +16,13 @@
 
 export const COMPANION_LINKS = {
   // Inspect & Analyse
+  //
+  // Note: URL Inspector → Unicode Inspector is NOT here. It's outcome-gated
+  // (only relevant when a scan flags punycode-hostname, non-ascii-hostname,
+  // or encoded-hostname) and stays inline in url-inspector/page.js next to
+  // the flags, matching the QR → TOTP pattern — the registry only holds
+  // links that are unconditional and standalone.
   "/modules/url-inspector": [
-    {
-      href: "/modules/unicode-inspector",
-      label: "Inspect the hostname for hidden characters",
-    },
     {
       href: "/modules/scam-message-analyser",
       label: "Analyse a suspicious message instead",

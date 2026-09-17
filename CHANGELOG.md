@@ -17,8 +17,11 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   - TOTP Generator → "Have a QR code instead? Decode it first" (QR Decode)
   - JWT Inspector → "Inspect the raw base64url encoding" and Base64 → "Pasted
     a JWT? Decode its parts instead"
-  Outcome-gated links (e.g. QR Decode → TOTP for 2FA codes) stay inline in
-  the page next to the result state, matching the existing QR → URL pattern.
+  Outcome-gated links stay inline in the page next to the result state,
+  matching the existing QR → URL pattern: QR Decode → TOTP only appears for
+  2FA setup codes, and URL Inspector → Unicode Inspector only appears when
+  the hostname scan flags punycode, non-ASCII, or percent-encoded hostname
+  characters.
   (`src/lib/companionLinks.js`,
   `src/app/modules/url-inspector/page.js`, `password-generator/page.js`,
   `passphrase-generator/page.js`, `fingerprint/page.js`, `totp/page.js`,

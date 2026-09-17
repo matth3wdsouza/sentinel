@@ -19,6 +19,16 @@ import useInspector from "@/lib/useInspector";
 import { SEVERITY_STYLE } from "@/lib/severity";
 import { companionLinksFor } from "@/lib/companionLinks";
 
+// Flag types that mean the hostname itself may be using deceptive characters
+// (punycode, raw non-ASCII, or percent-encoding) — the cases where jumping
+// into Unicode Inspector is actually useful, rather than noise on an
+// ordinary ASCII hostname.
+const HOSTNAME_UNICODE_FLAGS = new Set([
+  "punycode-hostname",
+  "non-ascii-hostname",
+  "encoded-hostname",
+]);
+
 const VERDICT_CONFIG = {
   safe: {
     verdict: "success",
@@ -175,7 +185,19 @@ export default function URLInspectorPage() {
               </FindingsList>
             )}
 
-            <CompanionLinks links={companionLinksFor("/modules/url-inspector")} />
+            <CompanionLinks
+              links={[
+                ...(result.flags.some((flag) => HOSTNAME_UNICODE_FLAGS.has(flag.type))
+                  ? [
+                      {
+                        href: "/modules/unicode-inspector",
+                        label: "Inspect the hostname for hidden characters",
+                      },
+                    ]
+                  : []),
+                ...companionLinksFor("/modules/url-inspector"),
+              ]}
+            />
 
             {/* Query Parameters */}
             {result.parsed.searchParams && [...result.parsed.searchParams].length > 0 && (
