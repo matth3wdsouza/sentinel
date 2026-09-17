@@ -16,7 +16,21 @@ import { ShieldX, Info } from "lucide-react";
 function getExplanation(analysis) {
   if (analysis.found) {
     return {
-      means: `This password is #${analysis.rank.toLocaleString()} on the NCSC's list of the 100,000 most common breached passwords — one of the exact strings attackers try first.`,
+      means: (
+        <>
+          This password is #{analysis.rank.toLocaleString()} on the{" "}
+          <a
+            href="https://www.ncsc.gov.uk/news/most-hacked-passwords-revealed-as-uk-cyber-survey-exposes-gaps-in-online-security"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-teal hover:underline"
+          >
+            NCSC
+          </a>
+          &apos;s list of the 100,000 most common breached passwords — one of the
+          exact strings attackers try first.
+        </>
+      ),
       doesntMean:
         "This ranking measures how often the exact string has appeared in breach data, not a judgement about you — and it only covers the most frequent passwords, not every weak one.",
       action:

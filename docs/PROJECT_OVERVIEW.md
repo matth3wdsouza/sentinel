@@ -53,6 +53,16 @@ planned modules are achievable entirely client-side.
   k-anonymity hash-prefix (never the full password) to the HIBP API — everything
   else leaves the device for no currently-built or currently-planned module.
 
+- **External outbound links are static text, never external requests.**
+  Attribution links to named sources — NCSC (Common Password Checker → the
+  top-100k breached-passwords news release), Have I Been Pwned (HIBP module
+  and the About page), and EFF (Passphrase Generator → the Dice-Generated
+  Passphrases wordlists page) — open in a new tab (`target="_blank"`,
+  `rel="noopener noreferrer"`) and make no network calls, so they are not
+  governed by the strict CSP's `connect-src` and no CSP change is needed.
+  Always point at a specific, verified-once-live source page rather than a
+  bare homepage.
+
 - **Two `IndexedDB` object stores.** `src/lib/db.js` exports both:
   - `activity` (v1) — generic store with a `module_type` field per record,
     covering all modules' history without schema churn. Originally named
@@ -1330,6 +1340,8 @@ src/
     ├── page.js               # home screen — reads CATEGORIES from lib/modules.js, filters disabled modules
     ├── (shell)/
     │   ├── layout.js         # shared shell layout (TopBar + PageShell)
+    │   ├── about/
+    │   │   └── page.js       # static About page — stats, module directory, privacy rows, version footer; linked from Settings + Command Palette
     │   ├── activity/
     │   │   ├── page.js          # thin shell — fetches records once, owns tab/error/delete state
     │   │   ├── LogTab.js        # existing log panel (filter, expand, delete) as a tab

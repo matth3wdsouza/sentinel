@@ -25,8 +25,20 @@ function getExplanation(result) {
     };
   }
   return {
-    means:
-      "This exact password hasn't appeared in any of the breach datasets HIBP tracks.",
+    means: (
+      <>
+        This exact password hasn&apos;t appeared in any of the breach datasets{" "}
+        <a
+          href="https://haveibeenpwned.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-teal hover:underline"
+        >
+          HIBP
+        </a>{" "}
+        tracks.
+      </>
+    ),
     doesntMean:
       "That's a good sign, but not a guarantee — and it says nothing about how easily it could be guessed. A common word with a birthday attached could still be weak even if it's never leaked.",
     action:

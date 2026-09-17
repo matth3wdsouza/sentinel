@@ -4,6 +4,28 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added — About page and external source links
+
+- **New `/about` page** explaining what Sentinel is and how it handles data,
+  reachable from the Settings About row and the Command Palette ("About"
+  quick action). Four sections: a short intro, a data-driven "At a glance"
+  stat strip (module/category counts, 100% in-browser, the single HIBP
+  exception), a jump-grid directory of every module, and a Privacy panel
+  restating the core invariants — local-only computation, the single HIBP
+  k-anonymity exception, per-entry activity clearing, and the toggleable
+  cross-module links. A version footer is sourced from `package.json`.
+  (`src/app/(shell)/about/page.js`, `settings/page.js`,
+  `src/components/CommandPalette.js`)
+- **Module results now link out to three named external sources** for
+  attribution and further reading: the NCSC news release on the top-100k
+  breached-passwords list (Common Password Checker), Have I Been Pwned
+  (HIBP, plus the About page), and EFF's Dice-Generated Passphrases wordlists
+  page (Passphrase Generator). These are plain `target="_blank"` anchors
+  (`rel="noopener noreferrer"`) — the app makes no new network requests, so
+  the strict CSP is unchanged. Every URL was verified live before landing.
+  (`common-password/page.js`, `hibp/page.js`,
+  `passphrase-generator/page.js`, `about/page.js`)
+
 ### Added — cross-module links expansion
 
 - **Five previously-isolated modules now suggest companion tools**, and the

@@ -319,7 +319,16 @@ export default function PassphraseGeneratorPage() {
                 Needs at least {UNUSABLE_LIST_THRESHOLD.toLocaleString()}{" "}
                 unique words to generate anything at all; for real security
                 you&apos;ll want closer to {WEAK_LIST_THRESHOLD.toLocaleString()}{" "}
-                or more (the EFF long list above has 7,776).
+                or more (the{" "}
+                <a
+                  href="https://www.eff.org/dice"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-teal hover:underline"
+                >
+                  EFF
+                </a>{" "}
+                long list above has 7,776).
               </p>
 
               {uploadError && (
