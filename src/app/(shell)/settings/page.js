@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Settings, RotateCcw, Layers, ChevronRight, CheckCircle2 } from "lucide-react";
+import { Settings, RotateCcw, Layers, ChevronRight, CheckCircle2, Info } from "lucide-react";
 import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -178,6 +178,25 @@ export default function SettingsPage() {
               <p className="text-sm font-medium text-ink">Manage modules</p>
               <p className="text-xs text-slate mt-0.5">
                 Choose which modules appear on the home screen.
+              </p>
+            </div>
+          </div>
+          <ChevronRight size={16} className="text-slate shrink-0" />
+        </Link>
+      </SettingsSection>
+
+      {/* ── About ────────────────────────────────────────────────────────── */}
+      <SettingsSection title="About">
+        <Link
+          href="/about"
+          className="flex items-center justify-between gap-6 px-5 py-4 hover:bg-slate/5 transition rounded-2xl"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <Info size={16} className="text-slate shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-ink">About Sentinel</p>
+              <p className="text-xs text-slate mt-0.5">
+                What this app does, and its privacy model.
               </p>
             </div>
           </div>

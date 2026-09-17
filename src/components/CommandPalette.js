@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Home, History, Settings, CornerDownLeft, Clock } from "lucide-react";
+import { Search, Home, History, Settings, Info, CornerDownLeft, Clock } from "lucide-react";
 import { ALL_MODULES } from "@/lib/modules";
 import { fetchActivity } from "@/lib/api";
 
@@ -10,6 +10,7 @@ const QUICK_ACTIONS = [
   { id: "home", title: "Home", icon: Home, href: "/" },
   { id: "activity", title: "Activity", icon: History, href: "/activity" },
   { id: "settings", title: "Settings", icon: Settings, href: "/settings" },
+  { id: "about", title: "About", icon: Info, href: "/about" },
 ];
 
 const ALL_ITEMS = [
