@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import ModulePage from "@/components/ModulePage";
 import TryExamples from "@/components/TryExamples";
 import CompanionLinks from "@/components/CompanionLinks";
@@ -91,6 +92,16 @@ export default function PinAnalyserPage() {
     showReset,
   } = useInspector({ onAnalyse: runAnalysis });
 
+  // Bumped on reset to force PasswordField to remount, wiping its internal
+  // show/hide state (same pattern as HIBP, Guessability and the common
+  // password checker — PasswordField intentionally doesn't expose that).
+  const [resetKey, setResetKey] = useState(0);
+
+  function resetAll() {
+    reset();
+    setResetKey((k) => k + 1);
+  }
+
   function runAnalysis(value) {
     const analysis = analyzePIN(value);
     if (!analysis) {
@@ -136,6 +147,7 @@ export default function PinAnalyserPage() {
             PIN or passcode
           </label>
           <PasswordField
+            key={resetKey}
             value={input}
             onChange={handleChange}
             onEnter={handleAnalyse}
@@ -150,7 +162,7 @@ export default function PinAnalyserPage() {
         <AnalyseActions
           onAnalyse={handleAnalyse}
           canAnalyse={canAnalyse}
-          onReset={reset}
+          onReset={resetAll}
           showReset={showReset}
         />
 
