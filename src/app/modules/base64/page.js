@@ -123,6 +123,10 @@ function EncodeTab({ moduleId }) {
           </div>
         </ResultCard>
       )}
+
+      {showReset && (
+        <CompanionLinks links={companionLinksFor("/modules/base64")} />
+      )}
     </div>
   );
 }

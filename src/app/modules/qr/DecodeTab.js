@@ -159,15 +159,15 @@ function URLPreview({ detail }) {
           className="py-2"
         />
         {detail.trackingParams.length > 0 && (
-        <KeyValueRow
-          label="Cleaned URL"
-          value={detail.cleanUrl}
-          mono
-          copyable
-          copyLabel="cleaned URL"
-          tone="match"
-          className="py-2"
-        />
+          <KeyValueRow
+            label="Cleaned URL"
+            value={detail.cleanUrl}
+            mono
+            copyable
+            copyLabel="cleaned URL"
+            tone="match"
+            className="py-2"
+          />
         )}
       </div>
 

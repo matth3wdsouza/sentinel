@@ -31,6 +31,9 @@ function EncryptTab({ moduleId }) {
   const [result, setResult] = useState(null);  // string on success
   const [error, setError] = useState(null);
   const [isWorking, setIsWorking] = useState(false);
+  // Bumped on reset to force the PasswordFields to remount, wiping their
+  // internal show/hide state (same pattern as the password-check modules).
+  const [resetKey, setResetKey] = useState(0);
 
   // Only show the mismatch warning once the user has typed in both fields —
   // showing it immediately on the first keystroke of the confirm field
@@ -48,6 +51,7 @@ function EncryptTab({ moduleId }) {
     setConfirm("");
     setResult(null);
     setError(null);
+    setResetKey((key) => key + 1);
   }
 
   async function handleEncrypt() {
@@ -100,6 +104,7 @@ function EncryptTab({ moduleId }) {
             Passphrase
           </label>
           <PasswordField
+            key={resetKey}
             value={passphrase}
             onChange={(e) => { setPassphrase(e.target.value); setResult(null); setError(null); }}
             placeholder="Choose a strong passphrase"
@@ -112,6 +117,7 @@ function EncryptTab({ moduleId }) {
             Confirm passphrase
           </label>
           <PasswordField
+            key={resetKey}
             value={confirm}
             onChange={(e) => { setConfirm(e.target.value); setResult(null); setError(null); }}
             placeholder="Repeat your passphrase"
@@ -186,12 +192,16 @@ function DecryptTab({ moduleId }) {
     ciphertext.trim().length > 0 &&
     passphrase.length > 0 &&
     !isWorking;
+  // Bumped on reset to force the PasswordField to remount, wiping its
+  // internal show/hide state (same pattern as EncryptTab above).
+  const [resetKey, setResetKey] = useState(0);
 
   function reset() {
     setCiphertext("");
     setPassphrase("");
     setResult(null);
     setError(null);
+    setResetKey((key) => key + 1);
   }
 
   async function handleDecrypt() {
@@ -270,6 +280,7 @@ function DecryptTab({ moduleId }) {
           Passphrase
         </label>
         <PasswordField
+          key={resetKey}
           value={passphrase}
           onChange={(e) => { setPassphrase(e.target.value); setResult(null); setError(null); }}
           placeholder="Enter the passphrase"
@@ -293,6 +304,7 @@ function DecryptTab({ moduleId }) {
       {error && (
         <ResultCard
           verdict="mismatch"
+          headingLevel="h2"
           heading={errorContent[error].heading}
           explanation={{
             means: errorContent[error].means,
