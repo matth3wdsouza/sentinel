@@ -3,6 +3,7 @@
 import { useState, useId } from "react";
 import { CheckCircle2, XCircle, Info, Terminal, AlertTriangle } from "lucide-react";
 import CopyButton from "@/components/CopyButton";
+import InfoSection from "@/components/InfoSection";
 
 const VERDICT_CONFIG = {
   success: {
@@ -78,8 +79,7 @@ function ExplanationSection({ label, text }) {
   if (!text) return null;
   return (
     <div className="mt-3 first:mt-0">
-      <p className="text-xs uppercase tracking-wide text-slate font-medium">{label}</p>
-      <p className="text-sm text-ink mt-0.5">{text}</p>
+      <InfoSection label={label} text={text} />
     </div>
   );
 }

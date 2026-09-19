@@ -1,6 +1,7 @@
 "use client";
 
 import { Copy, Check, RefreshCw, Info } from "lucide-react";
+import InfoSection from "@/components/InfoSection";
 
 const STRENGTH_CHIP_CONFIG = {
   mismatch: "bg-mismatch-light text-mismatch-chip",
@@ -118,12 +119,7 @@ export default function GeneratorResultCard({
           {showHelp && explanation && (
             <div className="mt-3 pt-3 border-t border-slate/20 space-y-3">
               {Object.entries(explanation).map(([key, text]) => (
-                <div key={key}>
-                  <p className="text-xs uppercase tracking-wide text-slate font-medium">
-                    {EXPLANATION_LABELS[key] ?? key}
-                  </p>
-                  <p className="text-sm text-ink mt-0.5">{text}</p>
-                </div>
+                <InfoSection key={key} label={EXPLANATION_LABELS[key] ?? key} text={text} />
               ))}
             </div>
           )}

@@ -15,6 +15,7 @@ import AlgorithmPicker from "@/components/AlgorithmPicker";
 import KeyValueRow from "@/components/KeyValueRow";
 import TextArea from "@/components/TextArea";
 import InlineError from "@/components/InlineError";
+import InfoSection from "@/components/InfoSection";
 
 // computeHashes accepts any Blob/File and streams it in chunks. Wrap the
 // UTF-8-encoded string in a Blob so the shared lib works unchanged.
@@ -58,18 +59,18 @@ function HashTable({ results }) {
       </div>
       {showHelp && (
         <div className="px-5 py-4 border-b border-slate/10 space-y-3">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-slate font-medium">What this means</p>
-            <p className="text-sm text-ink mt-0.5">Each value is a fixed-length fingerprint of the exact bytes in your input. The same input always produces the same hash; changing even a single character produces a completely different one.</p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-slate font-medium">What this doesn&apos;t mean</p>
-            <p className="text-sm text-ink mt-0.5">A hash is not encryption — it cannot be reversed to recover the original text, and it does not hide or protect it.</p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-slate font-medium">What to do</p>
-            <p className="text-sm text-ink mt-0.5">Use these values to verify that two strings are identical, or to compare against a published checksum. For security-sensitive work, prefer SHA-256, SHA-384, or SHA-512.</p>
-          </div>
+          <InfoSection
+            label="What this means"
+            text="Each value is a fixed-length fingerprint of the exact bytes in your input. The same input always produces the same hash; changing even a single character produces a completely different one."
+          />
+          <InfoSection
+            label="What this doesn't mean"
+            text="A hash is not encryption — it cannot be reversed to recover the original text, and it does not hide or protect it."
+          />
+          <InfoSection
+            label="What to do"
+            text="Use these values to verify that two strings are identical, or to compare against a published checksum. For security-sensitive work, prefer SHA-256, SHA-384, or SHA-512."
+          />
         </div>
       )}
       {Object.entries(results).map(([algo, hash]) => (

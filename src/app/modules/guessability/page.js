@@ -8,6 +8,7 @@ import AnalyseActions from "@/components/AnalyseActions";
 import Disclosure from "@/components/Disclosure";
 import CompanionLinks from "@/components/CompanionLinks";
 import InlineError from "@/components/InlineError";
+import InfoSection from "@/components/InfoSection";
 import { Info } from "lucide-react";
 
 const SCORE_LABELS = ["Very weak", "Weak", "Fair", "Good", "Strong"];
@@ -119,27 +120,13 @@ function GuessabilityResult({ result }) {
         buttonClassName="flex items-center gap-1 text-sm text-teal"
         contentClassName="mt-3 pt-3 border-t border-slate/20 space-y-3"
       >
-        <div>
-          <p className="text-xs uppercase tracking-wide text-slate font-medium">
-            Other scenarios
-          </p>
-          <p className="text-sm text-ink mt-0.5">{otherScenarios}.</p>
-        </div>
-        <div>
-          <p className="text-xs uppercase tracking-wide text-slate font-medium">
-            Suggestions
-          </p>
-          <p className="text-sm text-ink mt-0.5">{suggestions}</p>
-        </div>
+        <InfoSection label="Other scenarios" text={`${otherScenarios}.`} />
+        <InfoSection label="Suggestions" text={suggestions} />
         {result.matchedWords.length > 0 && (
-          <div>
-            <p className="text-xs uppercase tracking-wide text-slate font-medium">
-              Matched dictionary words
-            </p>
-            <p className="text-sm text-ink mt-0.5">
-              {result.matchedWords.join(", ")}
-            </p>
-          </div>
+          <InfoSection
+            label="Matched dictionary words"
+            text={result.matchedWords.join(", ")}
+          />
         )}
       </Disclosure>
     </div>
