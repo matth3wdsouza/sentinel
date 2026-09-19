@@ -108,7 +108,7 @@ export default function GenerateHashTab({ moduleId }) {
         canAnalyse={file && !isComputing}
         actionLabel="Compute Hash"
         loading={isComputing}
-        loadingLabel="Computing..."
+        loadingLabel="Computing…"
         onReset={resetForm}
         showReset={file || results || error}
       />

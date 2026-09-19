@@ -172,7 +172,7 @@ export default function CompareHashTab({ moduleId }) {
         canAnalyse={file && !isComparing}
         actionLabel="Compare"
         loading={isComparing}
-        loadingLabel="Comparing..."
+        loadingLabel="Comparing…"
         onReset={resetForm}
         showReset={file || pastedHash || result || error}
       />

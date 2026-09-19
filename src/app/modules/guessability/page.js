@@ -8,6 +8,7 @@ import AnalyseActions from "@/components/AnalyseActions";
 import Disclosure from "@/components/Disclosure";
 import CompanionLinks from "@/components/CompanionLinks";
 import InlineError from "@/components/InlineError";
+import { Info } from "lucide-react";
 
 const SCORE_LABELS = ["Very weak", "Weak", "Fair", "Good", "Strong"];
 
@@ -151,6 +152,10 @@ export default function GuessabilityPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [workerError, setWorkerError] = useState(null);
   const workerRef = useRef(null);
+  // Bumped on reset to force PasswordField to remount, wiping its internal
+  // show/hide state (same pattern as HIBP and the Common Password Checker —
+  // PasswordField intentionally owns that state itself).
+  const [resetKey, setResetKey] = useState(0);
 
   // The actual zxcvbn-ts call lives in a Web Worker (guessability.worker.js),
   // not here. Testing showed a real, measured worst case — repeated
@@ -192,6 +197,7 @@ export default function GuessabilityPage() {
     setPassword("");
     setResult(null);
     setWorkerError(null);
+    setResetKey((key) => key + 1);
   }
 
   function handleAnalyze() {
@@ -223,6 +229,7 @@ export default function GuessabilityPage() {
         </label>
         <div className="mb-4">
           <PasswordField
+            key={resetKey}
             value={password}
             onChange={handlePasswordChange}
             onEnter={handleAnalyze}
@@ -232,17 +239,22 @@ export default function GuessabilityPage() {
           />
         </div>
 
-        <p className="text-xs text-slate mb-4">
-          This never leaves your device — the analysis runs entirely in your
-          browser, and nothing about it is saved.
-        </p>
+        <div className="rounded-xl border border-slate/20 bg-surface px-4 py-3 mb-4">
+          <div className="flex items-start gap-2.5">
+            <Info size={15} className="shrink-0 text-teal mt-0.5" />
+            <p className="text-xs text-slate leading-relaxed">
+              This never leaves your device — the analysis runs entirely in
+              your browser, and nothing about it is saved.
+            </p>
+          </div>
+        </div>
 
         <AnalyseActions
           onAnalyse={handleAnalyze}
           canAnalyse={password && !isAnalyzing}
           actionLabel="Analyze password"
           loading={isAnalyzing}
-          loadingLabel="Analyzing..."
+          loadingLabel="Analyzing…"
           onReset={handleReset}
           showReset={password || result}
           className="mb-6"

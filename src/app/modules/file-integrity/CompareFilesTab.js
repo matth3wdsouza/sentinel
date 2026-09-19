@@ -238,7 +238,7 @@ export default function CompareFilesTab({ moduleId }) {
         canAnalyse={fileA && fileB && !isComparing}
         actionLabel="Compare"
         loading={isComparing}
-        loadingLabel="Comparing..."
+        loadingLabel="Comparing…"
         onReset={resetForm}
         showReset={fileA || fileB || result || error}
       />

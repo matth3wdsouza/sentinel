@@ -183,7 +183,7 @@ export default function HibpPage() {
           canAnalyse={password && !isChecking}
           actionLabel="Check password"
           loading={isChecking}
-          loadingLabel="Checking..."
+          loadingLabel="Checking…"
           onReset={resetForm}
           showReset={password || result || error}
         />
