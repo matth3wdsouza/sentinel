@@ -22,7 +22,7 @@ const MAX_PREVIEW_LENGTH = 300;
 // ─── analysisExplanation ──────────────────────────────────────────────────────
 // Returns { heading, verdict, means, doesntMean, action } for each content type.
 
-function analysisExplanation(analysis, text) {
+function analysisExplanation(analysis) {
   const { type, detail } = analysis;
 
   switch (type) {
@@ -124,6 +124,32 @@ function analysisExplanation(analysis, text) {
 
 // ─── ReadSection ──────────────────────────────────────────────────────────────
 
+function ReadResult({ clipValue, analysis }) {
+  const exp = analysisExplanation(analysis);
+  return (
+    <ResultCard
+      verdict={exp.verdict}
+      heading={exp.heading}
+      explanation={{
+        means: exp.means,
+        doesntMean: exp.doesntMean,
+        action: exp.action,
+      }}
+    >
+      {clipValue && clipValue.trim().length > 0 && (
+        <TextOutput
+          label="Clipboard contents"
+          text={clipValue}
+          mono
+          maxChars={MAX_PREVIEW_LENGTH}
+          className="mt-1 mb-2"
+          containerClassName="text-xs leading-relaxed"
+        />
+      )}
+    </ResultCard>
+  );
+}
+
 function ReadSection({ moduleId }) {
   const [state, setState] = useState("idle"); // idle | loading | done | error
   const [clipValue, setClipValue] = useState(null);
@@ -217,32 +243,8 @@ function ReadSection({ moduleId }) {
       </GuidedCard>
 
       {state === "done" && analysis && (
-        () => {
-          const exp = analysisExplanation(analysis, clipValue);
-          return (
-            <ResultCard
-              verdict={exp.verdict}
-              heading={exp.heading}
-              explanation={{
-                means: exp.means,
-                doesntMean: exp.doesntMean,
-                action: exp.action,
-              }}
-            >
-              {clipValue && clipValue.trim().length > 0 && (
-                <TextOutput
-                  label="Clipboard contents"
-                  text={clipValue}
-                  mono
-                  maxChars={MAX_PREVIEW_LENGTH}
-                  className="mt-1 mb-2"
-                  containerClassName="text-xs leading-relaxed"
-                />
-              )}
-            </ResultCard>
-          );
-        }
-      )()}
+        <ReadResult clipValue={clipValue} analysis={analysis} />
+      )}
 
       {state === "error" && errorCode && (
         <ResultCard
