@@ -307,7 +307,7 @@ export default function CompareFilesTab({ moduleId }) {
                 disabled={isComparing}
                 className="text-xs text-teal underline"
               >
-                {isComparing ? "Hashing..." : "Hash anyway"}
+                {isComparing ? "Hashing…" : "Hash anyway"}
               </button>
             )}
           </ResultCard>
