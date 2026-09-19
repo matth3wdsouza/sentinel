@@ -7,6 +7,7 @@ import { useModuleId } from "@/lib/useModuleId";
 import { usePreference } from "@/lib/usePreference";
 import { deletePreference } from "@/lib/db";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
+import { strengthLabel } from "@/lib/strength";
 import OptionRow from "@/components/OptionRow";
 import GeneratorResultCard from "@/components/GeneratorResultCard";
 import ModulePage from "@/components/ModulePage";
@@ -160,6 +161,7 @@ export default function PasswordGeneratorPage() {
             onCopy={handleCopy}
             onRegenerate={regenerate}
             stats={result ? [`${result.entropyBits.toFixed(1)} bits of entropy`] : []}
+            chip={result ? strengthLabel(result.entropyBits) : undefined}
             showHelp={showHelp}
             onToggleHelp={() => setShowHelp((prev) => !prev)}
             explanation={result ? getExplanation(result) : null}
