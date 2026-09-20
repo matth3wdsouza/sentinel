@@ -1,7 +1,7 @@
 // qr.js — QR code decode and generate helpers.
-// Decode: @zxing/browser reads from an image element directly.
-// Generate: qrcode renders to a canvas element provided by the caller.
-// No network calls. All processing is local.
+// Decode: native BarcodeDetector when available, else @zxing/browser reading
+// from a cross-origin-capable image URL. Generate: qrcode renders to a canvas
+// element provided by the caller. No network calls. All processing is local.
 
 import { TRACKING_PARAMS } from "@/lib/urlSignals";
 import { parseTOTP } from "@/lib/totp";
@@ -21,6 +21,24 @@ export async function decodeQR(file) {
         return { error: "IMAGE_ERROR", data: null };
       }
       bitmap.close();
+    }
+
+    // Prefer the browser's native QR decoder (Chromium, Android Chrome) — it
+    // uses the OS's own barcode engine rather than a JS reimplementation and
+    // reads photographed codes (angled, uneven lighting) far more reliably.
+    // Not every engine accepts a Blob here, and returns-with-no-results are
+    // genuinely missed codes, so both cases fall through to @zxing/browser
+    // rather than reporting failure twice.
+    if (typeof BarcodeDetector !== "undefined") {
+      try {
+        const detector = new BarcodeDetector({ formats: ["qr_code"] });
+        const detected = await detector.detect(file);
+        if (detected.length > 0) {
+          return { error: null, data: detected[0].rawValue };
+        }
+      } catch (_) {
+        // Fall through to the @zxing/browser path.
+      }
     }
 
     const { BrowserQRCodeReader } = await import("@zxing/browser");
