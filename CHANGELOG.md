@@ -4,6 +4,30 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added — native QR decoding in Chromium browsers
+
+- **`decodeQR()` now prefers the browser's native Barcode Detection API**
+  (`BarcodeDetector`) when available — Chromium and Android Chrome expose an
+  OS-engine `qr_code` detector, the same class of engine camera apps use,
+  which reads photographed codes (angled, uneven lighting) far more reliably
+  than the pure-JS decoder. Engines without `BarcodeDetector` (Firefox,
+  Safari), or where it returns no result or rejects the input, fall through to
+  the existing `@zxing/browser` path. No new dependencies; decoding stays
+  fully local. (`src/lib/qr.js`)
+
+### Fixed — QR decode failures were mislabelled as a decoder outage
+
+- **A photographed QR that couldn't be decoded warned "check your network
+  connection."** zxing throws differently-named exceptions for different
+  failure shapes (NotFoundException, ChecksumException, FormatException), and
+  any miss that wasn't literally a not-found tripped the `LIBRARY_ERROR` copy
+  — implying a network fault and offering no path forward. Every
+  `decodeFromImageUrl` miss is now reported as a genuine "No QR code detected"
+  with photo-taking advice (angle, blur, lighting, tight crop);
+  `LIBRARY_ERROR` is reserved for the library failing to load in the first
+  place, where the copy no longer blames the network. (`src/lib/qr.js`,
+  `src/app/modules/qr/DecodeTab.js`)
+
 ### Added — About page and external source links
 
 - **New `/about` page** explaining what Sentinel is and how it handles data,
