@@ -338,9 +338,9 @@ export default function DecodeTab({ moduleId }) {
 
   const errorMessages = {
     NOT_FOUND: {
-      heading: "No QR code found",
-      means: "No QR code was detected in this image. The image may be blurry, too small, or cropped too tightly around the code.",
-      action: "Try a clearer image with some white border around the QR code, or a higher-resolution scan.",
+      heading: "No QR code detected",
+      means: "Sentinel couldn't find a scannable QR code in this image. Real-world photos are usually to blame — the code may be at an angle, blurred, or too small, or it may be lost among surrounding content.",
+      action: "Try a clearer, more head-on photo with good lighting, or crop the image tightly around just the code.",
     },
     IMAGE_ERROR: {
       heading: "Couldn't read image",
@@ -348,9 +348,9 @@ export default function DecodeTab({ moduleId }) {
       action: null,
     },
     LIBRARY_ERROR: {
-      heading: "Decoder unavailable",
-      means: "The QR decoding library failed to load. Check your network connection and try again.",
-      action: null,
+      heading: "Decoder failed to load",
+      means: "The QR decoding library couldn't be loaded. This is rare and usually resolves itself.",
+      action: "Try decoding again, or reload the page.",
     },
   };
 

@@ -33,11 +33,14 @@ export async function decodeQR(file) {
       return { error: null, data: result.getText() };
     } catch (err) {
       URL.revokeObjectURL(url);
-      const isNotFound =
-        err?.name === "NotFoundException" ||
-        err?.message?.includes("No MultiFormat Readers") ||
-        err?.message?.includes("No code detected");
-      return { error: isNotFound ? "NOT_FOUND" : "LIBRARY_ERROR", data: null };
+      // Any failure here is a decode miss, not a load failure. The only paths
+      // that can actually fail to load — importing the chunk and constructing
+      // the reader — sit above this inner try and fall through to the outer
+      // catch (LIBRARY_ERROR). zxing throws many differently-named exceptions
+      // (NotFoundException, ChecksumException, FormatException, ...) on a hard
+      // image, and distinguishing them buys nothing: every decode miss is
+      // reported as NOT_FOUND so the Decode tab can give photo-taking advice.
+      return { error: "NOT_FOUND", data: null };
     }
   } catch (err) {
     return { error: "LIBRARY_ERROR", data: null };
