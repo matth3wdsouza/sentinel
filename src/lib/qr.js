@@ -144,6 +144,39 @@ function parseWifiPayload(text) {
   return detail;
 }
 
+// Parse a UPI "upi://pay" payload (NPCI deep-link standard) into its fields.
+// pa (payee VPA) and pn (payee name) are required; am/cu/tn/tr/mc/mode are
+// optional. Values are percent-encoded and decoded via URLSearchParams. The
+// `sign` field (a PSP-issued signature over the payload) is reduced to a
+// boolean — the signature bytes are noise in a read-only inspector and are
+// never surfaced. A payload is `malformed` when the VPA doesn't look like
+// name@handle or an embedded amount isn't a plain decimal.
+function parseUpiPayload(text) {
+  const query = text.slice(text.indexOf("?") + 1);
+  const params = new URLSearchParams(query);
+
+  const detail = {
+    payeeVpa: params.get("pa") ?? null,
+    payeeName: params.get("pn") ?? null,
+    amount: params.get("am") ?? null,
+    currency: params.get("cu") ?? null,
+    note: params.get("tn") ?? null,
+    reference: params.get("tr") ?? null,
+    merchantCode: params.get("mc") ?? null,
+    mode: params.get("mode") ?? null,
+    hasAmount: params.get("am") !== null,
+    hasSignature: params.get("sign") !== null,
+  };
+
+  const vpaOk =
+    detail.payeeVpa !== null &&
+    /^[^@\s]{2,256}@[^@\s]{2,64}$/.test(detail.payeeVpa);
+  const amountOk = detail.amount === null || /^\d+(\.\d{1,2})?$/.test(detail.amount);
+  detail.malformed = !(vpaOk && amountOk);
+
+  return detail;
+}
+
 export function analyzeQRContent(text) {
   if (!text || text.trim().length === 0) {
     return { type: "empty", detail: null };
@@ -193,6 +226,19 @@ export function analyzeQRContent(text) {
     } catch (_) {
       // Not a parseable TOTP URI (e.g. otpauth://hotp or a malformed URI) —
       // fall through to the URL/text branches.
+    }
+  }
+
+  // UPI payment requests — upi://pay is the NPCI-standard deep link behind
+  // payment QR codes. Like otpauth it parses as a URL with a non-web scheme,
+  // so it must be recognised here before the URL branch throws it out.
+  if (/^upi:\/\/pay/i.test(trimmed)) {
+    const detail = parseUpiPayload(trimmed);
+    // Only treat it as a payment code when the essential field (the payee
+    // address) is present — a bare "upi://pay" with nothing else is not a
+    // usable payment code and falls through to plain text.
+    if (detail.payeeVpa !== null) {
+      return { type: "upi", detail };
     }
   }
 

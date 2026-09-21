@@ -178,6 +178,73 @@ describe("analyzeQRContent — otpauth (2FA setup)", () => {
   });
 });
 
+describe("analyzeQRContent — UPI payment request", () => {
+  it("parses a static UPI payload (no amount)", () => {
+    const result = analyzeQRContent("upi://pay?pa=merchant@okhdfcbank&pn=Raj%20Stores");
+    expect(result.type).toBe("upi");
+    expect(result.detail).toMatchObject({
+      payeeVpa: "merchant@okhdfcbank",
+      payeeName: "Raj Stores",
+      amount: null,
+      hasAmount: false,
+      hasSignature: false,
+      malformed: false,
+    });
+  });
+
+  it("extracts the full optional field set from a dynamic payload", () => {
+    const result = analyzeQRContent(
+      "upi://pay?pa=merchant@okhdfcbank&pn=Raj%20Stores&am=150.00&cu=INR&tn=Invoice%20001&tr=TXN001&mc=5411&mode=02"
+    );
+    expect(result.type).toBe("upi");
+    expect(result.detail).toMatchObject({
+      payeeVpa: "merchant@okhdfcbank",
+      payeeName: "Raj Stores",
+      amount: "150.00",
+      currency: "INR",
+      note: "Invoice 001",
+      reference: "TXN001",
+      merchantCode: "5411",
+      mode: "02",
+      hasAmount: true,
+      malformed: false,
+    });
+  });
+
+  it("accepts an uppercase UPI://PAY prefix", () => {
+    expect(analyzeQRContent("UPI://PAY?pa=x@upi&pn=Y").type).toBe("upi");
+  });
+
+  it("decodes plus-encoded values like payment apps do", () => {
+    const result = analyzeQRContent("upi://pay?pa=shop@axisbank&pn=Chai+Point&tn=Table+7");
+    expect(result.detail.payeeName).toBe("Chai Point");
+    expect(result.detail.note).toBe("Table 7");
+  });
+
+  it("falls through to text when the payee address is missing", () => {
+    expect(analyzeQRContent("upi://pay?pn=OnlyName").type).toBe("text");
+    expect(analyzeQRContent("upi://pay").type).toBe("text");
+  });
+
+  it("flags an empty or blank payee address as malformed", () => {
+    expect(analyzeQRContent("upi://pay?pa=&pn=Y").type).toBe("upi");
+    expect(analyzeQRContent("upi://pay?pa=&pn=Y").detail.malformed).toBe(true);
+  });
+
+  it("never surfaces the PSP sign signature", () => {
+    const result = analyzeQRContent("upi://pay?pa=x@upi&pn=Y&sign=VERYSECRETSIG");
+    expect(result.type).toBe("upi");
+    expect(JSON.stringify(result)).not.toContain("VERYSECRETSIG");
+    expect(result.detail.hasSignature).toBe(true);
+  });
+
+  it("flags a malformed VPA or amount", () => {
+    expect(analyzeQRContent("upi://pay?pa=not-a-vpa&pn=Y").detail.malformed).toBe(true);
+    expect(analyzeQRContent("upi://pay?pa=x@upi&pn=Y&am=abc").detail.malformed).toBe(true);
+    expect(analyzeQRContent("upi://pay?pa=x@upi&pn=Y&am=12.345").detail.malformed).toBe(true);
+  });
+});
+
 describe("analyzeQRContent — text", () => {
   it("falls through to plain text", () => {
     expect(analyzeQRContent("just some text")).toEqual({

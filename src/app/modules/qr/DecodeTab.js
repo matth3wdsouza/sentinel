@@ -110,6 +110,26 @@ function analysisResult(analysis) {
         },
       };
 
+    case "upi": {
+      const d = detail;
+      return {
+        verdict: d.malformed ? "mismatch" : "neutral",
+        heading: d.hasAmount ? "UPI payment request — fixed amount" : "UPI payment request",
+        explanation: {
+          means: d.malformed
+            ? "This QR code is a UPI payment request, but it's malformed — the payee address or amount doesn't look right."
+            : d.hasAmount
+            ? `This code pre-fills a payment of ${d.amount}${d.currency ? ` ${d.currency}` : ""} to ${d.payeeName ?? "an unnamed payee"} (${d.payeeVpa}). Scanned with a payment app, it opens the payee's details for you to confirm before paying.`
+            : `This code is a UPI payment request to ${d.payeeName ?? "an unnamed payee"} (${d.payeeVpa}). It has no fixed amount — you'd enter the amount yourself in your payment app.`,
+          doesntMean:
+            "Scanning it here makes no payment and sends nothing — Sentinel only decodes what's in the image. The payee, amount, and note are never stored or logged.",
+          action: d.malformed
+            ? "Treat a malformed payment code with suspicion — don't try to pay with it."
+            : "Before entering your PIN, check the payee name your payment app shows matches the shop or person you intended to pay — it's the one real fraud check. Watch for codes pasted over stickers, and treat any request that pre-fills an amount or name you weren't expecting with suspicion.",
+        },
+      };
+    }
+
     case "text":
       return {
         verdict: "neutral",
@@ -261,6 +281,64 @@ function OtpAuthPreview({ detail }) {
   );
 }
 
+// ─── UpiPreview ──────────────────────────────────────────────────────────────
+// Payer-visible fields for UPI payment-request QR codes. These are exactly the
+// details a payment app would show so the payer can check them; none of them
+// are ever logged (activity records only the contentType plus two booleans).
+
+function UpiPreview({ detail }) {
+  return (
+    <div className="mt-1 mb-2 divide-y divide-slate/10">
+      <div className="py-2 flex items-start justify-between gap-4">
+        <span className="text-xs text-slate shrink-0 w-28">Payee (VPA)</span>
+        <span className="text-xs text-ink font-mono text-right break-all">{detail.payeeVpa ?? "—"}</span>
+      </div>
+      <div className="py-2 flex items-start justify-between gap-4">
+        <span className="text-xs text-slate shrink-0 w-28">Payee name</span>
+        <span className="text-xs text-ink font-mono text-right">{detail.payeeName ?? "—"}</span>
+      </div>
+      <div className="py-2 flex items-start justify-between gap-4">
+        <span className="text-xs text-slate shrink-0 w-28">Amount</span>
+        <span className="text-xs text-ink font-mono text-right">
+          {detail.hasAmount
+            ? [detail.amount, detail.currency].filter(Boolean).join(" ")
+            : "Entered manually"}
+        </span>
+      </div>
+      {detail.note && (
+        <div className="py-2 flex items-start justify-between gap-4">
+          <span className="text-xs text-slate shrink-0 w-28">Note</span>
+          <span className="text-xs text-ink font-mono text-right break-all">{detail.note}</span>
+        </div>
+      )}
+      {detail.reference && (
+        <div className="py-2 flex items-start justify-between gap-4">
+          <span className="text-xs text-slate shrink-0 w-28">Reference</span>
+          <span className="text-xs text-ink font-mono text-right break-all">{detail.reference}</span>
+        </div>
+      )}
+      {detail.merchantCode && (
+        <div className="py-2 flex items-start justify-between gap-4">
+          <span className="text-xs text-slate shrink-0 w-28">Merchant code</span>
+          <span className="text-xs text-ink font-mono text-right">{detail.merchantCode}</span>
+        </div>
+      )}
+      {detail.mode && (
+        <div className="py-2 flex items-start justify-between gap-4">
+          <span className="text-xs text-slate shrink-0 w-28">Mode</span>
+          <span className="text-xs text-ink font-mono text-right">{detail.mode}</span>
+        </div>
+      )}
+      {detail.hasSignature && (
+        <div className="py-2 flex items-start justify-between gap-4">
+          <span className="text-xs text-slate shrink-0 w-28">Issuer-signed</span>
+          <span className="text-xs text-ink font-mono text-right">Yes</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── GenericPreview ───────────────────────────────────────────────────────────
 
 function GenericPreview({ text }) {
@@ -318,10 +396,17 @@ export default function DecodeTab({ moduleId }) {
     setAnalysis(analyzed);
     setState("done");
 
+    const details = { contentType: analyzed.type };
+    if (analyzed.type === "upi" && analyzed.detail) {
+      // Coarse booleans only — the payee VPA, name, amount, note, and
+      // reference are never logged (see PROJECT_OVERVIEW privacy invariants).
+      details.upiAmountPrefilled = analyzed.detail.hasAmount;
+      details.upiIssuerSigned = analyzed.detail.hasSignature;
+    }
     saveActivity({
       moduleType: moduleId,
       summary: "QR code decoded",
-      details: { contentType: analyzed.type },
+      details,
     });
   }
 
@@ -363,8 +448,8 @@ export default function DecodeTab({ moduleId }) {
         heading="Decode a QR code"
         description={
           "Upload an image containing a QR code to reveal the hidden URL, Wi-Fi " +
-          "credentials, or text. Useful for checking a QR code before you " +
-          "follow a link — especially from unknown sources."
+          "credentials, UPI payment details, or text. Useful for checking a QR " +
+          "code before you follow a link or pay — especially from unknown sources."
         }
       />
 
@@ -434,7 +519,10 @@ export default function DecodeTab({ moduleId }) {
                 />
               </>
             )}
-            {analysis.type !== "url" && analysis.type !== "wifi" && analysis.type !== "otpauth" && decoded && (
+            {analysis.type === "upi" && analysis.detail && (
+              <UpiPreview detail={analysis.detail} />
+            )}
+            {analysis.type !== "url" && analysis.type !== "wifi" && analysis.type !== "otpauth" && analysis.type !== "upi" && decoded && (
               <GenericPreview text={decoded} />
             )}
           </ResultCard>
