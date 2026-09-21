@@ -4,6 +4,16 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed — the tab icon is now the Sentinel shield mark
+
+- **The stock Next.js favicon is replaced with a custom Sentinel mark.** A
+  rounded-square teal tile (brand `--color-teal` → `--color-teal-mid`)
+  carries the same lucide `shield-check` glyph as the home-page hero,
+  rendered in its native outline style. Served as an SVG favicon
+  (`src/app/icon.svg`, crisp at any size in modern browsers) with a
+  16/32/48px `favicon.ico` fallback and a 180x180 `apple-icon.png` for iOS
+  home-screen tiles.
+
 ### Added — native QR decoding in Chromium browsers
 
 - **`decodeQR()` now prefers the browser's native Barcode Detection API**
