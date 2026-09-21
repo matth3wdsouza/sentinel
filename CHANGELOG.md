@@ -28,6 +28,21 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
   place, where the copy no longer blames the network. (`src/lib/qr.js`,
   `src/app/modules/qr/DecodeTab.js`)
 
+### Added — UPI payment-request QRs in the QR Decoder
+
+- **`upi://pay` codes are now recognised instead of shown as plain text.** The
+  Decode tab parses NPCI's standard deep link into the payer-visible fields a
+  payment app would show: payee VPA and name, amount and currency, note,
+  reference, merchant code and mode. Static codes (no embedded amount) are
+  distinguished from dynamic ones that would pre-fill an amount, PSP-issued
+  `sign` signatures are reduced to an "issuer-signed" boolean (signature bytes
+  are never surfaced), and a malformed payee address or amount is flagged.
+  Decoding stays fully local and Sentinel never initiates a payment.
+  (`src/lib/qr.js`, `src/app/modules/qr/DecodeTab.js`)
+- **Activity stays coarse-metadata-only** — an `upi` content tag plus two
+  booleans (amount pre-filled, issuer-signed). The VPA, payee name, amount,
+  note, and reference are never logged.
+
 ### Added — About page and external source links
 
 - **New `/about` page** explaining what Sentinel is and how it handles data,
