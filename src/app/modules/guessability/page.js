@@ -7,9 +7,11 @@ import ModulePage from "@/components/ModulePage";
 import AnalyseActions from "@/components/AnalyseActions";
 import Disclosure from "@/components/Disclosure";
 import CompanionLinks from "@/components/CompanionLinks";
+import ReceivedPayload from "@/components/ReceivedPayload";
 import InlineError from "@/components/InlineError";
 import InfoSection from "@/components/InfoSection";
 import { Info } from "lucide-react";
+import { useModulePayload } from "@/lib/useModulePayload";
 
 const SCORE_LABELS = ["Very weak", "Weak", "Fair", "Good", "Strong"];
 
@@ -134,7 +136,13 @@ function GuessabilityResult({ result }) {
 }
 
 export default function GuessabilityPage() {
-  const [password, setPassword] = useState("");
+  // Payload hand-off from another module (moduleBridge.js — e.g. Password
+  // Generator's current password). Seeds the input exactly as if pasted;
+  // the analysis itself still starts when the user presses Analyze (it runs
+  // in a worker, so it can't be produced from initial state) and nothing
+  // about it is ever logged.
+  const pending = useModulePayload("/modules/guessability");
+  const [password, setPassword] = useState(() => pending?.value ?? "");
   const [result, setResult] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [workerError, setWorkerError] = useState(null);
@@ -202,8 +210,13 @@ export default function GuessabilityPage() {
   return (
     <ModulePage>
 
-        <label className="flex items-center justify-between text-sm font-medium mb-1">
-          <span>Password to analyze</span>
+        <label className="flex items-center justify-between gap-2 text-sm font-medium text-ink mb-1">
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span>Password to analyze</span>
+            {pending && password === pending.value && (
+              <ReceivedPayload from={pending.from} />
+            )}
+          </span>
           <span
             className={`font-normal ${
               password.length >= MAX_PASSWORD_LENGTH

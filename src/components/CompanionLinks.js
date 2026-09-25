@@ -42,7 +42,7 @@ export default function CompanionLinks({ links = [], className = "" }) {
       aria-label="Companion tools"
       className={`mt-1 flex flex-wrap gap-2 ${className}`}
     >
-      {links.map(({ href, label, icon: Icon, payload, payloadFrom }) => {
+      {links.map(({ href, label, icon: Icon, payload, payloadFrom }, index) => {
         const resolved = MODULES_BY_PATH.get(href);
         const LinkIcon = Icon ?? resolved?.icon ?? null;
 
@@ -50,11 +50,13 @@ export default function CompanionLinks({ links = [], className = "" }) {
         // stores the value in the module bridge (see moduleBridge.js) and
         // navigates client-side, so the destination module can pick it up on
         // mount — the value never touches the URL. Links without a payload
-        // stay plain <Link>s, unchanged.
+        // stay plain <Link>s, unchanged. Keys include the index so a page can
+        // send several payloads to the same target (e.g. one per extracted
+        // link) without React key collisions.
         if (payload !== undefined) {
           return (
             <button
-              key={href}
+              key={`${href}-${index}`}
               type="button"
               onClick={() => {
                 storePendingPayload(href, payload, payloadFrom);
@@ -74,7 +76,7 @@ export default function CompanionLinks({ links = [], className = "" }) {
 
         return (
           <Link
-            key={href}
+            key={`${href}-${index}`}
             href={href}
             className="group inline-flex items-center gap-1.5 rounded-lg border border-teal/30 bg-surface px-3 py-1.5 text-sm font-medium text-teal transition hover:border-teal hover:bg-teal hover:text-on-teal"
           >

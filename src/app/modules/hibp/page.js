@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import CompanionLinks from "@/components/CompanionLinks";
+import ReceivedPayload from "@/components/ReceivedPayload";
 import { checkPasswordBreach, sha1Hex } from "@/lib/hibp";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
+import { useModulePayload } from "@/lib/useModulePayload";
 import ResultCard from "@/components/ResultCard";
 import PasswordField from "@/components/PasswordField";
 import ModulePage from "@/components/ModulePage";
@@ -48,7 +50,16 @@ function getExplanation(result) {
 
 export default function HibpPage() {
   const moduleId = useModuleId();
-  const [password, setPassword] = useState("");
+
+  // Payload hand-off from another module (moduleBridge.js — e.g. Password
+  // Generator's current password). Seeds the input exactly as if pasted.
+  // The transmission posture is unchanged: only the k-anonymity SHA-1
+  // prefix ever leaves, and the check itself still starts when the user
+  // presses Check (it's a network call, so it can't come from initial
+  // state — and showing the prefix first preserves the "see exactly what
+  // leaves the device before it leaves" guarantee).
+  const pending = useModulePayload("/modules/hibp");
+  const [password, setPassword] = useState(() => pending?.value ?? "");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -65,6 +76,24 @@ export default function HibpPage() {
   // Guards against out-of-order sha1Hex resolves while typing fast: each new
   // keystroke bumps the id, so stale promises are ignored.
   const prefixRequestRef = useRef(0);
+
+  // Show the live prefix for a hand-off-arrived password too — the "see
+  // exactly what leaves the device" guarantee must hold whether the password
+  // was typed or handed over. Mirrors handlePasswordChange: the setState
+  // fires in sha1Hex's async continuation (never synchronously in the
+  // effect), so this is lint-clean and idempotent under StrictMode, and the
+  // request-id guard drops it as soon as the user starts typing or resets.
+  useEffect(() => {
+    if (!pending) return;
+    const requestId = ++prefixRequestRef.current;
+    sha1Hex(pending.value)
+      .then((hash) => {
+        if (prefixRequestRef.current === requestId) setPrefix(hash.slice(0, 5));
+      })
+      .catch(() => {
+        if (prefixRequestRef.current === requestId) setPrefix(null);
+      });
+  }, [pending]);
 
   function handlePasswordChange(e) {
     const value = e.target.value;
@@ -127,9 +156,14 @@ export default function HibpPage() {
   return (
     <ModulePage>
 
-        <label className="block text-sm font-medium text-ink mb-1">
-          Password to check
-        </label>
+        <div className="mb-1 flex flex-wrap items-center justify-between gap-x-2">
+          <label className="block text-sm font-medium text-ink">
+            Password to check
+          </label>
+          {pending && password === pending.value && (
+            <ReceivedPayload from={pending.from} />
+          )}
+        </div>
         <div className="mb-1">
           <PasswordField
             key={resetKey}

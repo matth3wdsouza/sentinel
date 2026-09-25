@@ -200,12 +200,32 @@ describe("verdict tiering", () => {
 });
 
 describe("privacy-safe output shape", () => {
-  it("never exposes the message content, domains, or URLs in the result", () => {
+  it("never exposes the message content in the result", () => {
     const secretText = "Our secret password is s3cr3t. Visit https://evil.xyz now!!!";
     const result = analyzeMessage(secretText);
     const serialized = JSON.stringify(result);
-    // The analyser may not include the input anywhere in its returned object.
+    // The general message text never appears in the returned object — only
+    // the extracted link strings below.
     expect(serialized.includes("s3cr3t")).toBe(false);
-    expect(serialized.includes("evil")).toBe(false);
+    expect(serialized.includes("Our secret password")).toBe(false);
+  });
+
+  it("exposes only the extracted link strings, so the page can hand them to the URL Inspector", () => {
+    const result = analyzeMessage("Visit https://evil.xyz now!!!");
+    // The live result carries the extracted URLs (and their suspicious
+    // subset) so the "inspect this link safely" hand-off can send one of
+    // them to the URL Inspector. Message text is never included.
+    expect(result.urlCount).toBe(1);
+    expect(result.suspiciousUrlCount).toBe(1);
+    expect(result.urls).toEqual(["https://evil.xyz"]);
+    expect(result.suspiciousUrls).toEqual(["https://evil.xyz"]);
+  });
+
+  it("keeps urls/suspiciousUrls empty when the message contains no links", () => {
+    const result = analyzeMessage("Please send the code today.");
+    expect(result.urlCount).toBe(0);
+    expect(result.suspiciousUrlCount).toBe(0);
+    expect(result.urls).toEqual([]);
+    expect(result.suspiciousUrls).toEqual([]);
   });
 });

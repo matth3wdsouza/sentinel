@@ -274,8 +274,15 @@ function detectFlags(text, lowerText) {
 //   verdict       — "clean" | "suspicious" | "dangerous"
 //   flags         — array of { id, category, severity, message, detail }
 //   counts        — { urgency, financial, credential, secrecy, impersonation, links, pressure }
-//   urlCount      — total links found (never their contents)
-//   suspiciousUrlCount — suspicious links found (never their contents)
+//   urlCount      — total links found
+//   suspiciousUrlCount — suspicious links found
+//   urls          — the extracted link strings, present so the page can hand
+//                   a link straight to the URL Inspector (module bridge). The
+//                   strings live only in the in-memory result object (the
+//                   message text already sits in the page's input state) —
+//                   activity logging stays coarse: urlCount and
+//                   suspiciousUrlCount only, never the links themselves.
+//   suspiciousUrls — the subset of urls classified as suspicious
 //   wordCount     — word count of the message
 export function analyzeMessage(text) {
   const trimmed = String(text ?? "").trim();
@@ -294,6 +301,8 @@ export function analyzeMessage(text) {
     verdict,
     flags,
     counts,
+    urls,
+    suspiciousUrls,
     urlCount: urls.length,
     suspiciousUrlCount: suspiciousUrls.length,
     wordCount: trimmed.split(/\s+/).filter(Boolean).length,

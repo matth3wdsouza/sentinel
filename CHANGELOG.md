@@ -4,6 +4,35 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added — more modules hand their results forward
+
+- **The in-memory payload bridge now spans six hand-offs, not just the QR
+  pilot.** Two privacy-critical flows from the Password Generator (its
+  current password → Guessability "Analyze how guessable this password is"
+  and → HIBP "Check if this password has been breached") and two link-safety
+  flows between the URL tools: Scam Message Analyser → URL Inspector
+  ("Inspect this link safely" now sends the *actual* extracted suspicious
+  link, one button per link) and URL Inspector → Unicode Inspector (the
+  punycode/encoded-hostname link sends the analysed URL).
+- **Receivers keep their own analysis and transmission rules.** Guessability
+  and HIBP seed their input from initial state only — their analyses are
+  async (worker / network), so the user still presses Analyse/Check, exactly
+  as with a paste; HIBP additionally computes and displays the exact
+  k-anonymity SHA-1 prefix for the handed-over password on arrival, so "see
+  what leaves the device before it leaves" holds whether you typed or handed
+  it over. URL Inspector and Unicode Inspector auto-run on arrival (their
+  analyses are synchronous; the hand-off *is* the analyse step, same as the
+  QR pilot: `initialValue` + `initialResult` + a ref-guarded one-shot log).
+- **Scam Message Analyser result-shape relaxation (documented).**
+  `analyzeMessage` now returns the extracted `urls`/`suspiciousUrls` strings
+  in the live result so the page can hand a link to the URL Inspector. The
+  strings live only in the in-memory result object (never in a log — activity
+  logging stays `urlCount`/`suspiciousUrlCount` only) and the message text
+  itself is still never included.
+- **`CompanionLinks` keys by href+index**, so one page can send several
+  payloads to the same target (e.g. one per extracted link) without React key
+  collisions.
+
 ### Added — decoded QR content can be handed to another module
 
 - **Module results can now pass their content forward instead of asking for

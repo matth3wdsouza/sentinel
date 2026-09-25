@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
@@ -13,8 +13,10 @@ import VerdictCard from "@/components/VerdictCard";
 import FindingsList from "@/components/FindingsList";
 import SeverityChips from "@/components/SeverityChips";
 import InfoCallout from "@/components/InfoCallout";
+import ReceivedPayload from "@/components/ReceivedPayload";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
+import { useModulePayload } from "@/lib/useModulePayload";
 import useInspector from "@/lib/useInspector";
 import { analyzeUnicode, CATEGORY_CONFIG } from "@/lib/unicodeInspector";
 import { SEVERITY_STYLE } from "@/lib/severity";
@@ -85,6 +87,40 @@ export default function UnicodeInspectorPage() {
   const moduleId = useModuleId();
   const [highlightOpen, setHighlightOpen] = useState(false);
 
+  // Payload hand-off from another module (moduleBridge.js — e.g. URL
+  // Inspector's analysed URL when a scan flags punycode/homoglyph hostnames).
+  // The hand-off *is* the analyse step (same as URL Inspector): the analysis
+  // is synchronous, so seed the input AND the result as initial state — no
+  // effects, nothing re-runs.
+  const pending = useModulePayload("/modules/unicode-inspector");
+  const pendingValue = pending?.value ?? "";
+  const [seededAnalysis] = useState(() =>
+    pendingValue ? analyzeUnicode(pendingValue) : null
+  );
+
+  // Log the hand-off-arrived analysis once — an external-store write, not a
+  // state update; the UI result is already shown from initial state. The ref
+  // guard is written inside the effect (the sanctioned place per the
+  // react-hooks/refs rule) so a React 19 StrictMode remount in dev can't
+  // write a duplicate activity entry.
+  const loggedRef = useRef(false);
+  useEffect(() => {
+    if (!seededAnalysis || loggedRef.current) return;
+    loggedRef.current = true;
+    saveActivity({
+      moduleType: moduleId,
+      summary: "Text analysed for hidden Unicode characters",
+      details: {
+        verdict: seededAnalysis.verdict,
+        flagCount: seededAnalysis.hiddenCount,
+        bidiCount: seededAnalysis.categories.bidi,
+        zeroWidthCount: seededAnalysis.categories.zeroWidth,
+        homoglyphCount: seededAnalysis.categories.homoglyph,
+        controlCount: seededAnalysis.categories.control,
+      },
+    });
+  }, [seededAnalysis, moduleId]);
+
   const {
     input,
     result,
@@ -100,7 +136,11 @@ export default function UnicodeInspectorPage() {
     clearExpanded,
     canAnalyse,
     showReset,
-  } = useInspector({ onAnalyse: runAnalysis });
+  } = useInspector({
+    onAnalyse: runAnalysis,
+    initialValue: pendingValue,
+    initialResult: seededAnalysis,
+  });
 
   function runAnalysis(text) {
     const analysis = analyzeUnicode(text);
@@ -141,9 +181,14 @@ export default function UnicodeInspectorPage() {
     <ModulePage>
       <div className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-ink mb-1.5">
-            Text to inspect
-          </label>
+          <div className="mb-1.5 flex flex-wrap items-center justify-between gap-x-2">
+            <label className="block text-sm font-medium text-ink">
+              Text to inspect
+            </label>
+            {pending && input === pendingValue && (
+              <ReceivedPayload from={pending.from} />
+            )}
+          </div>
           <TextArea
             value={input}
             onChange={handleChange}

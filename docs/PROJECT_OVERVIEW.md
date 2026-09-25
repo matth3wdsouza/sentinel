@@ -92,22 +92,32 @@ planned modules are achievable entirely client-side.
 
 - **Cross-module payload hand-offs live in an in-memory bridge, never the
   URL.** `src/lib/moduleBridge.js` is the web-analog of an intent: a module
-  that produces a value (a scanned URL, a raw `otpauth://` URI, …) stores it
-  in a single ephemeral slot keyed by the *target* module path, and the
-  target reads it on mount via `useModulePayload`
-  (`src/lib/useModulePayload.js`) with flash-attribute semantics — last write
-  wins, reading consumes, and the backing store is module-scope memory only.
-  The payload deliberately never enters the URL/address bar (OWASP CWE-598:
-  query strings leak to history, sync, logs, and the Referer header), never
-  touches IndexedDB/localStorage/sessionStorage, and never reaches
-  `saveActivity`; a hard reload or a fresh tab simply has no pending payload
-  (a graceful no-op). Sender side: `CompanionLinks` entries that carry
-  `payload`/`payloadFrom` render as send-with-data buttons that
-  `router.push` after storing (links without a payload are unchanged).
-  Receiver side: pages seed existing inputs from *initial state* — the
-  URL Inspector via optional `initialValue`/`initialResult` on
-  `useInspector`, TOTP via a pure `seedFromPeer` initializer — so nothing is
-  set through effects and payloads are rendered, never interpolated as HTML.
+  that produces a value (a scanned URL, a raw `otpauth://` URI, a generated
+  password, an extracted link, an analysed URL) stores it in a single
+  ephemeral slot keyed by the *target* module path, and the target reads it
+  on mount via `useModulePayload` (`src/lib/useModulePayload.js`) with
+  flash-attribute semantics — last write wins, reading consumes, and the
+  backing store is module-scope memory only. The payload deliberately never
+  enters the URL/address bar (OWASP CWE-598: query strings leak to history,
+  sync, logs, and the Referer header), never touches
+  IndexedDB/localStorage/sessionStorage, and never reaches `saveActivity`; a
+  hard reload or a fresh tab simply has no pending payload (a graceful
+  no-op). Sender side: `CompanionLinks` entries that carry `payload`/
+  `payloadFrom` render as send-with-data buttons that `router.push` after
+  storing (links without a payload are unchanged; keys are href+index so one
+  page can send several payloads to the same target). Receiver side: pages
+  seed existing inputs from *initial state* — `useInspector`'s optional
+  `initialValue`/`initialResult`, a pure `seedFromPeer`-style initializer,
+  or a plain `useState` initializer — so nothing is set through effects and
+  payloads are rendered, never interpolated as HTML. Consumers today: QR
+  Decode → TOTP and → URL Inspector, Password Generator → Guessability and →
+  HIBP, Scam Message Analyser → URL Inspector (one button per suspicious
+  link), URL Inspector → Unicode Inspector (punycode/encoded-hostname flag).
+  Receivers that auto-run on arrival (URL Inspector, Unicode Inspector) do
+  so because their analysis is synchronous and the hand-off *is* the analyse
+  step; receivers whose analysis is async (Guessability's worker, HIBP's
+  fetch) seed their input only and the user still presses Analyse/Check —
+  paste-equivalent.
 
 - **Module bridge consumer rules.** The bridge is the web-analog of a paste:
   the receiving module seeds its *input* and then behaves exactly as if the
@@ -127,6 +137,19 @@ planned modules are achievable entirely client-side.
   invisible to other tabs), and an SPA back-navigation may restore a seeded
   page from Next's client router cache — the same state retention that
   applies to anything pasted into a textarea today, not a new exposure.
+  Two consumer-specific decisions were recorded: (1) **HIBP shows the hand-off
+  password's k-anonymity prefix on arrival** via an async-continuation effect
+  (setState only fires inside `sha1Hex`'s promise callback, so it is
+  lint-clean; the request-id guard drops it on typing/reset) — the "see
+  exactly what leaves before it leaves" guarantee must hold whether the
+  password was typed or handed over, and the check still starts only on the
+  user's press. (2) **`scamAnalyser.analyzeMessage` now returns the extracted
+  `urls`/`suspiciousUrls` strings** in the live result so the page can hand a
+  link to the URL Inspector. This deliberately relaxes the old "the result
+  never carries link contents" posture: the strings live only in the
+  in-memory result object (the message text already sits in the page's input
+  state, so nothing new is exposed), and activity logging stays
+  `urlCount`/`suspiciousUrlCount`-only — never the links themselves.
 
 - **Theme stays in `localStorage`, not `preferences`/IndexedDB.** The
   `themeInitScript` in `layout.js` runs synchronously before first paint to

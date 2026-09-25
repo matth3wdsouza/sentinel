@@ -233,6 +233,8 @@ export default function URLInspectorPage() {
                       {
                         href: "/modules/unicode-inspector",
                         label: "Inspect the hostname for hidden characters",
+                        payload: input,
+                        payloadFrom: "URL Inspector",
                       },
                     ]
                   : []),

@@ -212,12 +212,12 @@ export default function ScamMessageAnalyserPage() {
 
             {result.suspiciousUrlCount > 0 && (
               <CompanionLinks
-                links={[
-                  {
-                    href: "/modules/url-inspector",
-                    label: "Inspect the link safely",
-                  },
-                ]}
+                links={result.suspiciousUrls.map((url) => ({
+                  href: "/modules/url-inspector",
+                  label: "Inspect this link safely",
+                  payload: url,
+                  payloadFrom: "Scam Message Analyser",
+                }))}
               />
             )}
           </>

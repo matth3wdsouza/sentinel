@@ -243,7 +243,27 @@ export default function PasswordGeneratorPage() {
           </div>
         </div>
 
-        <CompanionLinks links={companionLinksFor("/modules/password-generator")} />
+        <CompanionLinks
+          links={[
+            ...companionLinksFor("/modules/password-generator"),
+            ...(result && !error
+              ? [
+                  {
+                    href: "/modules/guessability",
+                    label: "Analyze how guessable this password is",
+                    payload: result.password,
+                    payloadFrom: "Password Generator",
+                  },
+                  {
+                    href: "/modules/hibp",
+                    label: "Check if this password has been breached",
+                    payload: result.password,
+                    payloadFrom: "Password Generator",
+                  },
+                ]
+              : []),
+          ]}
+        />
 
         {(!isDefaultOptions(options) || error) && (
           <Button variant="ghost" resetIcon onClick={resetForm} className="mt-3">
