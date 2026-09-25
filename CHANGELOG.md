@@ -4,6 +4,27 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added — decoded QR content can be handed to another module
+
+- **Module results can now pass their content forward instead of asking for
+  copy/paste.** The QR Decode tab's "Inspect this URL for phishing" and "Set
+  up two-factor using this code" links now *send* the decoded value (the
+  scanned URL, or the raw `otpauth://` URI) to the URL Inspector / TOTP
+  module: the receiving input is pre-filled and analysis starts immediately.
+  Powered by a module-to-module payload bridge (`src/lib/moduleBridge.js`):
+  one ephemeral, in-memory slot per target module — last write wins, reading
+  consumes (flash-attribute semantics), and a hard reload or new tab simply
+  has no payload. **The payload never enters the URL, address bar, history,
+  IndexedDB, localStorage, or the activity log** — same privacy posture as
+  before, minus the clipboard. Links that carry a payload render as
+  send-with-data buttons in `CompanionLinks`; receiving pages seed existing
+  inputs via optional `initialValue`/`initialResult` in `useInspector` (or
+  initial state in TOTP) — nothing is set through effects.
+  (`src/lib/moduleBridge.js`, `src/lib/useModulePayload.js`,
+  `src/components/CompanionLinks.js`, `src/components/ReceivedPayload.js`,
+  `src/app/modules/qr/DecodeTab.js`, `url-inspector/page.js`, `totp/page.js`,
+  `src/lib/useInspector.js`)
+
 ### Changed — the tab icon is now the Sentinel shield mark
 
 - **The stock Next.js favicon is replaced with a custom Sentinel mark.** A

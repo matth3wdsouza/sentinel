@@ -90,6 +90,44 @@ planned modules are achievable entirely client-side.
   (IndexedDB is universally supported; Safari on iOS may evict storage under
   memory pressure, which is acceptable for preferences).
 
+- **Cross-module payload hand-offs live in an in-memory bridge, never the
+  URL.** `src/lib/moduleBridge.js` is the web-analog of an intent: a module
+  that produces a value (a scanned URL, a raw `otpauth://` URI, …) stores it
+  in a single ephemeral slot keyed by the *target* module path, and the
+  target reads it on mount via `useModulePayload`
+  (`src/lib/useModulePayload.js`) with flash-attribute semantics — last write
+  wins, reading consumes, and the backing store is module-scope memory only.
+  The payload deliberately never enters the URL/address bar (OWASP CWE-598:
+  query strings leak to history, sync, logs, and the Referer header), never
+  touches IndexedDB/localStorage/sessionStorage, and never reaches
+  `saveActivity`; a hard reload or a fresh tab simply has no pending payload
+  (a graceful no-op). Sender side: `CompanionLinks` entries that carry
+  `payload`/`payloadFrom` render as send-with-data buttons that
+  `router.push` after storing (links without a payload are unchanged).
+  Receiver side: pages seed existing inputs from *initial state* — the
+  URL Inspector via optional `initialValue`/`initialResult` on
+  `useInspector`, TOTP via a pure `seedFromPeer` initializer — so nothing is
+  set through effects and payloads are rendered, never interpolated as HTML.
+
+- **Module bridge consumer rules.** The bridge is the web-analog of a paste:
+  the receiving module seeds its *input* and then behaves exactly as if the
+  user had typed/pasted the value — each module keeps its own transmission
+  and logging behavior. Concretely: never pass a payload (or anything derived
+  from it beyond the module's existing coarse metadata) to `saveActivity`;
+  never render a payload or its `from` label as HTML (React text children
+  only); and a module that makes a network call (HIBP is currently the only
+  one) must keep transmitting only its existing k-anonymity SHA-1 prefix —
+  the bridge must never be used to move a raw secret toward `fetch`. The
+  payload contract is enforced in the store: values are non-empty strings
+  capped at 256 KiB, `from` is a display-only label capped at 80 chars, and
+  a slot key is a literal module path (deliberately not registry-validated —
+  the lib stays registry-independent; a mistyped key is a quiet no-op).
+  Accepted, documented residual risks: a payload stored but never consumed
+  lingers in the tab's memory until the tab closes (same-origin, memory-only,
+  invisible to other tabs), and an SPA back-navigation may restore a seeded
+  page from Next's client router cache — the same state retention that
+  applies to anything pasted into a textarea today, not a new exposure.
+
 - **Theme stays in `localStorage`, not `preferences`/IndexedDB.** The
   `themeInitScript` in `layout.js` runs synchronously before first paint to
   avoid a flash of the wrong theme — IndexedDB is async so it can't be used

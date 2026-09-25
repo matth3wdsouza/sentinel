@@ -8,16 +8,43 @@ import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import ModulePage from "@/components/ModulePage";
 import TextArea from "@/components/TextArea";
 import CompanionLinks from "@/components/CompanionLinks";
+import ReceivedPayload from "@/components/ReceivedPayload";
 import { downloadCanvas } from "@/lib/download";
 import { Button } from "@/components/Button";
 import InlineError from "@/components/InlineError";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
+import { useModulePayload } from "@/lib/useModulePayload";
 import { parseTOTP, generateRandomSecret } from "@/lib/totp";
 import { companionLinksFor } from "@/lib/companionLinks";
 
 function formatCode(code) {
   return code.slice(0, 3) + " " + code.slice(3);
+}
+
+// Initial state derived from a payload handed over by another module
+// (moduleBridge.js — e.g. QR Decode's raw otpauth:// URI). Produces the same
+// seed the textarea would if the user pasted the value, so a hand-off behaves
+// identically to a paste: the code flows without the clipboard ever being
+// touched. Pure, so it can run in useState initializers.
+function seedFromPeer(pending) {
+  if (!pending) return { input: "", totp: null, source: null, error: null };
+  const val = pending.value;
+  try {
+    return {
+      input: val,
+      totp: parseTOTP(val),
+      source: val.trim().startsWith("otpauth://") ? "otpauth" : "raw",
+      error: null,
+    };
+  } catch {
+    return {
+      input: val,
+      totp: null,
+      source: null,
+      error: "Invalid Base32 secret or otpauth:// URI.",
+    };
+  }
 }
 
 // ─── Code cell ────────────────────────────────────────────────────────────────
@@ -185,15 +212,26 @@ function TOTPDisplay({ totp, onCopy }) {
 
 export default function TOTPPage() {
   const moduleId = useModuleId();
-  const [input, setInput] = useState("");
-  const [totp, setTotp] = useState(null);
-  const [error, setError] = useState(null);
+
+  // Payload hand-off from another module (moduleBridge.js — e.g. QR Decode
+  // handed over the raw otpauth:// URI): seed input + parsed TOTP as initial
+  // state so codes start flowing exactly as if the user had pasted it. The
+  // seed lives in state initializers (rendered directly, no effects), and the
+  // secret itself is never logged.
+  const pending = useModulePayload("/modules/totp");
+  const [start] = useState(() => seedFromPeer(pending));
+
+  const [input, setInput] = useState(start.input);
+  const [totp, setTotp] = useState(start.totp);
+  const [error, setError] = useState(start.error);
   // What produced the current secret: "otpauth" | "raw" | "random". Logged in
   // coarse form only — never the secret itself.
-  const [source, setSource] = useState(null);
+  const [source, setSource] = useState(start.source);
 
-  function handleInputChange(e) {
-    const val = e.target.value;
+  // Value-typed entry point shared by the textarea (handleInputChange) and
+  // payload hand-offs from other modules (moduleBridge.js). Pasted secrets
+  // and otpauth URIs are parsed here; the secret itself is never logged.
+  function applySecret(val) {
     setInput(val);
     if (!val.trim()) {
       setTotp(null);
@@ -212,6 +250,10 @@ export default function TOTPPage() {
       if (val.trim().length > 8) setError("Invalid Base32 secret or otpauth:// URI.");
       else setError(null);
     }
+  }
+
+  function handleInputChange(e) {
+    applySecret(e.target.value);
   }
 
   // The meaningful action is copying a generated code (matching the
@@ -256,9 +298,14 @@ export default function TOTPPage() {
   return (
     <ModulePage>
       <div>
-        <label className="block text-sm font-medium text-ink mb-1.5">
-          Secret or otpauth:// URI
-        </label>
+        <div className="mb-1.5 flex flex-wrap items-center justify-between gap-x-2">
+          <label className="block text-sm font-medium text-ink">
+            Secret or otpauth:// URI
+          </label>
+          {pending && input === pending.value && (
+            <ReceivedPayload from={pending.from} />
+          )}
+        </div>
         <TextArea
           value={input}
           onChange={handleInputChange}

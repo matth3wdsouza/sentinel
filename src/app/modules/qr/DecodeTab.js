@@ -498,6 +498,8 @@ export default function DecodeTab({ moduleId }) {
                     {
                       href: "/modules/url-inspector",
                       label: "Inspect this URL for phishing",
+                      payload: analysis.detail.href,
+                      payloadFrom: "QR Decode",
                     },
                   ]}
                 />
@@ -514,6 +516,8 @@ export default function DecodeTab({ moduleId }) {
                     {
                       href: "/modules/totp",
                       label: "Set up two-factor using this code",
+                      payload: decoded,
+                      payloadFrom: "QR Decode",
                     },
                   ]}
                 />

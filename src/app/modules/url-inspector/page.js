@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import ModulePage from "@/components/ModulePage";
 import ResultCard from "@/components/ResultCard";
 import URLPartsTable from "@/components/URLPartsTable";
@@ -11,8 +12,10 @@ import FindingsList from "@/components/FindingsList";
 import InfoCallout from "@/components/InfoCallout";
 import TryExamples from "@/components/TryExamples";
 import CompanionLinks from "@/components/CompanionLinks";
+import ReceivedPayload from "@/components/ReceivedPayload";
 import { saveActivity } from "@/lib/api";
 import { useModuleId } from "@/lib/useModuleId";
+import { useModulePayload } from "@/lib/useModulePayload";
 import { analyzeURL } from "@/lib/urlInspector";
 import useInspector from "@/lib/useInspector";
 import { SEVERITY_STYLE } from "@/lib/severity";
@@ -72,6 +75,39 @@ const EXAMPLES = [
 export default function URLInspectorPage() {
   const moduleId = useModuleId();
 
+  // Payload hand-off from another module (moduleBridge.js — e.g. QR Decode
+  // handed over a scanned URL). The hand-off *is* the analyse step: the URL
+  // was already vetted by the source module, so seed the input and the
+  // analysis as initial state (no effects, nothing re-runs) — the box stays
+  // editable and the user can re-run at any time.
+  const pending = useModulePayload("/modules/url-inspector");
+  const pendingValue = pending?.value ?? "";
+  // Captured in state so the reference stays stable for the log effect below
+  // (compute-once; re-renders must not re-fire the activity write).
+  const [seededAnalysis] = useState(() =>
+    pendingValue ? analyzeURL(pendingValue.trim()) : null
+  );
+
+  // Log the hand-off-arrived analysis once — an external-store write, not a
+  // state update; the UI result is already shown from initial state. The ref
+  // guard is written inside the effect (the sanctioned place per the
+  // react-hooks/refs rule) so a React 19 StrictMode remount in dev — which
+  // re-runs effects — can't write a duplicate activity entry.
+  const loggedRef = useRef(false);
+  useEffect(() => {
+    if (!seededAnalysis || loggedRef.current) return;
+    loggedRef.current = true;
+    saveActivity({
+      moduleType: moduleId,
+      summary: "URL analysed",
+      details: {
+        verdict: seededAnalysis.verdict,
+        flagCount: seededAnalysis.flags.length,
+        scheme: seededAnalysis.parsed.protocol,
+      },
+    });
+  }, [seededAnalysis, moduleId]);
+
   const {
     input,
     result,
@@ -87,7 +123,12 @@ export default function URLInspectorPage() {
     clearExpanded,
     canAnalyse,
     showReset,
-  } = useInspector({ trim: true, onAnalyse: runAnalysis });
+  } = useInspector({
+    trim: true,
+    onAnalyse: runAnalysis,
+    initialValue: pendingValue,
+    initialResult: seededAnalysis,
+  });
 
   function runAnalysis(value) {
     const analysis = analyzeURL(value);
@@ -116,9 +157,14 @@ export default function URLInspectorPage() {
     <ModulePage>
       <div className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-ink mb-1.5">
-            URL to analyse
-          </label>
+          <div className="mb-1.5 flex flex-wrap items-center justify-between gap-x-2">
+            <label className="block text-sm font-medium text-ink">
+              URL to analyse
+            </label>
+            {pending && input === pendingValue && (
+              <ReceivedPayload from={pending.from} />
+            )}
+          </div>
           <TextArea
             value={input}
             onChange={handleChange}

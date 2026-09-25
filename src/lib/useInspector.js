@@ -8,9 +8,14 @@ import { useState } from "react";
 // hook owns the input/result/error/expanded state and the standard handlers.
 // `setResult`/`setError`/`clearExpanded` are returned so each page's
 // runAnalysis body can stay exactly as it was.
-export default function useInspector({ onAnalyse, trim = false } = {}) {
-  const [input, setInput] = useState("");
-  const [result, setResult] = useState(null);
+//
+// `initialValue`/`initialResult` seed the state machine's initial state (used
+// by the module-bridge hand-offs: a payload arriving from another module is
+// rendered into initial state, not set via effects). They only take effect on
+// mount, like any useState initial value.
+export default function useInspector({ onAnalyse, trim = false, initialValue = "", initialResult = null } = {}) {
+  const [input, setInput] = useState(initialValue);
+  const [result, setResult] = useState(initialResult);
   const [error, setError] = useState(null);
   const [expanded, setExpanded] = useState({});
 
