@@ -141,7 +141,7 @@ export default function ScamMessageAnalyserPage() {
             ariaLabel="Message text"
             rows={7}
           />
-          <TryExamples examples={EXAMPLES} onLoad={loadExample} />
+          <TryExamples examples={EXAMPLES} onLoad={loadExample} value={input} />
         </div>
 
         <AnalyseActions

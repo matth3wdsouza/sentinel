@@ -1404,6 +1404,21 @@ The streaming rework removed the memory risk, so the whole size-limit UX was ret
 - All non-`set-state-in-effect` findings are resolved: `react/no-unescaped-entities` escaped to entities across clipboard, encryptor, JWT inspector, QR WiFi, and text-hash; the unused `eslint-disable` in password-generator removed; `exhaustive-deps` fixed by adding the genuinely stable deps (`moduleId`, `canvasRef`, `subType` in `generateOptions.js`); the QR decode preview `<img>` (blob URL, not optimizable by next/image) now has a documented disable.
 - Lint baseline is now **9 errors / 0 warnings**, all pre-existing `react-hooks/set-state-in-effect` (restructuring those risks behavior changes — left as-is).
 
+### Fixed — Try Examples captions lingered after typing or Reset
+
+- **A Try-Examples caption ("Digits step up in order…") stayed on screen after
+  the user typed over the sample or pressed Reset.** The caption lived in
+  `TryExamples`' own local `active` state, so a page's `handleChange`/`reset`
+  cleared the field but had no way to clear the sentence — visible on every
+  consumer (Scam Message, PIN, URL, Common Password, Unicode). The caption is
+  now *derived* from the live input: `TryExamples` takes a `value` prop (the
+  field's raw text) and renders the caption only while the field still holds
+  exactly the loaded sample. Type over it or Reset and it clears; analyse with
+  unchanged input and it stays. All five consumers pass their field value.
+  Pure render-time derivation — no effects added. Verified end-to-end in
+  headless Chrome on all five modules (click → caption; type/Reset → clears).
+  (`src/components/TryExamples.js` + the five module pages)
+
 ### Known remaining items
 
 - **Existing IndexedDB entries** written before the logging change may still contain digests/filenames; clearing activity in Settings scrubs them (app is still in dev — migration not a priority).

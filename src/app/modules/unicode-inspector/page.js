@@ -196,7 +196,7 @@ export default function UnicodeInspectorPage() {
             ariaLabel="Text to inspect"
             rows={5}
           />
-          <TryExamples examples={EXAMPLES} onLoad={loadExampleAndResetHighlight} />
+          <TryExamples examples={EXAMPLES} onLoad={loadExampleAndResetHighlight} value={input} />
         </div>
 
         <AnalyseActions

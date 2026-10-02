@@ -173,7 +173,7 @@ export default function URLInspectorPage() {
             rows={3}
             mono
           />
-          <TryExamples examples={EXAMPLES} onLoad={loadExample} />
+          <TryExamples examples={EXAMPLES} onLoad={loadExample} value={input} />
         </div>
 
         <AnalyseActions

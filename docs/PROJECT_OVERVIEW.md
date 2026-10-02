@@ -823,6 +823,26 @@ elevated). All phases are complete and stable:
     ODF subtype family plus pages/numbers/key, so legitimate files of any
     of these families verify cleanly. Regression tests added.
 
+- **Phase 23 — Try Examples caption lifecycle fix**: the "Try an example"
+  shortcut's caption (the one-sentence description shown after a sample is
+  clicked) lived in `TryExamples`' own local `active` state, so the page's
+  Reset and typing-on-edit cleared the field but left the sentence on screen —
+  seen on every consumer (the scam, PIN, URL, common-password, and Unicode
+  pages). The caption is now *derived* from the live input instead of owned:
+  `TryExamples` takes a `value` prop (the field's raw text) and renders the
+  caption only while the field still holds exactly the loaded sample — type
+  over it or press Reset and it clears; analyse with unchanged input and it
+  stays (the sample is still what's being inspected). All five consumers pass
+  their raw field value. The derivation is pure render-time logic — no effects
+  added, so the change can't drift or cascade (and it keeps the codebase's
+  "never set state from effects" posture). A component-level regression test
+  was attempted but the suite's vitest setup deliberately has no JSX transform
+  for `.js` files (per the "no component tests" decision under Round 6), so
+  the fix was instead verified end-to-end in headless Chrome on all five
+  modules (click → caption; type → clears; reset → clears; analyser with
+  unchanged input → caption stays). (`src/components/TryExamples.js` + the
+  five module pages)
+
 ## Refactor — Rounds 1–3
 
 A systematic refactor was completed after the 10th module was built, to

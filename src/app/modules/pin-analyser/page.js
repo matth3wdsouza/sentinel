@@ -156,7 +156,7 @@ export default function PinAnalyserPage() {
             maxLength={MAX_PIN_LENGTH}
             inputMode="numeric"
           />
-          <TryExamples examples={EXAMPLES} onLoad={loadExample} />
+          <TryExamples examples={EXAMPLES} onLoad={loadExample} value={input} />
         </div>
 
         <AnalyseActions

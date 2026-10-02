@@ -155,7 +155,7 @@ export default function CommonPasswordPage() {
             placeholder="Enter a password"
             ariaLabel="Password to check"
           />
-          <TryExamples examples={EXAMPLES} onLoad={loadExample} />
+          <TryExamples examples={EXAMPLES} onLoad={loadExample} value={password} />
         </div>
 
         <div className="rounded-xl border border-slate/20 bg-surface px-4 py-3">
