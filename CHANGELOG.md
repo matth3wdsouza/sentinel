@@ -1402,7 +1402,11 @@ The streaming rework removed the memory risk, so the whole size-limit UX was ret
 ### Changed — lint cleanup (safe fixes only)
 
 - All non-`set-state-in-effect` findings are resolved: `react/no-unescaped-entities` escaped to entities across clipboard, encryptor, JWT inspector, QR WiFi, and text-hash; the unused `eslint-disable` in password-generator removed; `exhaustive-deps` fixed by adding the genuinely stable deps (`moduleId`, `canvasRef`, `subType` in `generateOptions.js`); the QR decode preview `<img>` (blob URL, not optimizable by next/image) now has a documented disable.
-- Lint baseline is now **9 errors / 0 warnings**, all pre-existing `react-hooks/set-state-in-effect` (restructuring those risks behavior changes — left as-is).
+- Lint baseline was then **9 errors / 0 warnings**, all pre-existing
+  `react-hooks/set-state-in-effect` (restructuring those risks behavior
+  changes — left as-is). A later pass reduced this to the current 2
+  (`usePreference.js` + `settings/page.js`); see Known remaining items
+  below.
 
 ### Fixed — Try Examples captions lingered after typing or Reset
 
