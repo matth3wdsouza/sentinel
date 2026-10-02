@@ -2,7 +2,12 @@
 
 All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https://keepachangelog.com/); the log is maintained by hand.
 
-## [Unreleased]
+## [1.0.0] - 2026-10-03
+
+First release — Sentinel is feature-complete: 20 modules across 4 categories,
+fully client-side, no backend, no telemetry. This entry is the accumulated
+log since inception; the freeze-time decisions are recorded under "Notes at
+1.0" at the foot.
 
 ### Added — more modules hand their results forward
 
@@ -1427,3 +1432,25 @@ The streaming rework removed the memory risk, so the whole size-limit UX was ret
 
 - **Existing IndexedDB entries** written before the logging change may still contain digests/filenames; clearing activity in Settings scrubs them (app is still in dev — migration not a priority).
 - **Lint baseline**: 2 errors / 0 warnings, both pre-existing `react-hooks/set-state-in-effect` per AGENTS.md (`usePreference.js`, `settings/page.js`).
+
+### Notes at 1.0
+
+Freeze-time decisions, confirmed on the day of release:
+
+- **Module hand-offs are six, final, by design** — QR → TOTP / URL, Password
+  Generator → Guessability / HIBP, Scam Message Analyser → URL Inspector,
+  URL Inspector → Unicode Inspector. A seventh (Password Generator → Common
+  Password Checker) was considered and deliberately not built.
+- **Text Hash and QR Decode log activity automatically** (live hashing on
+  type; decode-on-drop), unlike every other module's button-press logging.
+  This is a deliberate design trait — the auto-run *is* those modules' UX —
+  parked as-is for post-v1 review.
+- **Legacy IndexedDB entries** (pre-logging-change, possibly holding digests
+  or filenames) are accepted and documented; clearing activity in Settings
+  scrubs them.
+- **No LICENSE added at 1.0** — deliberately deferred; the code remains
+  all-rights-reserved until the author chooses terms.
+- **npm audit**: 5 advisories (1 moderate, 3 high, 1 critical) all in inert
+  transitive dependencies (`sharp` — unused: no `next/image` anywhere and the
+  build is a static export; `postcss` — build-time only). Neither ships in the
+  deployed artifact; no dependency churn was taken at freeze.
