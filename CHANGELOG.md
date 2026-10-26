@@ -2,7 +2,7 @@
 
 All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https://keepachangelog.com/); the log is maintained by hand.
 
-## [Unreleased]
+## [1.1.0] - 2026-10-26
 
 ### Security
 
