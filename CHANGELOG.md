@@ -4,6 +4,12 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Security
+
+- **Dependency refresh clears the npm audit report.** Next.js 16.4.3,
+  Vitest and its coverage provider 4.1.12, happy-dom 21.0.4, Wrangler
+  4.153.0, plus transitive fixes, bring `npm audit` to zero vulnerabilities.
+
 ### Changed
 
 - **Text Encryptor now writes a v2 ciphertext envelope.** New output is
