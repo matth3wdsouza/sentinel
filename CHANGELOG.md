@@ -2,6 +2,22 @@
 
 All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https://keepachangelog.com/); the log is maintained by hand.
 
+## [Unreleased]
+
+### Changed
+
+- **Text Encryptor now writes a v2 ciphertext envelope.** New output is
+  `sentinel:v2:<iterations>:<salt>:<iv>:<ciphertext>` and uses PBKDF2-HMAC-SHA256
+  at 600,000 iterations, the current OWASP guidance. The iteration count is part
+  of the string, so it can be raised again without making earlier ciphertext
+  unreadable.
+- **Legacy `sentinel:v1` ciphertext remains readable.** v1 strings are decrypted
+  with the 310,000 iterations they were created with. No migration is needed.
+- **Decrypt now distinguishes an unsupported format version.** A string from a
+  newer release reports `UNSUPPORTED_VERSION` instead of the generic malformed
+  input message. Decrypt also validates salt, IV, ciphertext and iteration-count
+  bounds before doing any expensive key derivation.
+
 ## [1.0.0] - 2026-10-03
 
 First release — Sentinel is feature-complete: 20 modules across 4 categories,

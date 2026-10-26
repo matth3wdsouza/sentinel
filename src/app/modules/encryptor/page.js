@@ -185,7 +185,7 @@ function DecryptTab({ moduleId }) {
   const [ciphertext, setCiphertext] = useState("");
   const [passphrase, setPassphrase] = useState("");
   const [result, setResult] = useState(null);  // string on success
-  const [error, setError] = useState(null);    // { type: "MALFORMED"|"DECRYPT_FAILED"|"UNKNOWN" }
+  const [error, setError] = useState(null);    // { type: "MALFORMED"|"UNSUPPORTED_VERSION"|"DECRYPT_FAILED"|"UNKNOWN" }
   const [isWorking, setIsWorking] = useState(false);
 
   const canDecrypt =
@@ -220,6 +220,7 @@ function DecryptTab({ moduleId }) {
       });
     } catch (err) {
       const type = err.message === "MALFORMED" ? "MALFORMED"
+        : err.message === "UNSUPPORTED_VERSION" ? "UNSUPPORTED_VERSION"
         : err.message === "DECRYPT_FAILED" ? "DECRYPT_FAILED"
         : "UNKNOWN";
       setError(type);
@@ -237,9 +238,18 @@ function DecryptTab({ moduleId }) {
     MALFORMED: {
       heading: "Unrecognised format",
       means:
-        `This doesn't look like a Sentinel-encrypted message. Make sure you copied the full output, starting with "sentinel:v1:".`,
+        `This doesn't look like a Sentinel-encrypted message. Make sure you copied the full output, starting with "sentinel:v1:" or "sentinel:v2:".`,
       action:
         "Go back to whoever sent you this message and ask them to re-send the full encrypted output.",
+    },
+    UNSUPPORTED_VERSION: {
+      heading: "Newer format",
+      means:
+        "This message uses a format version that this copy of Sentinel does not understand. It was probably created by a newer release.",
+      doesntMean:
+        "This doesn't mean the message is damaged, or that the passphrase is wrong.",
+      action:
+        "Update Sentinel, or ask the sender to re-encrypt it with a version you can read.",
     },
     DECRYPT_FAILED: {
       heading: "Decryption failed",
@@ -267,7 +277,7 @@ function DecryptTab({ moduleId }) {
         <TextArea
           value={ciphertext}
           onChange={(e) => { setCiphertext(e.target.value); setResult(null); setError(null); }}
-          placeholder="Paste the sentinel:v1:… encrypted output here…"
+          placeholder="Paste a sentinel:v1: or sentinel:v2: string here…"
           rows={4}
           ariaLabel="Encrypted text"
           mono

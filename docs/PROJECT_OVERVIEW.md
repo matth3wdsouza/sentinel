@@ -1234,25 +1234,32 @@ Location: `src/lib/guessability.js` + `src/app/modules/guessability/page.js`
 
 Location: `src/lib/encrypt.js` + `src/app/modules/encryptor/page.js`
 
-- Key derivation: PBKDF2 (SHA-256, 310,000 iterations — OWASP 2023 recommendation),
-  16-byte random salt per encryption.
+- Key derivation: PBKDF2 (SHA-256, 600,000 iterations for new v2 output, the
+  current OWASP guidance), 16-byte random salt per encryption. Legacy v1
+  ciphertext is decrypted with the 310,000 iterations it was created with.
 - Encryption: AES-256-GCM, 12-byte random IV per encryption. Authentication tag
-  is appended automatically by Web Crypto and verified on decrypt — any tampering
+  is appended automatically by Web Crypto and verified on decrypt, so any tampering
   causes decryption to fail.
-- Output format: `sentinel:v1:<base64(salt)>:<base64(iv)>:<base64(ciphertext+tag)>` —
-  self-contained, no separate key management needed. The format is Sentinel-specific
-  (the colon-delimited packing) but the underlying primitives are standard; any tool
-  supporting AES-256-GCM + PBKDF2 can decrypt by parsing the four fields.
-- No user-configurable crypto options — algorithm and iteration count are fixed at
+- Output format: `sentinel:v2:<iterations>:<base64(salt)>:<base64(iv)>:<base64(ciphertext+tag)>`,
+  self-contained, no separate key management needed. The iteration count is
+  recorded in the string so it can be raised in future without making earlier
+  ciphertext unreadable. Legacy `sentinel:v1:<base64(salt)>:<base64(iv)>:<base64(ciphertext+tag)>`
+  input remains readable at its original 310,000 iterations. The format is
+  Sentinel-specific (the colon-delimited packing) but the underlying primitives
+  are standard; any tool supporting AES-256-GCM + PBKDF2 can decrypt by parsing
+  the fields.
+- No user-configurable crypto options, algorithm and iteration count are fixed at
   best-practice values to prevent non-expert users from choosing weak settings.
 - Two-tab UI (Encrypt / Decrypt), matching the File Integrity tab pattern.
 - Encrypt tab: plaintext textarea, passphrase + confirm fields (mismatch warning
   shown after user types in both), Encrypt button disabled until fields match.
   Output displayed in `CodeBlock` with copy button.
-- Decrypt tab: ciphertext textarea, passphrase field. Two distinct error states:
-  `MALFORMED` (input doesn't match `sentinel:v1:` format) and `DECRYPT_FAILED`
-  (wrong passphrase or tampered ciphertext — AES-GCM does not distinguish these
-  by design). Decrypted text shown in a plain `div` with a lightweight copy button.
+- Decrypt tab: ciphertext textarea, passphrase field. Three distinct error states:
+  `MALFORMED` (input doesn't match the `sentinel:v1:` or `sentinel:v2:` shape),
+  `UNSUPPORTED_VERSION` (a newer format this release cannot read), and
+  `DECRYPT_FAILED` (wrong passphrase or tampered ciphertext, AES-GCM does not
+  distinguish these by design). Decrypted text shown in a plain `div` with a
+  lightweight copy button.
 - Activity logging: `{ action: "encrypt"|"decrypt", success: bool }` only —
   never the plaintext, ciphertext, or passphrase.
 - No settings persistence — no user-configurable options to store.
