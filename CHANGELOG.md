@@ -9,6 +9,9 @@ All notable changes to Sentinel. Format loosely follows [Keep a Changelog](https
 - **Dependency refresh clears the npm audit report.** Next.js 16.4.3,
   Vitest and its coverage provider 4.1.12, happy-dom 21.0.4, Wrangler
   4.153.0, plus transitive fixes, bring `npm audit` to zero vulnerabilities.
+- **The CSP now sends `frame-ancestors 'none'`.** This complements the
+  existing `X-Frame-Options: DENY` and blocks framing in CSP-capable
+  browsers as well.
 
 ### Changed
 

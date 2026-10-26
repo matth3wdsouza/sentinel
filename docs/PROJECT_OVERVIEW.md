@@ -993,9 +993,10 @@ and should stay as-is.
 
 **Round 6 — First-commit baseline review** (post-review cleanup)
 
-- **CSP hardened** (`next.config.mjs`) — added `object-src 'none'`, `base-uri
-  'none'`, and `form-action 'none'` so the policy covers plugin/embed, base-tag
-  takeover, and in-page form submission vectors.
+- **CSP hardened** (`public/_headers` after the static-export move; originally
+  `next.config.mjs`) — added `object-src 'none'`, `base-uri 'none'`, and
+  `form-action 'none'` so the policy covers plugin/embed, base-tag takeover,
+  and in-page form submission vectors.
 - **QR classification is http/https-only** (`src/lib/qr.js`) — the URL branch
   now rejects any other scheme that still parses as a URL (`javascript:`,
   `data:`, `file:`, …), which falls through to the plain-text branch. The
